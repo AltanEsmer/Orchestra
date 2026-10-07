@@ -218,3 +218,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+/CourseProjects.pdf
+/ProjectRreportInstructions.pdf
+/Lecture*.pdf
+/course-materials/*.pdf
+/data/raw/*
+!/data/raw/README.md
+!/data/raw/.gitkeep
+/data/processed/*
+!/data/processed/README.md
+!/data/processed/.gitkeep
+/results/*
+!/results/README.md
+!/results/.gitkeep
+/models/*
+!/models/README.md
+!/models/.gitkeep
+/work/
+/.scratch/
+
+.env.*
+!.env.example
+!.env.template
