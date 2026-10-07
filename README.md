@@ -1,2 +1,35 @@
 # Orchestra
-AI SM1 project repo
+
+Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The study will compare classifiers and text representations for choosing a query's first action, then analyze confidence and errors.
+
+Current status is preparation. The repository contains a project plan, data/evaluation protocol, learning routine, and a verified Python environment smoke check. There is no research dataset, trained router, or experiment result yet. Tool integration is optional and deferred.
+
+## Set up and check the environment
+
+Use [uv](https://docs.astral.sh/uv/getting-started/installation/) and run these commands from the repository root. The checked setup used uv 0.11.29 and Python 3.12.13. `.python-version` pins Python, and `uv.lock` pins package versions and distribution hashes. Setup needs network access when Python or packages are not cached.
+
+```sh
+uv python install 3.12.13
+uv sync --locked
+uv run --locked python scripts/smoke.py
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+git diff --check
+```
+
+The smoke check prints `PASS: environment-smoke-only` followed by the checks performed and runtime versions. It tests sparse TF-IDF, training-only vocabulary, and expected dummy-classifier predictions on artificial fixtures. It does not measure routing accuracy. Exact evidence is in the [learning log](docs/learning-log.md#preparation-evidence-october-7-2026).
+
+Training, dataset validation, experiment evaluation, and report generation are planned work. No runnable commands for those capabilities exist yet. No API key or GPU is needed for the current check.
+
+## Start the study
+
+- Read the [project plan](docs/project-plan.md) for milestones, scope, decisions, the report outline, and the ordered first work session.
+- Use the [data and evaluation protocol](docs/data-and-evaluation.md) for labels, annotation, leakage controls, the experiment matrix, and confidence analysis.
+- Follow the [repository walkthrough](docs/repo-guide.md) to explain each file and trace today's check versus the proposed prediction flow.
+- Maintain the [learning log](docs/learning-log.md) for evidence, teach-back questions, and knowledge gaps.
+- Consult [course sources](docs/course-sources.md) for file locations and verified page references. Course PDFs are not redistributed here.
+- Agents must follow [AGENTS.md](AGENTS.md).
+
+The report and code deadline is **December 6, 2026**. The report must be 5–12 pages in IEEE conference two-column format and use Altan's own words. Oral-exam details and AI-use rules still require confirmation with course staff.
+
+Repository preparation and student understanding are tracked separately. Routing and split terminology **needs practice** after the first question caused confusion. The other topics remain **not yet reviewed**. The learning log records the response and next exercise.
