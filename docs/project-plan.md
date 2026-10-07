@@ -18,21 +18,9 @@ Completion means both baselines run twice from the same committed configuration 
 
 ## Milestones working back from submission
 
-Dates are local to Europe/Copenhagen. The source gives a date, not a time of day. Confirm the portal's cutoff with course staff.
+The [roadmap](../roadmap.md#milestones) is the primary tracker for milestone dates, dependencies, statuses, and completion evidence. Its targets lead to the December 6, 2026 submission deadline. Update that tracker when progress or dates change.
 
-| Target date | Deliverable and dependency | Understanding checkpoint |
-| --- | --- | --- |
-| October 11, 2026 | Review this preparation, run the smoke check, confirm course AI-use and exam rules. | Trace the scaffold and distinguish preparation from an experiment. |
-| October 18 | Freeze annotation guide v1 after a 40-query pilot. Collect and review the first 120 accepted rows. | Label boundary cases and explain grouping before splitting. |
-| October 25 | Finish the first vertical slice. Requires accepted data and a checked split manifest. | Explain TF-IDF, the dummy baseline, and one prediction. |
-| November 8 | Freeze the main dataset, preferably 400 accepted queries, and complete the bounded comparison. Requires first-slice reproducibility. | Compare classifier mechanics and explain a confusion matrix. |
-| November 15 | Finish confidence, coverage, and qualitative error analysis. Freeze choices before final test evaluation. | Distinguish score, probability, calibration, and fallback. |
-| November 22 | Complete a report draft with traceable results, figures, and limitations. | Explain each figure without reading generated prose. |
-| November 29 | Reproduce from a clean environment and complete the final rehearsal. | Trace an unfamiliar query, reproduce a run, and defend a rejected design. |
-| December 4 | Freeze report and code, verify submission files and citations, leave two days of buffer. | Resolve high-priority knowledge gaps. |
-| December 6 | Submit report through itslearning and submit code using the course staff's confirmed method. | Record submission evidence. |
-
-The learning checkpoints are part of the work plan, not scheduled notifications. Their status is maintained in the [learning log](learning-log.md).
+Understanding checkpoints remain in the [learning log](learning-log.md#topic-ledger-and-question-bank). At each milestone, review the corresponding topics and carry gaps forward. These checkpoints are part of the work plan, not scheduled notifications.
 
 ## Decisions and rejected alternatives
 

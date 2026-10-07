@@ -7,6 +7,8 @@ This guide distinguishes the executable preparation from the planned routing exp
 | File | Purpose, input, and output |
 | --- | --- |
 | `README.md` | Entry point with executable setup/check commands and links to the project documents. |
+| `architecture.md` | Current and proposed components, query flow, library responsibilities, and storage boundaries. |
+| `roadmap.md` | Primary milestone tracker with target dates, statuses, completion gates, owners, and evidence. |
 | `AGENTS.md` | Repository workflow and explanation obligations for agents. |
 | `pyproject.toml` | Declares the Python range, pinned ML dependency, and development tooling. uv reads it to resolve the environment. |
 | `.python-version` | Selects Python 3.12.13 so a newer system Python does not silently change the runtime. |
@@ -14,7 +16,7 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `scripts/smoke.py` | Executable environment assertions on tiny artificial query lists. It prints a success label and runtime versions. It writes no research results. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
-| `docs/project-plan.md` | Scope, milestone dependencies, decision rationale, report evidence map, and first-session checklist. |
+| `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
 | `docs/data-and-evaluation.md` | Proposed first-action labels, row schema, annotation/split protocol, experiments, confidence, and reproducibility. |
 | `docs/course-sources.md` | Source locations, exact course page mapping, and requirement fingerprints. |
 | `docs/repo-guide.md` | This living explanation of authored files and data flow. |

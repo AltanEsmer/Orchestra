@@ -23,7 +23,9 @@ Training, dataset validation, experiment evaluation, and report generation are p
 
 ## Start the study
 
-- Read the [project plan](docs/project-plan.md) for milestones, scope, decisions, the report outline, and the ordered first work session.
+- Track milestones, completion evidence, and next actions in the [roadmap](roadmap.md).
+- Read the [architecture](architecture.md) for the current smoke check and proposed routing workflow.
+- Read the [project plan](docs/project-plan.md) for scope, decisions, the report outline, and the ordered first work session.
 - Use the [data and evaluation protocol](docs/data-and-evaluation.md) for labels, annotation, leakage controls, the experiment matrix, and confidence analysis.
 - Follow the [repository walkthrough](docs/repo-guide.md) to explain each file and trace today's check versus the proposed prediction flow.
 - Maintain the [learning log](docs/learning-log.md) for evidence, teach-back questions, and knowledge gaps.
