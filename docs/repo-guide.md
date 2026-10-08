@@ -8,7 +8,7 @@ This guide distinguishes the executable preparation from the planned routing exp
 | --- | --- |
 | `README.md` | Entry point with executable setup/check commands and links to the project documents. |
 | `architecture.md` | Current and proposed components, query flow, library responsibilities, and storage boundaries. |
-| `roadmap.md` | Primary milestone tracker with target dates, statuses, completion gates, owners, and evidence. |
+| `ROADMAP.md` | Primary milestone tracker with target dates, statuses, completion gates, linked GitHub issues, owners, and evidence. Includes plain-language milestone objectives. |
 | `AGENTS.md` | Repository workflow and explanation obligations for agents. |
 | `pyproject.toml` | Declares the Python range, pinned ML dependency, and development tooling. uv reads it to resolve the environment. |
 | `.python-version` | Selects Python 3.12.13 so a newer system Python does not silently change the runtime. |
