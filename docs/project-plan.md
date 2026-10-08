@@ -22,6 +22,16 @@ The [roadmap](../ROADMAP.md#milestones) is the primary tracker for milestone dat
 
 Understanding checkpoints remain in the [learning log](learning-log.md#topic-ledger-and-question-bank). At each milestone, review the corresponding topics and carry gaps forward. These checkpoints are part of the work plan, not scheduled notifications.
 
+## Explain and defend each milestone
+
+The objective is to complete the project and defend its methods and findings in the report and oral exam. Altan approved the [M0 delivery plan](m0-plan.md) on October 8, 2026. Course-rule confirmation is removed from agent work and milestone acceptance; Altan owns administration.
+
+Every milestone includes an updated [study guide](study-guides/README.md), exported to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/`. Keep its editable source in Git. Start with a plain-language lesson, then give implementation details, a concrete query trace, course connections, choices, actual checks, limitations, report evidence, and unanswered oral questions. Update the guide after meaningful changes and retain a dated snapshot at milestone completion.
+
+At each milestone, inspect relevant slides available in `/Users/altanesmer/Desktop/SM1/AI/`. Cite the exact filename and one-based PDF pages, record the inspected revision, and distinguish lecture concepts from project-specific techniques. New slides may add or revise connections, but do not justify retroactive claims that unfinished work exists. Source refresh happens during milestone work, not through a background monitor.
+
+After December submission, use the frozen project, saved results, and guide collection for oral practice through January 2027. Trace unfamiliar queries, explain a course principle and where the project applies it, justify an alternative, and discuss an observed error. Record actual answers and revisit gaps. January is Altan's stated target; no exact exam date is inferred. The final report is a separate synthesis in Altan's own words, not a concatenation of study guides.
+
 ## Decisions and rejected alternatives
 
 | Decision | Reason and consequence | Revisit when |
@@ -37,7 +47,7 @@ Understanding checkpoints remain in the [learning log](learning-log.md#topic-led
 
 The largest scientific risks are annotation shortcuts, overlapping action meanings, paraphrase leakage, a small test set, and synthetic language that fails to resemble real users. The [data protocol](data-and-evaluation.md) addresses each and requires limitations in the report. More models cannot repair unclear labels.
 
-Altan must confirm oral-exam format, permitted AI assistance, required assistance disclosure, and code-submission mechanics with course staff. The supplied PDFs do not settle these questions. Before any external data or embedding download, record its license and immutable revision. Dataset size is a collection target, not a guaranteed sample size. If fewer than 400 rows are feasible, keep the held-out test and report uncertainty instead of inventing data or hiding exclusions.
+Altan handles oral-exam arrangements, AI-use rules, disclosure, and submission mechanics. The agent does not require administrative answers to proceed with approved work. Before any external data or embedding download, record its license and immutable revision. Dataset size is a collection target, not a guaranteed sample size. If fewer than 400 rows are feasible, keep the held-out test and report uncertainty instead of inventing data or hiding exclusions.
 
 ## Report outline and evidence map
 
@@ -52,7 +62,7 @@ Target an eight-page draft within the required 5–12 pages. Use IEEE conference
 | Confidence and error analysis, about 1.5 pages | Can confidence guide fallback, and what mistakes remain? | Reliability diagram, log loss/Brier score, accuracy-versus-coverage curve, annotated error examples. | Imperfect calibration and domain shift. |
 | Discussion and conclusion, about 1 page | What does the evidence support? | Conclusions tied to run IDs, rejected alternatives, reproduction instructions. | No general claim about all AI systems or tool success. |
 
-References and final pagination must fit the course limit. Each result or figure links to a saved run and configuration. Do not write a conclusion before its evidence exists. Keep an agent-assistance record in the learning log and follow the staff's confirmed disclosure rules.
+References and final pagination must fit the course limit. Each result or figure links to a saved run and configuration. Do not write a conclusion before its evidence exists. Keep an agent-assistance record in the learning log. Altan manages the applicable disclosure requirements.
 
 ## First work session after preparation
 

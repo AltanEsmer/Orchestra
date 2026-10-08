@@ -17,6 +17,9 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
+| `docs/m0-plan.md` | Accepted M0 scope, ordered delivery, checks, and the separate student-response gate. |
+| `docs/study-guides/README.md` | PDF location, edition evidence, refresh procedure, and coverage planned for each milestone. |
+| `docs/study-guides/m0-preparation.md` | Editable M0 lesson and technical appendix explaining the current script and its course connections. |
 | `docs/data-and-evaluation.md` | Proposed first-action labels, row schema, annotation/split protocol, experiments, confidence, and reproducibility. |
 | `docs/course-sources.md` | Source locations, exact course page mapping, and requirement fingerprints. |
 | `docs/repo-guide.md` | This living explanation of authored files and data flow. |

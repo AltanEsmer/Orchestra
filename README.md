@@ -29,9 +29,10 @@ Training, dataset validation, experiment evaluation, and report generation are p
 - Use the [data and evaluation protocol](docs/data-and-evaluation.md) for labels, annotation, leakage controls, the experiment matrix, and confidence analysis.
 - Follow the [repository walkthrough](docs/repo-guide.md) to explain each file and trace today's check versus the proposed prediction flow.
 - Maintain the [learning log](docs/learning-log.md) for evidence, teach-back questions, and knowledge gaps.
+- Use the [milestone study guides](docs/study-guides/README.md) for implementation explanations, course connections, report evidence, and oral preparation. PDFs are saved outside the repository in `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/`.
 - Consult [course sources](docs/course-sources.md) for file locations and verified page references. Course PDFs are not redistributed here.
 - Agents must follow [AGENTS.md](AGENTS.md).
 
-The report and code deadline is **December 6, 2026**. The report must be 5–12 pages in IEEE conference two-column format and use Altan's own words. Oral-exam details and AI-use rules still require confirmation with course staff.
+The report and code deadline is **December 6, 2026**. The report must be 5–12 pages in IEEE conference two-column format and use Altan's own words. Altan handles course administration. At his request, course-rule confirmation is not an agent task or milestone gate. The study guides support his January 2027 oral preparation without claiming that the supplied PDFs verify an exam date.
 
 Repository preparation and student understanding are tracked separately. Routing and split terminology **needs practice** after the first question caused confusion. The other topics remain **not yet reviewed**. The learning log records the response and next exercise.
