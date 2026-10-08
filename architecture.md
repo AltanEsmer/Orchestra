@@ -1,6 +1,6 @@
 # Architecture
 
-Orchestra is a local classification study: given a query, predict the first action needed to answer it. A router chooses an action; it does not itself answer the query. This document describes the implemented environment check and the proposed study. Progress and completion evidence live in the [roadmap](roadmap.md).
+Orchestra is a local classification study: given a query, predict the first action needed to answer it. A router chooses an action; it does not itself answer the query. This document describes the implemented environment check and the proposed study. Progress and completion evidence live in the [roadmap](ROADMAP.md).
 
 ## Implemented today
 
