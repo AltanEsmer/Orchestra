@@ -41,7 +41,7 @@ M0 edition exported on October 8, 2026. The guide is delivered; the introductory
 
 - Editable source: [M0 preparation](m0-preparation.md).
 - PDF: `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M0-preparation.pdf`, 10 pages.
-- Baseline implementation commit: `0350a8e7cfa080b236caeb999e6eff3853c54f28`. The guide source commit will be recorded in the delivery evidence commit.
+- Baseline implementation commit: `0350a8e7cfa080b236caeb999e6eff3853c54f28`. Guide source commit: `22f445e08ea322ccb99a78d77fd9e04157030e26`.
 - Source SHA-256: `91c27e80834cd01632de2efd0bc7d20027072b4d09eb1d512f3c810e68455684`.
 - PDF SHA-256: `3c321a3b3be63f638fe9a16455926be78662b60e776cf0dccfb661a2b841ce07`.
 - Provenance sidecar: `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M0-preparation.manifest.json`.
