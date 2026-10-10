@@ -18,6 +18,8 @@ Use these statuses consistently:
 
 At each [milestone](project-plan.md#milestones-working-back-from-submission), review the topic ledger and carry unresolved gaps forward. Passing an implementation gate never automatically advances a learning status.
 
+Each handoff now includes a [milestone PDF](study-guides/README.md). Connect a verified lecture concept to an implemented choice, trace a concrete query or artifact, and identify evidence suitable for the report. PDF delivery is implementation evidence; only Altan's actual explanation changes the understanding record. New course slides are reviewed during milestone work. Continue this routine through January 2027 oral preparation after December submission.
+
 ## Preparation evidence, October 7, 2026
 
 The initial change adds a locked Python environment, a small smoke script, course-grounded planning documents, and agent instructions. A plain script was chosen over a package/CLI because the issue prepares a study and does not yet implement a router. The future data shape is a query row with stable identity, paraphrase group, first-action label, provenance, and annotation rationale.
@@ -69,6 +71,34 @@ Verification: locked environment synchronization, the README smoke check, Ruff l
 
 This planning/documentation work is agent-assisted. Altan has not provided a new learning response, so understanding statuses remain unchanged. For the next checkpoint, ask Altan to explain why a most-common-class guess is useful for comparison, why M4 waits until model choices are frozen before opening the test set, and what evidence distinguishes a milestone being planned from being complete. Record his attempt before revealing worked answers.
 
+## M0 study guide and revised checkpoints, October 8, 2026
+
+Altan approved the [M0 delivery plan](m0-plan.md), asked for milestone PDFs to explain the implementation and course connections, and removed administrative course confirmation from agent work. He wants to defend the project in the December report and January oral exam. These preferences are planning decisions, not evidence of ML understanding. Earlier entries describe the previous administrative gate; this entry supersedes it.
+
+The roadmap and project plan now require a lesson and technical appendix for each milestone. The [guide index](study-guides/README.md) records the external PDF folder, update procedure, future coverage, source hashes, and edition evidence. The [M0 source](study-guides/m0-preparation.md) explains the existing environment and smoke script and maps classification, unseen testing, feature extraction, lost word order, and model complexity to verified lecture pages. The final report remains Altan's own synthesis. Course PDFs and generated study PDFs remain outside Git.
+
+The lead saved the plan before the guide author began. The worker owned the guide and local export helper; the lead owned other documents and issue updates. Existing application code and dependencies did not change. A tracked Markdown source and an external PDF were chosen over a new document-building framework. ReportLab runs in the bundled authoring environment, separate from the locked study environment. The data protocol only changes administrative ownership; its schema and evaluation decisions are unchanged.
+
+For example, the existing held-out query "Explain quasar formation." is transformed using the training vocabulary. Only `explain` has a fitted column, so the normalized row has one nonzero entry. The most-frequent dummy returns `simple` because that is the majority toy training label. It does not choose one of the proposed four routing actions. This explains an executable library check, not a research result.
+
+| Check on October 8 | Actual result |
+| --- | --- |
+| `uv python install 3.12.13` | Python 3.12.13 already installed. |
+| `uv sync --locked` | Resolved 9 packages and checked 8 packages. |
+| `uv run --locked python scripts/smoke.py` | PASS: environment-smoke-only; sparse TF-IDF, held-out vocabulary isolation, and toy DummyClassifier predictions verified. Python 3.12.13; scikit-learn 1.9.1. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | Initial check: 11 files already formatted. Final check after local authoring helpers: 13 files already formatted. |
+| `git diff --check` | Exit 0. |
+| PDF rendering | Author and lead inspected all 10 pages. No clipping, overlap, or missing glyphs observed. |
+| PDF content and numerical walkthrough | Author checked extracted text against the source and probed the locked environment for the matrix shapes, vocabulary, IDF values, and held-out vectors. |
+| Issue readback | Issues #3-#11 each contain their new PDF deliverable and course-to-project learning checkpoint. All remain open. |
+| Local Markdown links | All 59 local links and anchors across 12 tracked Markdown files resolve. |
+| Formula and code export | Lead verified all three fenced code/formula blocks against extracted PDF text. |
+
+Two independent reviewers from one model family checked standards and the accepted specification. The standards review found a blank line splitting the roadmap evidence table; the lead removed it. The specification review found no gaps and independently checked lecture pages, numerical examples, and checksums. No runtime-code or suppression review was needed because application code did not change. The final smoke, Ruff lint, Ruff formatting, and diff checks passed. Guide delivery commit: `22f445e08ea322ccb99a78d77fd9e04157030e26`. The guide index records the final source and PDF identities.
+
+The M0 guide's three fresh questions cover a database-then-calculation request, the features and dummy prediction for unfamiliar held-out text, and the difference between passing a smoke check and evidence of generalization. They have no worked answers. Altan has not answered them yet. Data-contract and introductory split terminology remain **needs practice**; other concepts remain **not yet reviewed**. M0's agent deliverables are ready, but milestone closure waits for an actual learning response, with gaps carried forward. January practice will revisit those gaps using the submitted study and later lecture slides.
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.
@@ -112,6 +142,8 @@ The data-contract and leakage/grouping rows currently have status **needs practi
 
 ## Knowledge gaps and final rehearsal
 
-No specific ML misconception has been established. The first response shows that routing and split terminology needs an introduction before further teach-back questions. Ability to explain the scaffold, taxonomy, preprocessing, and evaluation remains unverified. Course AI-use and oral-exam rules remain unconfirmed administrative questions.
+No specific ML misconception has been established. The first response shows that routing and split terminology needs an introduction before further teach-back questions. Ability to explain the scaffold, taxonomy, preprocessing, and evaluation remains unverified. On October 8 Altan took ownership of course administration and removed course-rule confirmation from agent tasks and milestone gates.
 
 By November 29, rehearse with an unfamiliar query, an actual saved model/configuration, a confusion matrix, and a confidence result. Altan must trace the query through preprocessing and prediction, explain a model and its features, interpret the results, justify one design choice, reproduce a run, and discuss an error or limitation. Record each attempt and revisit weak topics before the December 4 freeze. The rehearsal is planned; no oral readiness has been certified.
+
+After submission, continue with the frozen project and accumulated study PDFs through January 2027. For each newly available lecture, identify which principle the project uses, where it appears, and what assumption or limitation accompanies it. Record the attempt and revise explanations without rewriting the submitted experimental record.

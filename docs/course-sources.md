@@ -16,7 +16,13 @@ All page references below are PDF page numbers, counted from one. Source review 
 
 TF-IDF, pretrained sentence embeddings, calibration, macro-F1, and classifier confusion matrices are project method choices. Do not claim these specific techniques were mandated by the inspected lectures. Lecture 3's page 50 discusses precision, recall, and F-measure for clustering.
 
-The report instructions do not establish oral-exam format, AI-use policy, a submission time, or the code-upload mechanism. Confirm these with staff and record the answer and source in the [plan](project-plan.md).
+The report instructions do not establish oral-exam format, AI-use policy, a submission time, or the code-upload mechanism. On October 8, 2026, Altan removed confirmation of these details from agent work and milestone gates. He owns course administration. This decision changes the workflow, not what the PDFs establish.
+
+## Ongoing lecture review
+
+Altan will add lecture slides to `/Users/altanesmer/Desktop/SM1/AI/`. During each milestone, inspect the relevant available files and record filenames, one-based PDF pages, review date, and SHA-256 hashes in its study guide. Refresh affected explanations if a source changes. Do not copy course PDFs into Git or the generated guides. Paraphrase concepts and cite the source rather than reproducing slides. Unavailable topics remain labeled as project choices or external methods until a verified course connection exists.
+
+The supplied download `UTF-8''Project%20Rreport%20Instructions.pdf` was checked on October 8 and is byte-identical to the report-instructions copy below. January 2027 is Altan's oral-preparation target; the supplied instructions contain no oral date.
 
 ## Source fingerprints
 

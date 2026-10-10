@@ -4,17 +4,17 @@ Last updated: October 8, 2026. This is the primary progress tracker for course p
 
 ## Current position
 
-Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orchestra/pull/2) on October 7, 2026, as [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b). Issue #1 is closed. The locked environment and smoke check have passed. M0 remains open for the learning checkpoint and course-rule confirmation. No research dataset, trained router, experimental metric, or submitted report exists yet.
+Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orchestra/pull/2) on October 7, 2026, as [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b). Issue #1 is closed. The locked environment and smoke check have passed. M0 now delivers a course-linked study PDF and an introductory learning checkpoint under the [accepted plan](docs/m0-plan.md). Altan removed course confirmation as a gate on October 8. No research dataset, trained router, experimental metric, or submitted report exists yet.
 
 Statuses mean **not started**, **in progress**, **in review**, **done**, or **blocked**. “Done” requires the stated completion evidence. A blocked item records what must change and who can resolve it. Dates are targets, not evidence of completion.
 
 ## Milestones
 
-Dates use Europe/Copenhagen. December 6 is the course submission date; earlier dates are project targets. The portal cutoff time still needs confirmation.
+Dates use Europe/Copenhagen. December 6 is the course submission date; earlier dates are project targets. Altan handles submission timing and course administration.
 
 | ID | Target date | Milestone | Issue | Status | Completion evidence or remaining gate |
 | --- | --- | --- | --- | --- | --- |
-| M0 | October 11, 2026 | Preparation and course-rule confirmation | [#3](https://github.com/AltanEsmer/Orchestra/issues/3) | In progress | Environment and planning reviewed and merged in PR #2. Learning checkpoint and staff confirmation remain open. |
+| M0 | October 11, 2026 | Preparation and course-linked study guide | [#3](https://github.com/AltanEsmer/Orchestra/issues/3) | In progress | Environment and planning reviewed and merged in PR #2. M0 PDF delivered and visually checked. Altan's introductory learning response remains pending. |
 | M1 | October 18 | Annotation pilot and first dataset | [#4](https://github.com/AltanEsmer/Orchestra/issues/4) | Not started | After M0: review 40 pilot queries, freeze guide v1, and accept 120 rows with provenance and group IDs. Record disagreements and exclusions. |
 | M2 | October 25 | First reproducible baseline | [#5](https://github.com/AltanEsmer/Orchestra/issues/5) | Not started | After M1: validate rows and splits; run dummy and TF-IDF logistic regression twice with identical split membership and predictions. Save validation metrics and provenance. |
 | M3 | November 8 | Main classifier and representation comparison | [#6](https://github.com/AltanEsmer/Orchestra/issues/6) | Not started | After M2: freeze the main dataset, target 400 accepted queries, and complete the 14 required configurations. Save all outcomes and validation selections. |
@@ -26,11 +26,13 @@ Dates use Europe/Copenhagen. December 6 is the course submission date; earlier d
 
 The [first-slice acceptance condition](docs/project-plan.md#first-vertical-slice) defines M2 in more detail. Dataset sizes are collection targets, not observed counts. Optional embeddings and tool integration are outside the required milestone path.
 
+Every milestone also requires its updated [study PDF](docs/study-guides/README.md), with source and verification evidence, and a recorded learning attempt connecting course concepts to the project. A delivered guide and an actual student response are separate evidence. Unresolved learning gaps remain visible. After M8, continue oral preparation through January 2027 using the frozen study and newly relevant lectures; this is Altan's target, not a verified exam date.
+
 ## Milestones in plain language
 
 | Milestone | What you do | Objective by the end |
 | --- | --- | --- |
-| M0 — Get ready | Check the setup, understand what the project does, and confirm the course rules. | A working starting repository, confirmed rules, and a recorded learning checkpoint with any gaps visible. |
+| M0 — Get ready | Check the setup and use the study guide to explain what the project does and how the preparation works. | A working starting repository, a verified course-linked PDF, and a recorded learning checkpoint with any gaps visible. |
 | M1 — Prepare examples | Write questions and review the first action each one needs. | A clear labeling guide and 120 accepted, traceable examples ready for the first baseline. |
 | M2 — Build the first classifier | Train a simple question classifier and compare it with a model that always guesses the most common class. | Both baselines run twice with the same splits and predictions, and their validation results are saved. |
 | M3 — Compare approaches | Try different ways to represent questions and different classifiers on the same data. | A frozen dataset targeting 400 examples, all 14 required experiment outcomes, and choices justified by validation results. |
@@ -51,16 +53,17 @@ For example, “What is 18 percent of 250?” needs `calculation` as its first a
 - [x] Add the architecture overview and this progress tracker.
 - [x] Complete PR review and integration through PR #2 and merge commit `08cce7b`.
 - [ ] Complete the introductory learning checkpoint; the first response requested clarification.
-- [ ] Confirm AI-use rules, disclosure requirements, oral-exam format, code submission, and portal cutoff with course staff.
+- [x] Save the approved milestone-PDF plan and remove course confirmation as an agent gate.
+- [x] Deliver and verify the M0 lesson and technical appendix in the chosen study folder; see the [edition evidence](docs/study-guides/README.md#edition-evidence).
 
 ## Next actions and open decisions
 
-Altan owns course confirmation, annotation decisions, and the report. Implementation can be agent-assisted under the confirmed course rules. New implementation work starts with the [ordered first-session checklist](docs/project-plan.md#first-work-session-after-preparation).
+Altan owns course administration, annotation decisions, and the report. Agent work proceeds within his approved scope. New model implementation work starts with the [ordered first-session checklist](docs/project-plan.md#first-work-session-after-preparation).
 
 | Action or decision | Owner | Evidence needed |
 | --- | --- | --- |
-| Complete the remaining M0 gates in issue #3. | Altan | Dated course-rule confirmation and an actual introductory learning response; PR #2 is already merged. |
-| Confirm course rules and submission details. | Altan, with course staff | Dated staff response or official announcement in the course-source record. |
+| Complete the remaining M0 gates in issue #3. | Agent and Altan | Verified M0 study PDF and an actual introductory learning response; PR #2 is already merged. |
+| Refresh study guides as each milestone develops. | Agent and Altan | Current PDF, inspected lecture sources, report evidence, and recorded oral-practice feedback. |
 | Introduce routing with one everyday query before further practice. | Agent and Altan | Altan's actual response in the learning log. |
 | Start the 40-query annotation pilot. | Altan | Versioned rows, provenance, rationales, and reviewed boundary cases. |
 | Arrange a second human annotation review or document the delayed self-review alternative. | Altan | Recorded review method and disagreements before guide freeze. |
@@ -74,9 +77,12 @@ Altan owns course confirmation, annotation decisions, and the report. Implementa
 | October 7, 2026 | [PR #2](https://github.com/AltanEsmer/Orchestra/pull/2) and [tracking update](docs/learning-log.md#architecture-and-roadmap-october-7-2026) | Architecture and milestone tracking added to the preparation branch. |
 | October 7, 2026 | [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b) | PR #2 reviewed and merged; issue #1 closed. Learning and course-rule gates remain open. |
 | October 8, 2026 | [Milestone issues #3–#11](https://github.com/AltanEsmer/Orchestra/issues?q=is%3Aissue+%22%5BM%22) and [tracking update](docs/learning-log.md#milestone-issues-and-roadmap-rename-october-8-2026) | One issue per milestone, with objectives, dependencies, and completion criteria; roadmap renamed to `ROADMAP.md` and local references updated. No research milestone is claimed complete. |
+| October 8, 2026 | [M0 delivery plan](docs/m0-plan.md) and [study-guide edition](docs/study-guides/README.md#edition-evidence) | Course confirmation removed by Altan; M0 PDF delivered with code and lecture connections; M0-M8 issue learning checkpoints updated. Actual learning response remains pending. |
 
 ## Maintaining progress
 
 When work starts, change its status to “in progress.” When review is required, use “in review” until review finishes. Mark a milestone “done” only after linking its completion evidence: a commit, accepted dataset manifest, saved run, reviewed report, or submission receipt.
 
 Update the date and evidence ledger with each milestone change, and reconcile the linked issue's checklists and open/closed state with that evidence. Creating an issue does not complete its milestone. For a blocker, record its cause, owner, and next action. If a target date changes, record why. Keep milestone dates and statuses here instead of duplicating them in other documents. Learning statuses change only from Altan's actual responses in the learning log.
+
+Course-rule confirmation is no longer a milestone gate. Earlier ledger entries describe the requirements at the time; the October 8 accepted plan supersedes that administrative requirement.
