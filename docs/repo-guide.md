@@ -10,11 +10,18 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `architecture.md` | Current and proposed components, query flow, library responsibilities, and storage boundaries. |
 | `ROADMAP.md` | Primary milestone tracker with target dates, statuses, completion gates, linked GitHub issues, owners, and evidence. Includes plain-language milestone objectives. |
 | `AGENTS.md` | Repository workflow and explanation obligations for agents. |
-| `pyproject.toml` | Declares the Python range, pinned ML dependency, and development tooling. uv reads it to resolve the environment. |
+| `pyproject.toml` | Declares the Python range, pinned ML dependency, development tooling, and the pinned `setuptools==84.0.0` build requirement that makes `src/orchestra/` an editable package under `uv sync --locked`. |
 | `.python-version` | Selects Python 3.12.13 so a newer system Python does not silently change the runtime. |
 | `uv.lock` | Generated dependency resolution, versions, sources, and distribution hashes. uv uses it during locked setup. It is tracked evidence, not handwritten model logic. |
 | `scripts/smoke.py` | Executable environment assertions on tiny artificial query lists. It prints a success label and runtime versions. It writes no research results. |
-| `scripts/validate_dataset.py` | Reads an annotated JSONL file and the source manifest, prints every schema or provenance error, then prints a summary (dataset hash, status, label, and group counts, word lengths, source mix, group sizes, exclusions). With `--review LEDGER` it validates the review ledger and reports agreement. With `--ready` it also enforces the M1 acceptance requirements (counts, permission, review coverage, ledger/dataset agreement). Exit code 1 means the file is not valid or not ready. It does not judge whether a label is correct. |
+| `scripts/validate_dataset.py` | Thin CLI adapter over `orchestra.data`. Reads an annotated JSONL file and the source manifest, prints every schema or provenance error, then prints a summary (dataset hash, status, label, and group counts, word lengths, source mix, group sizes, exclusions). With `--review LEDGER` it validates the review ledger and reports agreement. With `--ready` it also enforces the M1 acceptance requirements (counts, permission, review coverage, ledger/dataset agreement). Exit code 1 means the file is not valid or not ready. It does not judge whether a label is correct. |
+| `src/orchestra/__init__.py` | Marks the installable package. Empty. |
+| `src/orchestra/data.py` | Shared dataset logic moved unchanged from the script: constants, `read_jsonl`, `validate`, `validate_reviews`, `agreement`, `readiness`, `file_sha256`, `summarize`. Pure functions on rows. |
+| `src/orchestra/splits.py` | `make_split` (five-fold `StratifiedGroupKFold`, folds 0-2 train, 3 validation, 4 test, refuses unresolved rows or too few groups), `check_split` (returns every violation of a manifest against the rows), and `materialize` (writes the three partition JSONL files). Rows are passed explicitly. |
+| `src/orchestra/__main__.py` | `python -m orchestra` entry point with `argparse` subcommands. `split --config PATH` validates the dataset, writes the immutable split manifest, re-checks it, writes train, validation, and sealed test files, and prints counts and proportions only. |
+| `configs/m2.json` | Paths and seed for the M2 split. The test file sits under `data/processed/sealed/` so training code can be pointed at train and validation only. |
+| `tests/test_splits.py` | Behavioral tests on a generated artificial fixture: whole groups with mixed labels, order independence, fold-to-partition mapping, every `check_split` rejection, and the `split` CLI end to end. |
+| `docs/evidence/m2-splits.md` | P2 evidence: setuptools pin, real `split` output on an artificial fixture, and the gates that remain open. |
 | `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts, including readiness rejections and ledger agreement. |
 | `docs/annotation-guide.md` | Draft v0 procedure for choosing a first action, writing and grouping queries, the pilot row conventions, the review method, and decisions Altan must make before v1. |
 | `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, license, and creation date. The license is `null` until Altan chooses one. |
@@ -34,7 +41,7 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `docs/repo-guide.md` | This living explanation of authored files and data flow. |
 | `docs/learning-log.md` | Change explanations, actual verification, questions, and evidence-based understanding status. |
 
-The smoke script checks the environment. Behavioral tests for project code live under `tests/` and run with `uv run --locked python -m unittest discover -s tests`. The validator lives in `scripts/` until the M2 split code needs to share it; then it moves to `src/orchestra/`. New files must be added to this guide when created.
+The smoke script checks the environment. Behavioral tests for project code live under `tests/` and run with `uv run --locked python -m unittest discover -s tests`. The shared validation code lives in `src/orchestra/data.py`; `scripts/validate_dataset.py` keeps the documented command line. New files must be added to this guide when created.
 
 ## The executable flow today
 
@@ -60,11 +67,11 @@ The following directories are planned, not empty packages created in advance.
 
 | Path | Intended content and Git policy |
 | --- | --- |
-| `src/orchestra/` | Add only when reusable validation, training, or evaluation code is needed. Track authored modules. |
+| `src/orchestra/` | Reusable validation and split code now; training and evaluation modules arrive with later units. Track authored modules. |
 | `tests/` and `tests/fixtures/` | Focused behavioral checks and small cleared fixtures. Track both. |
 | `data/raw/`, `data/processed/` | Local acquired and derived rows. Ignored. Preserve source/license manifests separately. |
 | `data/manifests/`, `data/splits/` | Proposed tracked provenance and stable split-ID manifests after privacy review. |
-| `configs/` | Proposed tracked, resolved experiment configurations. |
+| `configs/` | Tracked experiment configurations; `m2.json` exists. |
 | `results/<run-id>/` | Ignored full metrics, predictions, timing, and configuration copies. Archive for reproducibility. |
 | `models/` | Ignored fitted artifacts. Load only trusted locally produced files. |
 | `docs/evidence/` | Deliberately selected, cleared small tables and figures that support the report. |

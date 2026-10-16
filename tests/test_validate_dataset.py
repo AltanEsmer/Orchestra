@@ -6,15 +6,15 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.validate_dataset import (
+from orchestra.data import (
     agreement,
-    main,
     read_jsonl,
     readiness,
     summarize,
     validate,
     validate_reviews,
 )
+from scripts.validate_dataset import main
 
 SOURCES = {"s1": {"author": "altan", "license": "CC-BY-4.0", "created": "2026-10-01"}}
 VALID_ROWS = [
