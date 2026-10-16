@@ -221,3 +221,37 @@ No specific ML misconception has been established. The first response shows that
 By November 29, rehearse with an unfamiliar query, an actual saved model/configuration, a confusion matrix, and a confidence result. Altan must trace the query through preprocessing and prediction, explain a model and its features, interpret the results, justify one design choice, reproduce a run, and discuss an error or limitation. Record each attempt and revisit weak topics before the December 4 freeze. The rehearsal is planned; no oral readiness has been certified.
 
 After submission, continue with the frozen project and accumulated study PDFs through January 2027. For each newly available lecture, identify which principle the project uses, where it appears, and what assumption or limitation accompanies it. Record the attempt and revise explanations without rewriting the submitted experimental record.
+
+## PR #16 local setup, October 16, 2026
+
+Altan requested all setup that can proceed without his data or decisions. The locked environment synchronized successfully with uv 0.11.7 and Python 3.12.13. No dependency, model, row schema, or evaluation rule changed.
+
+The executable `scripts/run_experiment.sh` sets the four numerical thread variables to `1` before invoking the existing run CLI. It resolves relative paths from the repository root and preserves command arguments and exit codes. The [experiment runbook](run-experiments.md) replaces the README's incomplete command sequence and names the readiness gate before splitting. The annotation guide now records the existing implementation approval without freezing guide v1.
+
+Local setup prepared an ignored blank worksheet at `data/raw/pilot-intake.md` and empty `data/raw/pilot-v0.jsonl` and `data/raw/reviews-v1.jsonl` files. Existing files were preserved. No query, human label, reviewer identity, review date, license, or agreement was supplied. The empty pilot fails `--ready` with `ERROR: no accepted rows: the training dataset is empty`, exit 1. The source license and M3 parent hash remain null. The latter can be calculated only after the real M2 split exists.
+
+A worker owned the five-line launcher. A separate read-only explainer confirmed that the existing split and extension commands perform structural validation but do not enforce complete readiness. The lead wrote the runbook and inspected the actual launcher and evidence. The final independent reviewer found no actionable issues in the integrated setup. It independently checked shell syntax, real help from another directory, the saved fixture transcript and thread provenance, empty intake files, and local links. Comment review found no actionable comments or suppressions. These agents use one model family, not cross-family review.
+
+The lead ran the complete command sequence under ignored `work/poteto/pr16-setup/workflow-proof/` using the existing artificial test fixture. The actual M2 split, two launcher runs, comparison, overwrite refusal, M3 hash-pinned extension, two 14-configuration launcher runs, comparison, valid selection, and report all behaved as expected. Provenance recorded all four thread variables and all loaded numerical thread pools at one thread. These are tooling checks, not research results. The local rerun script is `work/poteto/pr16-setup/verify_workflow.py`; it deliberately requires a fresh proof directory.
+
+| Check | Actual result |
+| --- | --- |
+| `uv python install 3.12.13` and `uv sync --locked` | Python already installed; resolved and checked 9 packages. |
+| Real launcher help from `/tmp` | Exit 0. |
+| Launcher with temporary fake uv | Preserved arguments and working directory, forced caller thread values from 8 to 1, propagated exit 37, and handled a repository path containing spaces. |
+| `sh -n scripts/run_experiment.sh` | Exit 0. |
+| Complete artificial M2 and M3 command sequence | PASS, including both reproduction checks and report files. |
+| Empty pilot with `--review data/raw/reviews-v1.jsonl --ready` | Expected exit 1, no accepted rows. |
+| `uv run --locked python scripts/smoke.py` | PASS, environment-smoke-only; Python 3.12.13 and scikit-learn 1.9.1. |
+| `uv run --locked python -m unittest discover -s tests` | Ran 148 tests, OK. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | 32 files already formatted. |
+| `git diff --check` | Exit 0. |
+| `git check-ignore` on all three intake files | All ignored. |
+| Local Markdown links in the six changed documents | 54 links and anchors resolve. |
+
+Trace the existing teaching query about calculating an increase from an attached report. Altan still supplies its first-action rationale and scenario group for any distinct real example. The readiness command checks accepted data and review evidence. After splitting, the launcher fixes the timing environment and passes train and validation paths to the runner. The runner predicts the first action without executing tools. The teaching query stays outside the dataset.
+
+Still needed from Altan are the 40-query pilot with labels, rationales, and groups; actual dataset permission; a review method and real blind review evidence; and pilot boundary resolutions before guide v1. The 120-row release and reviewed expansion toward 400 remain future work. No research split or metric exists. No learning status changed.
+
+Two unanswered exercises remain for later practice. Why can structural validation pass an empty draft while readiness fails? Why must the parent-manifest hash come from the frozen M2 artifact rather than a chosen value?

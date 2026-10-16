@@ -2,7 +2,7 @@
 
 This plan defines the next implementation for Altan's routing study. It is a documentation deliverable dated October 16, 2026. The user authorized its PR and merge, then required a stop until separate implementation approval. M1 remains in progress. M2 and M3 remain not started.
 
-Read the [methods preview](study-guides/m1-m3-methods-preview.md) for explanations and report or presentation support. Use the [roadmap](../ROADMAP.md) for dates and status, and the [data protocol](data-and-evaluation.md) for scientific rules. Planned paths and commands below do not exist yet unless explicitly identified as current.
+Read the [methods preview](study-guides/m1-m3-methods-preview.md) for explanations and report or presentation support. Use the [roadmap](../ROADMAP.md) for dates and status, and the [data protocol](data-and-evaluation.md) for scientific rules. The tooling is implemented in PR #16. Follow the [experiment runbook](run-experiments.md) for current setup and commands. Real data, review, permissions, archives, and research runs remain pending.
 
 ## Start only after implementation approval
 

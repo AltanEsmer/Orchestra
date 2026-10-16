@@ -24,18 +24,9 @@ The smoke check prints `PASS: environment-smoke-only` followed by the checks per
 
 Check annotated rows with `uv run --locked python scripts/validate_dataset.py <file.jsonl>`; the [annotation guide](docs/annotation-guide.md) explains the format. Add `--review <ledger.jsonl> --ready` to also check the M1 release requirements.
 
-The experiment commands below exist but need real accepted data, so do not run them on the repository paths yet. Set the thread variables first so timings are comparable. The [repository walkthrough](docs/repo-guide.md) explains each command and the [evidence documents](docs/evidence/) show fixture runs.
+The [experiment runbook](docs/run-experiments.md) gives the data intake checklist, readiness gate, complete M2 and M3 commands, and parent-hash procedure. Research runs wait for accepted, reviewed data and a permission record.
 
-```sh
-export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
-uv run --locked python -m orchestra split --config configs/m2.json
-uv run --locked python -m orchestra run --config configs/m2.json --run-id m2-a
-uv run --locked python -m orchestra compare --left results/m2-a --right results/m2-b
-uv run --locked python -m orchestra extend --config configs/m3.json
-uv run --locked python -m orchestra select --run results/m3-a --out results/m3-a-selection.json
-```
-
-`report` writes validation error text next to the run under the ignored `results/` directory. No API key or GPU is needed.
+Use `scripts/run_experiment.sh --config configs/m2.json --run-id m2-a` after the readiness check and split. The launcher sets all four timing thread variables to `1` before starting the existing runner. It resolves relative paths from the repository root. No API key or GPU is needed.
 
 ## Start the study
 

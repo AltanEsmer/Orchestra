@@ -2,7 +2,7 @@
 
 Status: draft for the M1 pilot, prepared on October 16, 2026. Altan freezes v1 after the 40-query pilot review. The [data protocol](data-and-evaluation.md#prediction-contract) defines the labels and remains authoritative if this guide disagrees with it. This guide turns those definitions into a repeatable procedure. It contains no dataset rows.
 
-The later October 16 [M1 to M3 plan](m1-m3-plan.md#resolve-the-data-decisions-without-guessing-evidence) proposes answers to the open workflow decisions without claiming pilot evidence. Implementation approval is pending. Keep v0 until the required review and permissions exist. Its local storage decision replaces the draft pilot path below because `data/annotation/` is not ignored.
+The October 16 [M1 to M3 plan](m1-m3-plan.md#resolve-the-data-decisions-without-guessing-evidence) proposes answers to the open workflow decisions without claiming pilot evidence. Implementation was approved on October 16. Keep v0 until the required review and permissions exist. Follow the [experiment runbook](run-experiments.md) for the local intake worksheet, readiness gate, and commands. Store actual rows under ignored `data/raw/`, because `data/annotation/` is not ignored.
 
 ## Choose the first action
 
