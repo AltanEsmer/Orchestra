@@ -10,5 +10,20 @@
   "validation": "data/processed/m3/validation.jsonl",
   "sealed_test": "data/processed/sealed/m3-test.jsonl",
   "results_dir": "results",
-  "configurations": []
+  "configurations": [
+    {"family": "B0"},
+    {"family": "B1"},
+    {"family": "L1", "C": 0.1},
+    {"family": "L1", "C": 1},
+    {"family": "L1", "C": 10},
+    {"family": "L2", "C": 0.1},
+    {"family": "L2", "C": 1},
+    {"family": "L2", "C": 10},
+    {"family": "S1", "C": 0.1},
+    {"family": "S1", "C": 1},
+    {"family": "S1", "C": 10},
+    {"family": "L3", "C": 0.1},
+    {"family": "L3", "C": 1},
+    {"family": "L3", "C": 10}
+  ]
 }

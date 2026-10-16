@@ -481,5 +481,324 @@ class ReproductionTest(RunTestCase):
         self.assertTrue(done.stdout.endswith("FAIL: runs differ\n"))
 
 
+M3_IDS = [
+    "B0",
+    "B1",
+    "L1-C0.1",
+    "L1-C1",
+    "L1-C10",
+    "L2-C0.1",
+    "L2-C1",
+    "L2-C10",
+    "S1-C0.1",
+    "S1-C1",
+    "S1-C10",
+    "L3-C0.1",
+    "L3-C1",
+    "L3-C10",
+]
+
+
+class FamilyTest(RunTestCase):
+    def run_config(self, configurations):
+        config = {**self.config(), "configurations": configurations}
+        self.config_path.write_text(json.dumps(config))
+        self.assertEqual(self.run_id("a")[0], 0)
+        lines = (self.root / "results/a/predictions.jsonl").read_text().splitlines()
+        return [json.loads(line) for line in lines]
+
+    def test_m3_config_expands_to_the_14_literal_ids(self):
+        path = Path(__file__).resolve().parents[1] / "configs" / "m3.json"
+        entries = json.loads(path.read_text())["configurations"]
+        resolved = experiment.resolve_configurations(entries)
+        self.assertEqual([c["id"] for c in resolved], M3_IDS)
+
+    def test_s1_margins_follow_labels_order_and_are_labeled_margin(self):
+        rows = self.run_config([{"family": "S1", "C": 1}])
+        self.assertEqual(len(rows), 10)
+        for row in rows:
+            self.assertEqual(row["score_type"], "margin")
+            self.assertEqual(len(row["scores"]), 4)
+            best = row["scores"].index(max(row["scores"]))
+            self.assertEqual(LABELS[best], row["prediction"])
+        clf = self.result("a", "config.json")["resolved_params"]["S1-C1"]["classifier"]
+        self.assertEqual(
+            (clf["penalty"], clf["loss"], clf["dual"], clf["max_iter"]),
+            ("l2", "squared_hinge", "auto", 1000),
+        )
+        self.assertEqual((clf["multi_class"], clf["random_state"]), ("ovr", 42))
+
+    def test_b1_probabilities_sum_to_one_on_counts(self):
+        rows = self.run_config([{"family": "B1"}])
+        for row in rows:
+            self.assertEqual(row["score_type"], "probability")
+            self.assertAlmostEqual(sum(row["scores"]), 1.0)
+            self.assertEqual(
+                LABELS[row["scores"].index(max(row["scores"]))], row["prediction"]
+            )
+        params = self.result("a", "config.json")["resolved_params"]["B1"]
+        self.assertEqual(params["vectorizer"]["ngram_range"], [1, 1])
+        self.assertEqual(
+            (params["classifier"]["alpha"], params["classifier"]["fit_prior"]),
+            (1.0, True),
+        )
+
+    def test_l3_uses_bigrams_and_l1_uses_counts(self):
+        self.run_config([{"family": "L3", "C": 1}, {"family": "L1", "C": 1}])
+        params = self.result("a", "config.json")["resolved_params"]
+        self.assertEqual(params["L3-C1"]["vectorizer"]["ngram_range"], [1, 2])
+        self.assertIn("lowercase", params["L1-C1"]["vectorizer"])
+        self.assertNotIn("use_idf", params["L1-C1"]["vectorizer"])
+
+    def test_latency_is_recorded_with_batch_and_repetitions(self):
+        self.run_config([{"family": "B0"}])
+        latency = self.result("a", "timing.json")["configurations"]["B0"]["latency"]
+        self.assertEqual((latency["batch_size"], latency["repetitions"]), (10, 30))
+        self.assertGreater(latency["p95_seconds"], 0)
+        self.assertLessEqual(latency["median_seconds"], latency["p95_seconds"])
+
+
+def write_run(directory, spec, run_id="fx", blocked=None):
+    """Write a literal run: spec maps id -> (family, C, status, macro_f1, latency)."""
+    directory.mkdir(parents=True)
+    entries = [
+        {"id": cid, "family": family, "C": c}
+        for cid, (family, c, *_rest) in spec.items()
+    ]
+    contents = {
+        "config.json": {"configurations": entries},
+        "provenance.json": {
+            "run_id": run_id,
+            "manifest_dataset_sha256": "d" * 64,
+            "split_manifest_sha256": "s" * 64,
+            "train_sha256": "t" * 64,
+            "validation_sha256": "v" * 64,
+        },
+        "outcomes.json": [
+            {"id": cid, "status": status} for cid, (_, _, status, *_r) in spec.items()
+        ],
+        "metrics.json": {
+            cid: {"macro_f1": f1, "accuracy": f1}
+            for cid, (_, _, status, f1, _l) in spec.items()
+            if status != "failed"
+        },
+        "timing.json": {
+            "configurations": {
+                cid: {"latency": {"median_seconds": lat}}
+                for cid, (*_h, lat) in spec.items()
+            }
+        },
+        "confusion.json": {},
+        "warnings.json": {},
+        "predictions.jsonl": None,
+    }
+    files = {}
+    for name in experiment.RUN_FILES:
+        text = "" if name == "predictions.jsonl" else json.dumps(contents[name])
+        (directory / name).write_text(text)
+        files[name] = file_sha256(directory / name)
+    (directory / "manifest.json").write_text(
+        json.dumps({"run_id": run_id, "complete": True, "files": files})
+    )
+
+
+class SelectionTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+
+    def select(self, spec):
+        write_run(self.root / "run", spec)
+        return experiment.select(self.root / "run")
+
+    def test_tie_within_tolerance_picks_smallest_c(self):
+        selection = self.select(
+            {
+                "L2-C0.1": ("L2", 0.1, "ok", 0.795, 0.1),
+                "L2-C1": ("L2", 1, "ok", 0.80, 0.1),
+                "L2-C10": ("L2", 10, "ok", 0.79, 0.1),
+            }
+        )
+        family = selection["families"]["L2"]
+        self.assertEqual(family["tie_set"], ["L2-C0.1", "L2-C1", "L2-C10"])
+        self.assertEqual(family["chosen"], "L2-C0.1")
+        self.assertIs(selection["valid"], True)
+
+    def test_gap_of_0_011_is_not_a_tie(self):
+        selection = self.select(
+            {
+                "L2-C0.1": ("L2", 0.1, "ok", 0.789, 0.1),
+                "L2-C1": ("L2", 1, "ok", 0.80, 0.1),
+            }
+        )
+        family = selection["families"]["L2"]
+        self.assertEqual(family["tie_set"], ["L2-C1"])
+        self.assertEqual(family["chosen"], "L2-C1")
+
+    def test_failed_configuration_invalidates_and_stays_listed(self):
+        selection = self.select(
+            {
+                "B0": ("B0", None, "ok", 0.1, 0.1),
+                "L2-C1": ("L2", 1, "unresolved_warning", 0.9, 0.1),
+                "L2-C10": ("L2", 10, "failed", None, 0.1),
+            }
+        )
+        self.assertIs(selection["valid"], False)
+        self.assertEqual(selection["blocking"], ["L2-C1", "L2-C10"])
+        self.assertEqual(selection["configurations"]["L2-C10"]["status"], "failed")
+        self.assertIsNone(selection["families"]["B0"]["chosen"])
+        self.assertIsNone(selection["overall"]["chosen"])
+
+    def test_overall_tie_prefers_the_simpler_family_over_latency(self):
+        selection = self.select(
+            {
+                "L3-C1": ("L3", 1, "ok", 0.80, 0.001),
+                "S1-C1": ("S1", 1, "ok", 0.795, 0.002),
+                "L2-C1": ("L2", 1, "ok", 0.79, 0.9),
+                "B0": ("B0", None, "ok", 0.20, 0.0),
+            }
+        )
+        self.assertEqual(selection["overall"]["tie_set"], ["L2-C1", "S1-C1", "L3-C1"])
+        self.assertEqual(selection["overall"]["chosen"], "L2-C1")
+        self.assertEqual(selection["families"]["B0"]["chosen"], "B0")
+
+    def test_overall_gap_beyond_tolerance_keeps_only_the_best_winner(self):
+        selection = self.select(
+            {
+                "L1-C1": ("L1", 1, "ok", 0.70, 0.1),
+                "L3-C1": ("L3", 1, "ok", 0.80, 0.1),
+            }
+        )
+        self.assertEqual(selection["overall"]["chosen"], "L3-C1")
+
+    def test_cli_writes_invalid_selection_and_exits_1_and_refuses_overwrite(self):
+        write_run(
+            self.root / "run",
+            {"B0": ("B0", None, "failed", None, 0.1)},
+        )
+        out = self.root / "selection.json"
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            code = main(["select", "--run", str(self.root / "run"), "--out", str(out)])
+        self.assertEqual(code, 1)
+        self.assertIn("FAIL: selection is not valid; blocked by B0", output.getvalue())
+        saved = json.loads(out.read_text())
+        self.assertEqual((saved["valid"], saved["run_id"]), (False, "fx"))
+        self.assertEqual(saved["hashes"]["validation_sha256"], "v" * 64)
+        out.write_text("{}")
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            code = main(["select", "--run", str(self.root / "run"), "--out", str(out)])
+        self.assertEqual(code, 1)
+        self.assertIn("exists and differs; selections are immutable", output.getvalue())
+        self.assertEqual(out.read_text(), "{}")
+
+
+class ReportTest(RunTestCase):
+    def setUp(self):
+        super().setUp()
+        config = {
+            **self.config(),
+            "configurations": [
+                {"family": "B0"},
+                {"family": "B1"},
+                {"family": "L1", "C": 1},
+                {"family": "L2", "C": 1},
+                {"family": "S1", "C": 1},
+                {"family": "L3", "C": 1},
+            ],
+        }
+        self.config_path.write_text(json.dumps(config))
+        self.assertEqual(self.run_id("a")[0], 0)
+        self.run_dir = self.root / "results/a"
+        self.selection = self.root / "selection.json"
+        self.assertEqual(
+            self.cli(
+                "select", "--run", str(self.run_dir), "--out", str(self.selection)
+            )[0],
+            0,
+        )
+
+    def report(self, out, validation=None):
+        return self.cli(
+            "report",
+            "--run",
+            str(self.run_dir),
+            "--selection",
+            str(self.selection),
+            "--train",
+            str(self.root / "train.jsonl"),
+            "--validation",
+            str(validation or self.root / "validation.jsonl"),
+            "--out",
+            str(self.root / out),
+        )
+
+    def test_report_is_byte_identical_and_fits_nothing(self):
+        with mock.patch(
+            "sklearn.pipeline.Pipeline.fit", side_effect=AssertionError("fit called")
+        ):
+            first = self.report("r1")
+            second = self.report("r2")
+        self.assertEqual(first[0], 0)
+        self.assertEqual(second[0], 0)
+        self.assertTrue(first[1].endswith(f"PASS: report written to {self.root}/r1\n"))
+        for name in ("comparison.md", "errors.jsonl"):
+            self.assertEqual(
+                (self.root / "r1" / name).read_bytes(),
+                (self.root / "r2" / name).read_bytes(),
+            )
+        text = (self.root / "r1/comparison.md").read_text()
+        self.assertIn("# Validation comparison for run `a`", text)
+        self.assertIn("| B0 | ok | 0.3000 | ", text)
+        self.assertIn("### L2 vs L3: phrase features", text)
+        self.assertIn("| document_retrieval | 6 | 4 | 4 | 4 |", text)
+        self.assertIn("| document_retrieval | 3 | 5 | 5 | 5 |", text)
+        self.assertIn("tie set B1, L1-C1, L2-C1, S1-C1, L3-C1.", text)
+        self.assertIn("Source: run `a`, `confusion.json`", text)
+
+    def test_errors_cover_selected_configs_sorted_with_text(self):
+        code, output = self.report("r1")
+        self.assertEqual(code, 0)
+        errors = [
+            json.loads(x)
+            for x in (self.root / "r1/errors.jsonl").read_text().splitlines()
+        ]
+        selected = {
+            f["chosen"]
+            for f in json.loads(self.selection.read_text())["families"].values()
+        }
+        self.assertEqual({e["configuration"] for e in errors} - selected, set())
+        self.assertEqual(
+            [e["query_id"] for e in errors],
+            sorted(e["query_id"] for e in errors),
+        )
+        self.assertTrue(all("zzheldoutzz" in e["text"] for e in errors))
+        self.assertTrue(all(e["label"] != e["prediction"] for e in errors))
+        self.assertIn("B0: 7 validation errors", output)
+        self.assertNotIn("zzheldoutzz", output)
+
+    def test_refuses_validation_file_that_differs_from_provenance(self):
+        other = self.root / "other.jsonl"
+        other.write_text((self.root / "validation.jsonl").read_text() + "\n")
+        code, output = self.report("r1", validation=other)
+        self.assertEqual(code, 1)
+        self.assertIn("does not match run a validation_sha256", output)
+        self.assertFalse((self.root / "r1").exists())
+
+    def test_refuses_existing_output_directory(self):
+        (self.root / "r1").mkdir()
+        code, output = self.report("r1")
+        self.assertEqual(code, 1)
+        self.assertIn("already exists; report needs a new directory", output)
+
+    def test_refuses_selection_that_does_not_match_the_run(self):
+        selection = json.loads(self.selection.read_text())
+        selection["overall"]["chosen"] = "B0"
+        self.selection.write_text(json.dumps(selection))
+        code, output = self.report("r1")
+        self.assertEqual(code, 1)
+        self.assertIn("does not match the selection of run a", output)
+
+
 if __name__ == "__main__":
     unittest.main()

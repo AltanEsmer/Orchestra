@@ -4,6 +4,7 @@ import math
 import os
 import platform
 import resource
+import statistics
 import subprocess
 import sys
 import time
@@ -15,14 +16,16 @@ import scipy
 import sklearn
 from sklearn.dummy import DummyClassifier
 from sklearn.exceptions import ConvergenceWarning
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
     precision_recall_fscore_support,
 )
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
 
 from orchestra.data import LABELS, file_sha256, read_jsonl
 
@@ -50,15 +53,25 @@ PATH_KEYS = (
 THREAD_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")
 
 
-def tfidf():
+TOKEN_SETTINGS = {
+    "lowercase": True,
+    "token_pattern": r"(?u)\b\w+\b",
+    "stop_words": None,
+    "min_df": 1,
+    "max_df": 1.0,
+    "max_features": 10000,
+}
+LATENCY_REPETITIONS = 30
+
+
+def counts():
+    return CountVectorizer(**TOKEN_SETTINGS, ngram_range=(1, 1))
+
+
+def tfidf(ngram_range=(1, 1)):
     return TfidfVectorizer(
-        lowercase=True,
-        token_pattern=r"(?u)\b\w+\b",
-        stop_words=None,
-        min_df=1,
-        max_df=1.0,
-        max_features=10000,
-        ngram_range=(1, 1),
+        **TOKEN_SETTINGS,
+        ngram_range=ngram_range,
         norm="l2",
         use_idf=True,
         smooth_idf=True,
@@ -74,13 +87,47 @@ def build_b0(C, max_iter):
     )
 
 
-def build_l2(C, max_iter):
-    clf = LogisticRegression(
+def build_b1(C, max_iter):
+    clf = MultinomialNB(alpha=1.0, force_alpha=True, fit_prior=True)
+    return Pipeline([("vec", counts()), ("clf", clf)])
+
+
+def logistic(C, max_iter):
+    return LogisticRegression(
         C=C,
         solver="lbfgs",
         l1_ratio=0.0,  # L2 penalty; `penalty` is deprecated in scikit-learn 1.9.1
         tol=1e-4,
         max_iter=max_iter or 100,
+        fit_intercept=True,
+        class_weight=None,
+        random_state=MODEL_SEED,
+    )
+
+
+def build_l1(C, max_iter):
+    return Pipeline([("vec", counts()), ("clf", logistic(C, max_iter))])
+
+
+def build_l2(C, max_iter):
+    return Pipeline([("vec", tfidf()), ("clf", logistic(C, max_iter))])
+
+
+def build_l3(C, max_iter):
+    return Pipeline([("vec", tfidf((1, 2))), ("clf", logistic(C, max_iter))])
+
+
+def build_s1(C, max_iter):
+    # LinearSVC's default multi_class="ovr" is the one-vs-rest strategy the
+    # protocol asks for; it is not deprecated in 1.9.1, so it is left implicit
+    # and appears in the exported resolved parameters.
+    clf = LinearSVC(
+        C=C,
+        penalty="l2",
+        loss="squared_hinge",
+        dual="auto",
+        tol=1e-4,
+        max_iter=max_iter or 1000,
         fit_intercept=True,
         class_weight=None,
         random_state=MODEL_SEED,
@@ -92,7 +139,11 @@ def build_l2(C, max_iter):
 # applied to the whole family; None means the family has no iteration limit.
 FAMILIES = {
     "B0": {"build": build_b0, "retry_max_iter": None, "score": "probability"},
+    "B1": {"build": build_b1, "retry_max_iter": None, "score": "probability"},
+    "L1": {"build": build_l1, "retry_max_iter": 1000, "score": "probability"},
     "L2": {"build": build_l2, "retry_max_iter": 1000, "score": "probability"},
+    "S1": {"build": build_s1, "retry_max_iter": 10000, "score": "margin"},
+    "L3": {"build": build_l3, "retry_max_iter": 1000, "score": "probability"},
 }
 
 
@@ -187,6 +238,26 @@ def fit_predict(entry, train, validation, max_iter=None):
             issubclass(w.category, ConvergenceWarning) for w in caught
         ),
         "max_iter": getattr(pipeline.named_steps["clf"], "max_iter", None),
+    }
+
+
+def measure_latency(pipeline, texts):
+    """One warm-up predict, then timed repeats over the whole validation batch."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        pipeline.predict(texts)
+        times = []
+        for _ in range(LATENCY_REPETITIONS):
+            started = time.perf_counter()
+            pipeline.predict(texts)
+            times.append(time.perf_counter() - started)
+    times.sort()
+    return {
+        "median_seconds": statistics.median(times),
+        # nearest-rank 95th percentile
+        "p95_seconds": times[math.ceil(0.95 * len(times)) - 1],
+        "batch_size": len(texts),
+        "repetitions": len(times),
     }
 
 
@@ -366,6 +437,9 @@ def run(config, run_id):
             timing[cid] = {
                 "fit_seconds": result["fit_seconds"],
                 "predict_seconds": result["predict_seconds"],
+                "latency": measure_latency(
+                    result["pipeline"], [r["text"] for r in validation]
+                ),
             }
             kind = FAMILIES[entry["family"]]["score"]
             for row, prediction, scores in zip(
@@ -524,3 +598,302 @@ def compare(left_dir, right_dir):
         ):
             diffs.append(f"predictions.jsonl row {number}: scores differ beyond 1e-10")
     return diffs
+
+
+SELECTION_TOLERANCE = 0.01
+SIMPLICITY_ORDER = ("B0", "B1", "L1", "L2", "S1", "L3")
+SELECTION_RULES = (
+    "Per family: candidates are configurations with status ok. The tie set is every "
+    "candidate whose validation macro-F1 is within 0.01 of the family best; choose "
+    "the smallest C (a family without C has one member). Overall: among family "
+    "winners within 0.01 of the best winner, prefer B0, B1, L1, L2, S1, L3 in that "
+    "order, then lower median prediction latency, then configuration ID. Any "
+    "configuration that is not ok makes the selection invalid and nothing is chosen."
+)
+
+
+def within_tolerance(score, best):
+    # Rounding keeps a gap of exactly 0.01 inside despite float representation.
+    return round(score, 12) >= round(best - SELECTION_TOLERANCE, 12)
+
+
+def select(run_dir):
+    """Frozen per-family and overall selection from one run's validation metrics."""
+    run, problems = load_run(run_dir)
+    if problems:
+        raise ValueError("; ".join(problems))
+    entries = run["config.json"]["configurations"]
+    status = {o["id"]: o["status"] for o in run["outcomes.json"]}
+    scores_by_id = {
+        e["id"]: run["metrics.json"][e["id"]]["macro_f1"]
+        for e in entries
+        if status.get(e["id"]) == "ok"
+    }
+    blocking = [e["id"] for e in entries if e["id"] not in scores_by_id]
+    valid = bool(entries) and not blocking
+    c_of = {e["id"]: e["C"] for e in entries}
+    latency = {
+        cid: t["latency"]["median_seconds"]
+        for cid, t in run["timing.json"]["configurations"].items()
+    }
+
+    families, winners = {}, {}
+    for family in SIMPLICITY_ORDER:
+        scores = {
+            e["id"]: scores_by_id[e["id"]]
+            for e in entries
+            if e["family"] == family and e["id"] in scores_by_id
+        }
+        if not any(e["family"] == family for e in entries):
+            continue
+        best = max(scores.values(), default=None)
+        tie_set = sorted(
+            (cid for cid, f in scores.items() if within_tolerance(f, best)),
+            key=lambda cid: (c_of[cid] if c_of[cid] is not None else 0, cid),
+        )
+        chosen = tie_set[0] if valid else None
+        if chosen:
+            winners[family] = chosen
+        families[family] = {"scores": scores, "tie_set": tie_set, "chosen": chosen}
+
+    overall_ties = []
+    if winners:
+        top = max(scores_by_id[cid] for cid in winners.values())
+        overall_ties = sorted(
+            (
+                cid
+                for cid in winners.values()
+                if within_tolerance(scores_by_id[cid], top)
+            ),
+            key=lambda cid: (
+                SIMPLICITY_ORDER.index(next(f for f, w in winners.items() if w == cid)),
+                latency.get(cid, math.inf),
+                cid,
+            ),
+        )
+    provenance_ = run["provenance.json"]
+    return {
+        "valid": valid,
+        "blocking": blocking,
+        "rules": {
+            "text": SELECTION_RULES,
+            "tolerance": SELECTION_TOLERANCE,
+            "simplicity_order": list(SIMPLICITY_ORDER),
+        },
+        "run_id": provenance_["run_id"],
+        "run": str(run_dir),
+        "hashes": {
+            key: provenance_[key]
+            for key in (
+                "manifest_dataset_sha256",
+                "split_manifest_sha256",
+                "train_sha256",
+                "validation_sha256",
+            )
+        },
+        "configurations": {
+            e["id"]: {
+                "family": e["family"],
+                "C": e["C"],
+                "status": status.get(e["id"]),
+                "macro_f1": scores_by_id.get(e["id"]),
+            }
+            for e in entries
+        },
+        "families": families,
+        "overall": {
+            "tie_set": overall_ties,
+            "chosen": overall_ties[0] if valid and overall_ties else None,
+        },
+    }
+
+
+def table(headers, rows):
+    lines = ["| " + " | ".join(headers) + " |", "|" + " --- |" * len(headers)]
+    lines += ["| " + " | ".join(str(c) for c in row) + " |" for row in rows]
+    return "\n".join(lines) + "\n"
+
+
+def class_length_tables(rows, name, digest, run_id):
+    body = []
+    for label in LABELS:
+        words = [len(r["text"].split()) for r in rows if r["label"] == label]
+        body.append(
+            [label, len(words)]
+            + [f"{f(words):g}" if words else "-" for f in (min, statistics.median, max)]
+        )
+    head = (
+        f"### {name}\n\nSource: `{name}.jsonl` (sha256 `{digest}`, equal to run "
+        f"`{run_id}` provenance). Words are whitespace-separated tokens.\n\n"
+    )
+    return head + table(["Class", "Queries", "Words min", "median", "max"], body)
+
+
+def fraction(value):
+    return "-" if value is None else f"{value:.4f}"
+
+
+def report(run_dir, selection_path, train_path, validation_path, out_dir):
+    """Write comparison.md and errors.jsonl from saved files; nothing is fitted."""
+    run, problems = load_run(run_dir)
+    if problems:
+        raise ValueError("; ".join(problems))
+    prov = run["provenance.json"]
+    run_id = prov["run_id"]
+    for path, key in (
+        (train_path, "train_sha256"),
+        (validation_path, "validation_sha256"),
+    ):
+        if file_sha256(path) != prov[key]:
+            raise ValueError(f"{path} does not match run {run_id} {key}")
+    selection = json.loads(Path(selection_path).read_text(encoding="utf-8"))
+    expected = select(run_dir)
+    if {**selection, "run": None} != {**expected, "run": None}:
+        raise ValueError(
+            f"{selection_path} does not match the selection of run {run_id}"
+        )
+    train = load_rows(train_path, "train")
+    validation = load_rows(validation_path, "validation")
+    texts = {r["query_id"]: r["text"] for r in validation}
+    out = Path(out_dir)
+    out.mkdir(parents=True)
+
+    metrics_ = run["metrics.json"]
+    timing = run["timing.json"]["configurations"]
+    configs = selection["configurations"]
+    cite = f"Source: run `{run_id}`"
+    md = [
+        f"# Validation comparison for run `{run_id}`\n",
+        (
+            f"Validation only. Selection valid: `{selection['valid']}`. "
+            f"Dataset sha256 `{prov['manifest_dataset_sha256']}`, split manifest "
+            f"sha256 `{prov['split_manifest_sha256']}`.\n"
+        ),
+    ]
+    if selection["blocking"]:
+        md.append("Blocking configurations: " + ", ".join(selection["blocking"]) + "\n")
+
+    rows = []
+    for cid, info in configs.items():
+        m = metrics_.get(cid)
+        latency = timing.get(cid, {}).get("latency", {}).get("median_seconds")
+        rows.append(
+            [
+                cid,
+                info["status"],
+                fraction(m and m["accuracy"]),
+                fraction(m and m["macro_f1"]),
+                "-" if latency is None else f"{latency:.6f}",
+            ]
+        )
+    md += [
+        "## Validation table\n",
+        (
+            f"{cite}, `outcomes.json`, `metrics.json`, `timing.json`. Latency is "
+            "the median seconds to predict the whole validation batch.\n"
+        ),
+        table(
+            ["Configuration", "Status", "Accuracy", "Macro-F1", "Median latency (s)"],
+            rows,
+        ),
+    ]
+
+    md += [
+        "## Matched-C comparisons\n",
+        f"{cite}, `metrics.json`. Difference is the second family minus the first.\n",
+    ]
+    for first, second, purpose in (
+        ("L1", "L2", "term weighting (counts vs TF-IDF)"),
+        ("L2", "S1", "classifier (logistic regression vs linear SVM)"),
+        ("L2", "L3", "phrase features (unigrams vs unigrams and bigrams)"),
+    ):
+        pairs = []
+        for cid, info in configs.items():
+            if info["family"] != first or info["C"] is None:
+                continue
+            other = next(
+                (
+                    o
+                    for o, oi in configs.items()
+                    if oi["family"] == second and oi["C"] == info["C"]
+                ),
+                None,
+            )
+            if other:
+                a, b = info["macro_f1"], configs[other]["macro_f1"]
+                delta = None if a is None or b is None else b - a
+                pairs.append(
+                    [
+                        f"{info['C']:g}",
+                        fraction(a),
+                        fraction(b),
+                        "-" if delta is None else f"{delta:+.4f}",
+                    ]
+                )
+        md += [
+            f"### {first} vs {second}: {purpose}\n",
+            table(
+                ["C", f"{first} macro-F1", f"{second} macro-F1", "Difference"], pairs
+            ),
+        ]
+    chosen_rows = [
+        [fam, f["chosen"] or "-", ", ".join(f["tie_set"]) or "-"]
+        for fam, f in selection["families"].items()
+    ]
+    md += [
+        "### Selected configuration per family\n",
+        f"{cite}, `selection.json`. Tie set: within 0.01 of the family best.\n",
+        table(["Family", "Chosen", "Tie set"], chosen_rows),
+        (
+            f"Overall choice: `{selection['overall']['chosen']}`; tie set "
+            f"{', '.join(selection['overall']['tie_set'])}.\n"
+        ),
+    ]
+
+    md += [
+        "## Class balance and query length\n",
+        class_length_tables(train, "train", prov["train_sha256"], run_id),
+        class_length_tables(
+            validation, "validation", prov["validation_sha256"], run_id
+        ),
+    ]
+
+    chosen = [f["chosen"] for f in selection["families"].values() if f["chosen"]]
+    md.append("## Confusion matrices of selected configurations\n")
+    errors, counts = [], {}
+    predictions = run["predictions.jsonl"]
+    for cid in chosen:
+        confusion_ = run["confusion.json"][cid]
+        md += [
+            f"### {cid}\n",
+            f"{cite}, `confusion.json`. Rows are true classes, columns predicted; raw counts.\n",
+            table(
+                ["true \\ predicted"] + confusion_["labels"],
+                [
+                    [label] + row
+                    for label, row in zip(confusion_["labels"], confusion_["counts"])
+                ],
+            ),
+        ]
+        wrong = [
+            p
+            for p in predictions
+            if p["configuration"] == cid and p["label"] != p["prediction"]
+        ]
+        counts[cid] = len(wrong)
+        errors += [
+            {
+                "configuration": cid,
+                "query_id": p["query_id"],
+                "label": p["label"],
+                "prediction": p["prediction"],
+                "text": texts[p["query_id"]],
+            }
+            for p in wrong
+        ]
+    errors.sort(key=lambda e: (e["query_id"], e["configuration"]))
+    (out / "comparison.md").write_text("\n".join(md), encoding="utf-8")
+    (out / "errors.jsonl").write_text(
+        "".join(json.dumps(e) + "\n" for e in errors), encoding="utf-8"
+    )
+    return out, counts

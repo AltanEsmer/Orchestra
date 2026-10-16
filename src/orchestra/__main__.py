@@ -62,11 +62,11 @@ def load_valid(dataset, sources_path):
     return rows
 
 
-def write_manifest(manifest, path):
+def write_manifest(manifest, path, kind="manifest"):
     text = json.dumps(manifest, indent=2) + "\n"
     path = Path(path)
     if path.exists() and path.read_text(encoding="utf-8") != text:
-        print(f"ERROR: {path} exists and differs; manifests are immutable")
+        print(f"ERROR: {path} exists and differs; {kind}s are immutable")
         return None
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
@@ -209,6 +209,41 @@ def compare(args):
     return 0
 
 
+def select(args):
+    try:
+        selection = experiment.select(args.run_dir)
+    except ValueError as error:
+        print(f"ERROR: {error}")
+        return 1
+    if write_manifest(selection, args.out, "selection") is None:
+        return 1
+    for family, info in selection["families"].items():
+        print(f"{family}: {info['chosen']}")
+    if not selection["valid"]:
+        blocked = ", ".join(selection["blocking"]) or "no configurations"
+        print(f"FAIL: selection is not valid; blocked by {blocked}; see {args.out}")
+        return 1
+    print(f"PASS: overall {selection['overall']['chosen']}; written to {args.out}")
+    return 0
+
+
+def report(args):
+    try:
+        out, counts = experiment.report(
+            args.run_dir, args.selection, args.train, args.validation, args.out
+        )
+    except FileExistsError as error:
+        print(f"ERROR: {error.filename} already exists; report needs a new directory")
+        return 1
+    except ValueError as error:
+        print(f"ERROR: {error}")
+        return 1
+    for configuration, count in counts.items():
+        print(f"{configuration}: {count} validation errors")
+    print(f"PASS: report written to {out}")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="orchestra")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -228,6 +263,17 @@ def main(argv=None):
     compare_parser.add_argument("--left", required=True)
     compare_parser.add_argument("--right", required=True)
     compare_parser.set_defaults(run=guarded(compare))
+    select_parser = commands.add_parser("select", help="freeze per-family selections")
+    select_parser.add_argument("--run", dest="run_dir", required=True)
+    select_parser.add_argument("--out", required=True)
+    select_parser.set_defaults(run=guarded(select))
+    report_parser = commands.add_parser("report", help="write the comparison report")
+    report_parser.add_argument("--run", dest="run_dir", required=True)
+    report_parser.add_argument("--selection", required=True)
+    report_parser.add_argument("--train", required=True)
+    report_parser.add_argument("--validation", required=True)
+    report_parser.add_argument("--out", required=True)
+    report_parser.set_defaults(run=guarded(report))
     args = parser.parse_args(argv)
     return args.run(args)
 
