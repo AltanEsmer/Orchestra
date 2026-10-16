@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+from orchestra import experiment
 from orchestra.data import file_sha256, read_jsonl, validate
 from orchestra.splits import check_split, make_split, materialize
 
@@ -82,12 +83,70 @@ def split(args):
     return 1
 
 
+def run_experiment(args):
+    with open(args.config, encoding="utf-8") as file:
+        config = json.load(file)
+    try:
+        out, outcomes = experiment.run(config, args.run_id)
+    except FileExistsError as error:
+        print(
+            f"ERROR: run directory {error.filename} already exists; pick a new run id"
+        )
+        return 1
+    except ValueError as error:
+        print(f"ERROR: {error}")
+        return 1
+    for outcome in outcomes:
+        print(f"{outcome['id']}: {outcome['status']}")
+    if any(o["status"] != "ok" for o in outcomes):
+        print(f"FAIL: some configurations did not finish cleanly; see {out}")
+        return 1
+    print(f"PASS: run written to {out}")
+    return 0
+
+
+def guarded(function):
+    def command(args):
+        try:
+            return function(args)
+        except OSError as error:
+            print(f"ERROR: cannot read {error.filename}: {error.strerror}")
+        except json.JSONDecodeError as error:
+            print(f"ERROR: invalid JSON: {error}")
+        except KeyError as error:
+            print(f"ERROR: config is missing {error}")
+        except (TypeError, AttributeError):
+            print("ERROR: config values have the wrong type")
+        return 1
+
+    return command
+
+
+def compare(args):
+    differences = experiment.compare(args.left, args.right)
+    for difference in differences:
+        print(f"DIFF: {difference}")
+    if differences:
+        print("FAIL: runs differ")
+        return 1
+    print("PASS: runs reproduce")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="orchestra")
     commands = parser.add_subparsers(dest="command", required=True)
     split_parser = commands.add_parser("split", help="create the persisted split")
     split_parser.add_argument("--config", required=True)
     split_parser.set_defaults(run=split)
+    run_parser = commands.add_parser("run", help="fit and evaluate the baselines")
+    run_parser.add_argument("--config", required=True)
+    run_parser.add_argument("--run-id", required=True)
+    run_parser.set_defaults(run=guarded(run_experiment))
+    compare_parser = commands.add_parser("compare", help="check two runs reproduce")
+    compare_parser.add_argument("--left", required=True)
+    compare_parser.add_argument("--right", required=True)
+    compare_parser.set_defaults(run=guarded(compare))
     args = parser.parse_args(argv)
     return args.run(args)
 
