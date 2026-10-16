@@ -1,5 +1,6 @@
 import datetime
 import json
+import math
 import os
 import platform
 import resource
@@ -9,6 +10,8 @@ import time
 import warnings
 from pathlib import Path
 
+import numpy
+import scipy
 import sklearn
 from sklearn.dummy import DummyClassifier
 from sklearn.exceptions import ConvergenceWarning
@@ -34,6 +37,15 @@ RUN_FILES = (
     "confusion.json",
     "warnings.json",
     "timing.json",
+)
+PATH_KEYS = (
+    "dataset",
+    "sources",
+    "train",
+    "validation",
+    "sealed_test",
+    "split_manifest",
+    "results_dir",
 )
 THREAD_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")
 
@@ -91,6 +103,8 @@ def configuration_id(entry):
 
 
 def resolve_configurations(entries):
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("configurations must be a non-empty list")
     resolved, seen = [], set()
     for entry in entries:
         if not isinstance(entry, dict) or entry.get("family") not in FAMILIES:
@@ -172,7 +186,7 @@ def fit_predict(entry, train, validation, max_iter=None):
         "converged": not any(
             issubclass(w.category, ConvergenceWarning) for w in caught
         ),
-        "max_iter": max_iter,
+        "max_iter": getattr(pipeline.named_steps["clf"], "max_iter", None),
     }
 
 
@@ -211,10 +225,6 @@ def check_inputs(config, train, validation):
     for name, rows in (("train", train), ("validation", validation)):
         if [r["query_id"] for r in rows] != sorted(parts[name]):
             raise ValueError(f"{name} query_ids differ from the split manifest")
-    # Hash only, never parsed: the dataset file also holds the sealed test rows.
-    dataset = Path(config.get("dataset", ""))
-    if dataset.is_file() and file_sha256(dataset) != manifest["dataset_sha256"]:
-        raise ValueError("dataset hash differs from the split manifest")
     return manifest
 
 
@@ -249,7 +259,7 @@ def now():
     return datetime.datetime.now(datetime.UTC).isoformat()
 
 
-def provenance(config, manifest, started):
+def provenance(config, manifest, started, rows):
     lock = Path(__file__).resolve().parents[2] / "uv.lock"
     status = git("status", "--porcelain")
     return {
@@ -261,13 +271,17 @@ def provenance(config, manifest, started):
         "platform": platform.platform(),
         "cpu": platform.processor() or platform.machine(),
         "cpu_count": os.cpu_count(),
-        "dataset_sha256": manifest["dataset_sha256"],
+        # Copied from the split manifest; run never opens the dataset file.
+        "manifest_dataset_sha256": manifest["dataset_sha256"],
+        "annotation_versions": sorted({r.get("annotation_version") for r in rows}),
         "split_manifest_sha256": file_sha256(config["split_manifest"]),
         "train_sha256": file_sha256(config["train"]),
         "validation_sha256": file_sha256(config["validation"]),
         "seed": config["seed"],
         "model_seed": MODEL_SEED,
         "sklearn": sklearn.__version__,
+        "numpy": numpy.__version__,
+        "scipy": scipy.__version__,
         "thread_env": {name: os.environ.get(name) for name in THREAD_VARS},
         "started_utc": started,
         "ended_utc": now(),
@@ -304,20 +318,27 @@ def run(config, run_id):
     # A family that did not converge is refit as a whole at the retry limit.
     for family, spec in FAMILIES.items():
         members = [c for c in configurations if c["family"] == family]
-        failed = [
+        warned = [
             c
             for c in members
             if c["id"] in results and not results[c["id"]]["converged"]
         ]
-        if not failed or not spec["retry_max_iter"]:
+        if not warned or not spec["retry_max_iter"]:
             continue
         for entry in members:
-            if entry["id"] in results:
-                attempts[entry["id"]].append(summarize_attempt(results[entry["id"]]))
-                del results[entry["id"]]
-                try_fit(
-                    entry, train, validation, spec["retry_max_iter"], results, errors
+            cid = entry["id"]
+            if cid in results:
+                attempts[cid].append(summarize_attempt(results.pop(cid)))
+            else:  # the first attempt raised; keep it, then retry with the family
+                attempts[cid].append(
+                    {
+                        "max_iter": None,
+                        "converged": False,
+                        "warnings": [],
+                        "error": errors.pop(cid),
+                    }
                 )
+            try_fit(entry, train, validation, spec["retry_max_iter"], results, errors)
 
     outcomes, all_metrics, all_confusion, all_warnings, timing = [], {}, {}, {}, {}
     resolved, lines = {}, []
@@ -327,6 +348,14 @@ def run(config, run_id):
         result = results.get(cid)
         if result is None:
             status = "failed"
+            attempts[cid].append(
+                {
+                    "max_iter": None,
+                    "converged": False,
+                    "warnings": [],
+                    "error": errors[cid],
+                }
+            )
         else:
             attempts[cid].append(summarize_attempt(result))
             status = "ok" if result["converged"] else "unresolved_warning"
@@ -375,7 +404,7 @@ def run(config, run_id):
     )
     write_json(
         out / "provenance.json",
-        {"run_id": run_id, **provenance(config, manifest, started)},
+        {"run_id": run_id, **provenance(config, manifest, started, train + validation)},
     )
     write_json(out / "outcomes.json", outcomes)
     (out / "predictions.jsonl").write_text("".join(lines), encoding="utf-8")
@@ -403,6 +432,7 @@ def summarize_attempt(result):
         "max_iter": result["max_iter"],
         "converged": result["converged"],
         "warnings": result["warnings"],
+        "error": None,
     }
 
 
@@ -435,6 +465,12 @@ def load_run(directory):
     return run, []
 
 
+def comparable_config(run):
+    config = run["config.json"]
+    kept = {k: v for k, v in config["config"].items() if k not in PATH_KEYS}
+    return {**config, "config": kept}
+
+
 def compare(left_dir, right_dir):
     left, problems = load_run(left_dir)
     right, more = load_run(right_dir)
@@ -442,11 +478,32 @@ def compare(left_dir, right_dir):
     if problems:
         return problems
     diffs = []
-    for key in ("config.json", "outcomes.json", "metrics.json", "confusion.json"):
-        if left[key] != right[key]:
-            diffs.append(f"{key} differs")
+    if Path(left_dir).resolve() == Path(right_dir).resolve():
+        diffs.append("left and right are the same directory")
+    if left["provenance.json"]["run_id"] == right["provenance.json"]["run_id"]:
+        diffs.append("left and right share a run_id")
+    for side, run in (("left", left), ("right", right)):
+        bad = [o["id"] for o in run["outcomes.json"] if o["status"] != "ok"]
+        if bad:
+            diffs.append(f"{side} has configurations that are not ok: {', '.join(bad)}")
+        ids = {o["id"] for o in run["outcomes.json"]}
+        if not run["predictions.jsonl"]:
+            diffs.append(f"{side} has no predictions")
+        if {r["configuration"] for r in run["predictions.jsonl"]} != ids:
+            diffs.append(f"{side} predictions do not cover its configurations")
+        if not all(
+            math.isfinite(v) for r in run["predictions.jsonl"] for v in r["scores"]
+        ):
+            diffs.append(f"{side} has non-finite scores")
+    for name in ("outcomes.json", "metrics.json", "confusion.json"):
+        if left[name] != right[name]:
+            diffs.append(f"{name} differs")
+    # Paths may differ (a restored archive); input hashes establish identity.
+    left_config, right_config = comparable_config(left), comparable_config(right)
+    if left_config != right_config:
+        diffs.append("config.json differs")
     for key in (
-        "dataset_sha256",
+        "manifest_dataset_sha256",
         "split_manifest_sha256",
         "train_sha256",
         "validation_sha256",

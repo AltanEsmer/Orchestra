@@ -2,6 +2,7 @@ import contextlib
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -169,14 +170,44 @@ class GuardTest(RunTestCase):
         self.assertIn("train query_ids differ from the split manifest", output)
         self.assertFalse((self.root / "results" / "a").exists())
 
-    def test_refuses_dataset_hash_mismatch(self):
+    def test_never_opens_dataset_or_sealed_files(self):
         dataset = self.root / "data.jsonl"
         dataset.write_text("{}\n")
-        config = {**self.config(), "dataset": str(dataset)}
+        sealed = self.root / "sealed" / "test.jsonl"
+        self.assertTrue(sealed.exists())
+        self.config_path.write_text(
+            json.dumps({**self.config(), "dataset": str(dataset)})
+        )
+        opened = []
+        real_open = open
+
+        def recording_open(file, *args, **kwargs):
+            opened.append(os.fspath(file) if not isinstance(file, int) else file)
+            return real_open(file, *args, **kwargs)
+
+        with (
+            mock.patch("builtins.open", recording_open),
+            mock.patch("io.open", recording_open),
+        ):
+            self.assertEqual(self.run_id("a")[0], 0)
+        self.assertIn(str(self.root / "train.jsonl"), opened)
+        forbidden = {str(dataset), str(sealed)}
+        self.assertEqual(forbidden & {str(p) for p in opened}, set())
+
+    def test_refuses_empty_configuration_list(self):
+        config = {**self.config(), "configurations": []}
         self.config_path.write_text(json.dumps(config))
         code, output = self.run_id("a")
         self.assertEqual(code, 1)
-        self.assertIn("dataset hash differs", output)
+        self.assertIn("non-empty list", output)
+
+    def test_provenance_records_library_and_annotation_versions(self):
+        self.run_id("a")
+        p = self.result("a", "provenance.json")
+        self.assertEqual(p["annotation_versions"], ["v0"])
+        self.assertEqual(p["manifest_dataset_sha256"], DIGEST)
+        for key in ("numpy", "scipy", "sklearn"):
+            self.assertRegex(p[key], r"^\d+\.\d+")
 
     def test_succeeds_without_the_sealed_test_file(self):
         (self.root / "sealed" / "test.jsonl").unlink()
@@ -228,7 +259,7 @@ class ConvergenceRetryTest(RunTestCase):
         self.assertEqual(outcome["status"], "ok")
         self.assertEqual(
             [(a["max_iter"], a["converged"]) for a in outcome["attempts"]],
-            [(None, False), (1000, True)],
+            [(1, False), (1000, True)],
         )
         self.assertEqual(
             outcome["attempts"][0]["warnings"][0]["category"], "ConvergenceWarning"
@@ -241,6 +272,24 @@ class ConvergenceRetryTest(RunTestCase):
         (outcome,) = self.result("a", "outcomes.json")
         self.assertEqual(outcome["status"], "unresolved_warning")
         self.assertEqual(len(outcome["attempts"]), 2)
+
+    def test_member_that_raised_is_retried_with_its_family(self):
+        family = {
+            **experiment.FAMILIES["L2"],
+            "build": lambda C, n: experiment.build_l2(C, n or 1),
+        }
+        config = {
+            **self.config(),
+            "configurations": [{"family": "L2", "C": 1}, {"family": "L2", "C": -1}],
+        }
+        self.config_path.write_text(json.dumps(config))
+        with mock.patch.dict(experiment.FAMILIES, {"L2": family}):
+            self.assertEqual(self.run_id("a")[0], 1)
+        good, bad = self.result("a", "outcomes.json")
+        self.assertEqual(good["status"], "ok")
+        self.assertEqual(len(bad["attempts"]), 2)
+        self.assertIn("InvalidParameterError", bad["attempts"][0]["error"])
+        self.assertEqual(bad["status"], "failed")
 
 
 class ArtifactTest(RunTestCase):
@@ -279,6 +328,109 @@ class ArtifactTest(RunTestCase):
         diffs = experiment.compare(self.root / "results/a", self.root / "results/b")
         self.assertEqual(len(diffs), 1)
         self.assertIn("partial run", diffs[0])
+
+
+class CompareGuardTest(RunTestCase):
+    def setUp(self):
+        super().setUp()
+        self.run_id("a")
+        self.run_id("b")
+        self.a, self.b = self.root / "results/a", self.root / "results/b"
+
+    def rewrite(self, directory, name, edit):
+        path = directory / name
+        path.write_text(edit(path.read_text()))
+        manifest = json.loads((directory / "manifest.json").read_text())
+        manifest["files"][name] = file_sha256(path)
+        (directory / "manifest.json").write_text(json.dumps(manifest))
+
+    def shift_first_l2_score(self, delta):
+        def edit(text):
+            lines = text.splitlines()
+            i = next(n for n, x in enumerate(lines) if '"L2-C1"' in x)
+            row = json.loads(lines[i])
+            row["scores"][0] += delta
+            lines[i] = json.dumps(row)
+            return "\n".join(lines) + "\n"
+
+        self.rewrite(self.b, "predictions.jsonl", edit)
+
+    def test_identical_runs_pass(self):
+        self.assertEqual(experiment.compare(self.a, self.b), [])
+
+    def test_same_directory_is_refused(self):
+        diffs = experiment.compare(self.a, self.a)
+        self.assertIn("left and right are the same directory", diffs)
+        self.assertIn("left and right share a run_id", diffs)
+
+    def test_shared_run_id_is_refused(self):
+        self.rewrite(
+            self.b,
+            "provenance.json",
+            lambda t: t.replace('"run_id": "b"', '"run_id": "a"'),
+        )
+        self.assertEqual(
+            experiment.compare(self.a, self.b), ["left and right share a run_id"]
+        )
+
+    def test_run_with_a_non_ok_outcome_is_refused(self):
+        for directory in (self.a, self.b):
+            self.rewrite(
+                directory,
+                "outcomes.json",
+                lambda t: t.replace('"status": "ok"', '"status": "failed"', 1),
+            )
+        diffs = experiment.compare(self.a, self.b)
+        self.assertEqual(
+            diffs[:2],
+            [
+                "left has configurations that are not ok: B0",
+                "right has configurations that are not ok: B0",
+            ],
+        )
+
+    def test_empty_predictions_on_both_sides_are_refused(self):
+        for directory in (self.a, self.b):
+            self.rewrite(directory, "predictions.jsonl", lambda t: "")
+        diffs = experiment.compare(self.a, self.b)
+        self.assertIn("left has no predictions", diffs)
+        self.assertIn("right has no predictions", diffs)
+
+    def test_missing_configuration_in_predictions_is_refused(self):
+        def drop_b0(text):
+            return "".join(x for x in text.splitlines(True) if '"B0"' not in x)
+
+        self.rewrite(self.b, "predictions.jsonl", drop_b0)
+        diffs = experiment.compare(self.a, self.b)
+        self.assertIn("right predictions do not cover its configurations", diffs)
+
+    def test_non_finite_score_is_refused(self):
+        self.shift_first_l2_score(float("nan"))
+        self.assertIn("right has non-finite scores", experiment.compare(self.a, self.b))
+
+    def test_score_tolerance_boundary(self):
+        self.shift_first_l2_score(5e-11)
+        self.assertEqual(experiment.compare(self.a, self.b), [])
+        self.rewrite(self.b, "predictions.jsonl", lambda t: t)  # keep manifest valid
+        self.shift_first_l2_score(5e-10)
+        self.assertEqual(
+            experiment.compare(self.a, self.b),
+            ["predictions.jsonl row 11: scores differ beyond 1e-10"],
+        )
+
+    def test_runs_from_copied_inputs_in_another_directory_compare_equal(self):
+        copy = self.root / "restored"
+        shutil.copytree(self.root, copy, ignore=shutil.ignore_patterns("results"))
+        config = json.loads(self.config_path.read_text())
+        for key in ("split_manifest", "train", "validation", "sealed_test"):
+            config[key] = config[key].replace(str(self.root), str(copy))
+        config["results_dir"] = str(copy / "results")
+        (copy / "config.json").write_text(json.dumps(config))
+        code, _ = self.cli(
+            "run", "--config", str(copy / "config.json"), "--run-id", "c"
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(experiment.compare(self.a, copy / "results/c"), [])
 
 
 class ReproductionTest(RunTestCase):
