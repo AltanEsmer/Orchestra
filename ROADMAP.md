@@ -8,6 +8,8 @@ Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orc
 
 Statuses mean **not started**, **in progress**, **in review**, **done**, or **blocked**. “Done” requires the stated completion evidence. A blocked item records what must change and who can resolve it. Dates are targets, not evidence of completion.
 
+The October 16 [M1 to M3 plan](docs/m1-m3-plan.md) is a documentation-only delivery, accompanied by an [exam, presentation, and report methods preview](docs/study-guides/m1-m3-methods-preview.md). Altan authorized creating and merging the planning PR, then stopping for implementation approval. That approval is pending. Milestone statuses and human-review requirements remain unchanged.
+
 ## Milestones
 
 Dates use Europe/Copenhagen. December 6 is the course submission date; earlier dates are project targets. Altan handles submission timing and course administration.
@@ -58,14 +60,15 @@ For example, “What is 18 percent of 250?” needs `calculation` as its first a
 
 ## Next actions and open decisions
 
-Altan owns course administration, annotation decisions, and the report. Agent work proceeds within his approved scope. New model implementation work starts with the [ordered first-session checklist](docs/project-plan.md#first-work-session-after-preparation).
+Altan owns course administration, annotation decisions, and the report. Agent work proceeds within his approved scope. After separate implementation approval, follow the [M1 to M3 delivery units](docs/m1-m3-plan.md#deliver-the-work-in-five-units). Use the plan's local data paths instead of the draft guide's unignored pilot path.
 
 | Action or decision | Owner | Evidence needed |
 | --- | --- | --- |
 | Answer the carried-forward M0 checkpoint questions. | Altan | An actual response recorded in the learning log. |
 | Refresh study guides as each milestone develops. | Agent and Altan | Current PDF, inspected lecture sources, report evidence, and recorded oral-practice feedback. |
 | Introduce routing with one everyday query before further practice. | Agent and Altan | Altan's actual response in the learning log. |
-| Write the 40-query pilot using the [annotation guide](docs/annotation-guide.md). | Altan | `data/annotation/pilot-v0.jsonl` passing the validator, with rationales and reviewed boundary cases. |
+| Approve implementation after the planning PR merges. | Altan | Explicit subsequent approval recorded in the learning log. |
+| Write and review the 40-query pilot using the [annotation guide](docs/annotation-guide.md). | Altan, with disclosed agent candidate assistance if used | Local `data/raw/pilot-v0.jsonl` passing the validator, with actual human rationales and reviewed boundary cases. No rows exist yet. |
 | Decide the open guide questions: general-knowledge facts, review method, data license, and tracking of rows. | Altan | Decisions recorded in the annotation guide before v1. |
 | Arrange a second human annotation review or document the delayed self-review alternative. | Altan | Recorded review method and disagreements before guide freeze. |
 
@@ -81,6 +84,8 @@ Altan owns course administration, annotation decisions, and the report. Agent wo
 | October 8, 2026 | [M0 delivery plan](docs/m0-plan.md) and [study-guide edition](docs/study-guides/README.md#edition-evidence) | Course confirmation removed by Altan; M0 PDF delivered with code and lecture connections; M0-M8 issue learning checkpoints updated. Actual learning response remains pending. |
 | October 16, 2026 | Issue #3 closed by Altan; dated snapshot `M0-preparation-2026-10-16.pdf` (SHA-256 `3c321a3b…1ce07`, identical to the October 8 edition) | M0 closed by owner decision. The learning checkpoint was not answered and carries into M1. |
 | October 16, 2026 | Branch `claude/m1-annotation-start`: annotation guide v0, source manifest, and dataset validator with unit tests | M1 tooling ready for the pilot. No query rows exist yet. |
+| October 16, 2026 | [PR #14](https://github.com/AltanEsmer/Orchestra/pull/14), merged as `48abda0` | M1 preparation integrated into main. Data collection and acceptance remain unfinished. |
+| October 16, 2026 | [M1 to M3 plan](docs/m1-m3-plan.md), [methods preview](docs/study-guides/m1-m3-methods-preview.md), and [planning evidence](docs/evidence/m1-m3-planning.md) | Proposed implementation, data-growth safeguards, study-document workflow, and CPU/GPU resource decisions. No implementation approval, new research data, or experiment result is implied. |
 
 ## Maintaining progress
 

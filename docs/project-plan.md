@@ -1,6 +1,8 @@
 # Project plan
 
-Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation currently verifies the Python environment only.
+Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation currently verifies the Python environment and validates annotated row structure and provenance.
+
+The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the next implementation, its acceptance gates, resource limits, and supporting documents. Its planning PR is authorized for merge. Implementation waits for Altan's subsequent approval. The ordered units in that plan refine the first-session outline below without claiming any dataset or trained model exists.
 
 ## Research question and scope
 

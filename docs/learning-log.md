@@ -126,6 +126,20 @@ Questions for Altan, to answer before seeing worked explanations:
 2. Why does the validator reject a group of five paraphrases, and how could a large paraphrase group inflate a test score?
 3. Label "What is the boiling point of water in Fahrenheit?" under guide v0. Which open decision in the guide does it touch?
 
+## M1 to M3 planning, October 16, 2026
+
+Altan requested a complete implementation plan for M1, M2, and M3, documents supporting the exam, presentation, and report, and a planning PR to create and merge. He explicitly required waiting for implementation approval afterward and asked for no questions during planning. He also reported an SDU allocation of 10 GPU hours. These instructions establish project preferences, not new learning evidence.
+
+The agent added the [delivery plan](m1-m3-plan.md), a [methods preview](study-guides/m1-m3-methods-preview.md), [planning verification](evidence/m1-m3-planning.md), and a [decision trail](evidence/m1-m3-decisions.tsv). The plan separates pilot acceptance, split protection, baseline reproduction, immutable dataset expansion, and the 14-configuration comparison. It reserves GPU hours for a conditional optional embedding experiment. It requires human annotation evidence and permissions before research data acceptance.
+
+The data protocol now describes the proposed split extension, tokenization, and tie rules. The annotation guide uses the ignored local pilot directory to avoid accidentally publishing rows. No row schema, application code, dependency, source license, dataset, model, or experiment changed. The walkthrough, architecture, README, study index, and roadmap link the plan. Milestone statuses remain unchanged, and the implementation approval is pending.
+
+Trace the teaching query "Calculate the increase using the figures in the attached report." Its planned target remains `document_retrieval` because the figures must be read first. M1 would record a reviewed label and group, M2 would fit a training-only pipeline, and M3 would compare predictions on fixed validation rows. That research flow has not run. The teaching query and its paraphrases stay outside the dataset. Today's executable check still predicts artificial smoke labels.
+
+One worker inspected existing contracts and another wrote the companion in a disjoint file. The lead integrated and reviewed the documents. Actual checks and independent review are in the [planning evidence](evidence/m1-m3-planning.md). Commit identities and the merged PR are provided in the handoff and Git history. The document-only workflow skips model prototypes and performance experiments because implementation is not authorized.
+
+The preview stores three unanswered exercises covering lookup before calculation, paraphrase grouping and fit/transform, and accuracy versus macro-F1. No new response was supplied by Altan, so routing and split terminology remain **needs practice** and other topics remain **not yet reviewed**. The M1, M2, and M3 evidence-based PDFs and actual learning attempts are future deliverables. Nothing in the planning PR completes a research milestone or certifies oral readiness.
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.

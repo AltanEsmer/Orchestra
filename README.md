@@ -4,6 +4,8 @@ Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The
 
 Current milestone is M1, the annotation pilot. The repository contains a project plan, data/evaluation protocol, draft [annotation guide](docs/annotation-guide.md), dataset validator, learning routine, and a verified Python environment smoke check. There is no research dataset, trained router, or experiment result yet. Tool integration is optional and deferred.
 
+The [M1 to M3 implementation plan](docs/m1-m3-plan.md) defines the proposed data, baseline, and comparison work. Its [methods preview](docs/study-guides/m1-m3-methods-preview.md) supports the exam, presentation, and report. This is a planning delivery. Implementation waits for Altan's separate approval after the documentation PR merges.
+
 ## Set up and check the environment
 
 Use [uv](https://docs.astral.sh/uv/getting-started/installation/) and run these commands from the repository root. The checked setup used uv 0.11.29 and Python 3.12.13. `.python-version` pins Python, and `uv.lock` pins package versions and distribution hashes. Setup needs network access when Python or packages are not cached.

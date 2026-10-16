@@ -2,6 +2,8 @@
 
 Status: draft for the M1 pilot, prepared on October 16, 2026. Altan freezes v1 after the 40-query pilot review. The [data protocol](data-and-evaluation.md#prediction-contract) defines the labels and remains authoritative if this guide disagrees with it. This guide turns those definitions into a repeatable procedure. It contains no dataset rows.
 
+The later October 16 [M1 to M3 plan](m1-m3-plan.md#resolve-the-data-decisions-without-guessing-evidence) proposes answers to the open workflow decisions without claiming pilot evidence. Implementation approval is pending. Keep v0 until the required review and permissions exist. Its local storage decision replaces the draft pilot path below because `data/annotation/` is not ignored.
+
 ## Choose the first action
 
 Read only the query text. Assume a named-document retriever, a structured knowledge lookup, and a calculator exist. Ask these questions in order and stop at the first decisive answer.
@@ -21,7 +23,7 @@ A group is one scenario. Paraphrases and small variants of the same request shar
 
 ## Row format
 
-Store pilot rows in `data/annotation/pilot-v0.jsonl`, one JSON object per line. Every row has all nine fields from the [protocol](data-and-evaluation.md#planned-row-format-and-validation).
+Store pilot rows locally in ignored `data/raw/pilot-v0.jsonl`, one JSON object per line. Every row has all nine fields from the [protocol](data-and-evaluation.md#planned-row-format-and-validation). Keep queries out of Git and archive them with hashes when accepted.
 
 | Field | Convention for the pilot |
 | --- | --- |
@@ -36,7 +38,7 @@ Store pilot rows in `data/annotation/pilot-v0.jsonl`, one JSON object per line. 
 Check the file after each writing session:
 
 ```sh
-uv run --locked python scripts/validate_dataset.py data/annotation/pilot-v0.jsonl
+uv run --locked python scripts/validate_dataset.py data/raw/pilot-v0.jsonl
 ```
 
 The validator rejects missing fields, duplicate IDs, empty text, unknown labels, accepted rows without a label, unknown sources, exact duplicate text, and groups larger than four. It also prints status, label, and group counts and lists groups with more than one accepted label for review. It does not judge whether a label is correct.

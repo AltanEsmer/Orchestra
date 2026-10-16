@@ -2,6 +2,8 @@
 
 This is the proposed v1 protocol. No research dataset, trained router, or experimental score exists yet. The tiny examples in `scripts/smoke.py` are environment fixtures and must never enter the study.
 
+The October 16 [M1 to M3 plan](m1-m3-plan.md) specifies the proposed implementation of this protocol. Its refinements below are planning decisions. They add no dataset, schema implementation, fitted model, or measured outcome. Implementation requires Altan's separate approval after the documentation PR merges.
+
 ## Prediction contract
 
 Predict the first action required to answer a self-contained English query. Assume that the system has a named-document retriever, a structured knowledge lookup, and a calculator. The router sees only query text. It receives no hidden document content or conversation history. A model prediction is an action label, not an answer and not a complete tool sequence.
@@ -53,6 +55,12 @@ Create one group-aware, approximately stratified 60/20/20 train/validation/test 
 
 Persist query IDs and group IDs in a versioned split manifest. Keep the same split for every model and representation. Training fits vocabulary, IDF weights, scaling, model coefficients, and training-fold calibration. Validation selects hyperparameters, models, and any fallback threshold. The sealed test estimates final performance after those choices are frozen. Do not inspect test text or mistakes while tuning. Final test error analysis comes after the freeze and cannot feed another reported selection on the same test.
 
+For M2, the planned allocator sorts query IDs and uses five shuffled `StratifiedGroupKFold` folds with seed 42. Combine held-out folds 0 through 2 as training, fold 3 as validation, and fold 4 as test. Validate achieved class coverage and proportions rather than assuming exact stratification. This algorithm has not yet run on research data.
+
+For M3, preserve every original row hash, label, group ID, and partition. Allocate only new independent groups with the same procedure and append them to a child manifest that records its parent hash. Never resplit all 400 rows, because M2 validation has already influenced development. Put new variants of old scenarios in the challenge collection. Review new groups against all previous families before allocation. If old annotations require correction, record a successor protocol and exposure history instead of overwriting M2 evidence. Keep every exposed group out of any replacement test set.
+
+Freeze the expansion's collection brief before M2 error inspection. Collect new test candidates under that brief, rather than targeting observed model failures. Sealing restricts model-development access. It cannot undo exposure during human authoring or annotation, which must be disclosed. The planned runner reads separately materialized training and validation inputs and does not open test content. The splitter may inspect rows to allocate them and report aggregate counts.
+
 Use a scikit-learn pipeline so training-only transforms also hold inside cross-validation. Calibration uses three group-aware training folds with every class represented, supplied as explicit index pairs. It must never fit on the final test or the validation rows used for selection. If there are too few groups per class for those folds, postpone calibration and report the data shortage. These choices follow scikit-learn's [leakage guidance](https://scikit-learn.org/stable/common_pitfalls.html).
 
 ## Bounded experiment matrix
@@ -70,9 +78,13 @@ The mandatory comparison uses the following 14 configurations on the fixed split
 
 Use lowercase word tokenization, no stop-word removal, `min_df=1`, and a 10,000-feature cap initially. Record all library defaults in the resolved configuration. TF-IDF uses its documented normalization and IDF settings. Keep model regularization and solver settings explicit in the future implementation. Raise logistic-regression iteration limits only when convergence warnings require it and record the change. B1 gives a course-aligned probabilistic baseline. L1 versus L2 holds the classifier fixed to compare weighting. L2 versus S1 compares linear classifiers on the same representation. L2 versus L3 tests short phrases. The [feature extraction guide](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction) documents these representations.
 
+The implementation plan proposes word token pattern `(?u)\b\w+\b` to retain single-character digits and words. Preserve the original text and negation. This representation still loses punctuation and does not faithfully encode signed or decimal numbers. The plan fixes TF-IDF normalization, solver settings, bounded convergence retries, and score types before any comparison. All of these remain unmeasured proposals.
+
 Add one frozen sentence-embedding representation plus logistic regression at the same three C values only after a resource check. The candidate family is a small English sentence-transformer encoder. Before downloading, choose its exact model ID, immutable revision, license, dimension, maximum input length, pooling, and normalization. Cache by model revision and query hash. No fine-tuning is planned. This adds three configurations, for a maximum of 17. If the resource gate fails, the count-versus-TF-IDF comparison still satisfies the representation requirement. Neural representations extend Lecture 6; the specific pretrained encoder is external work, not lecture content.
 
 Select by validation macro-F1. Break ties within 0.01 by lower complexity, then prediction latency, recording the rule before comparing. Report each family's validation selection. Freeze the selected systems for one final test pass so classifier and feature comparisons remain visible. Do not choose a new winner by test score. Seeds 7 and 21 are optional training/validation-only stability checks with the original test groups held fixed.
+
+For M3, make that tie rule deterministic. Within each family, form the candidates within 0.01 of its best validation macro-F1 and prefer the smallest C. For an optional overall choice among tied family winners, use the declared simplicity order B0, B1, L1, L2, S1, L3. This is an explanatory and computational preference, not a theorem about model complexity. Use median prediction latency only if earlier keys tie, then configuration ID. Preserve per-family selections and matched-C comparisons regardless of the overall choice.
 
 ## Metrics, confidence, and errors
 
@@ -89,5 +101,7 @@ Inspect at least 20 validation errors across predicted and true classes, or all 
 Every future run records the Git SHA and dirty status, Python and uv versions, lockfile hash, OS/CPU, dataset and annotation versions, raw-file hashes, split manifest hash, random seeds, resolved model/feature configuration, library/model versions, and start/end time. Save predictions, metrics, confusion matrices, and timing under `results/<run-id>/`. Store enough metadata to recreate each plot. Never treat an untracked notebook state as an experiment definition.
 
 The current setup needs package downloads, one CPU, and no credentials. The planned sparse comparison targets a laptop with 8 GB RAM. The embedding gate allows one model download up to 500 MB and a 15-minute CPU pilot on 120 rows, with no paid API. These are proposed caps, not measured usage. Record runtime and peak memory before accepting the extension. Ask before paid services or larger compute commitments. Add visualization or embedding dependencies only when a committed experiment needs them.
+
+On October 16, Altan reported that SDU will provide 10 GPU hours. The required M1 through M3 sparse study reserves that allocation and uses the CPU. No SDU access or hardware has been verified. The [compute plan](m1-m3-plan.md#measure-resources-before-using-the-gpu-allocation) gives a conditional optional-embedding budget and the access information needed only if measured CPU limits justify using SDU. No GPU job or model download is authorized by this planning change.
 
 Keep raw downloads, processed data, models, local results, caches, `.env*`, and course PDFs out of Git. Commit small cleared fixtures, source/license manifests, split/configuration versions, and selected anonymized report evidence deliberately. Ignored results need an explicit backup or course submission archive containing the manifests and files required for reproduction. Record the archive location and checksum in the final handoff. Never load untrusted pickle/joblib artifacts. No secrets or API keys are required for the present scaffold.
