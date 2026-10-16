@@ -1,6 +1,7 @@
 {
   "parent_dataset": "data/processed/m1-v1.jsonl",
   "parent_manifest": "data/splits/m2-split.json",
+  "parent_manifest_sha256": null,
   "dataset": "data/processed/m3-v1.jsonl",
   "sources": "data/manifests/sources.json",
   "seed": 42,

@@ -111,11 +111,16 @@ def make_split(rows, dataset_sha256, seed=42):
 
 
 def extend_split(
-    parent_manifest, parent_rows, rows, dataset_sha256, parent_manifest_sha256, seed
+    parent_manifest,
+    parent_rows,
+    rows,
+    parent_dataset_sha256,
+    parent_manifest_sha256,
+    dataset_sha256,
+    seed,
 ):
     """Child manifest: parent memberships frozen, new independent groups allocated."""
-    parent_dataset = parent_manifest.get("dataset_sha256")
-    problems = check_split(parent_manifest, parent_rows, parent_dataset)
+    problems = check_split(parent_manifest, parent_rows, parent_dataset_sha256)
     if problems:
         raise ValueError(f"parent manifest is invalid: {problems[0]}")
     accepted = _accepted(rows)
@@ -148,7 +153,7 @@ def extend_split(
     new_by_id = {r["query_id"]: r for r in new}
     child.update(
         parent_manifest_sha256=parent_manifest_sha256,
-        parent_dataset_sha256=parent_dataset,
+        parent_dataset_sha256=parent_dataset_sha256,
         new_groups={
             "by_class": {
                 label: len({r["group_id"] for r in new if r["label"] == label})
@@ -163,15 +168,17 @@ def extend_split(
     return child
 
 
-def check_extension(child, parent, rows, dataset_sha256=None):
+def check_extension(
+    child, parent, parent_rows, rows, dataset_sha256, parent_manifest_sha256
+):
     """Every way a child manifest could disturb its parent's frozen evidence."""
-    if dataset_sha256 is None and isinstance(child, dict):
-        dataset_sha256 = child.get("dataset_sha256")
-    errors = check_split(child, rows, dataset_sha256)
-    if not isinstance(child, dict) or any(k not in child for k in MANIFEST_KEYS):
+    errors = [
+        f"parent: {e}"
+        for e in check_split(parent, parent_rows, _get(parent, "dataset_sha256"))
+    ]
+    errors += check_split(child, rows, dataset_sha256)
+    if errors:
         return errors
-    if child.get("parent_dataset_sha256") != parent["dataset_sha256"]:
-        errors.append("stale parent dataset hash: child does not match the parent")
     child_where = {q: n for n, ids in child["partitions"].items() for q in ids}
     for name, ids in parent["partitions"].items():
         for query_id in ids:
@@ -181,21 +188,27 @@ def check_extension(child, parent, rows, dataset_sha256=None):
                 errors.append(
                     f"{query_id}: moved from parent {name} to {child_where[query_id]}"
                 )
-            if child["row_sha256"].get(query_id) != parent["row_sha256"][query_id]:
-                errors.append(f"{query_id}: content hash differs from the parent")
-            if child["groups"].get(query_id) != parent["groups"][query_id]:
-                errors.append(f"{query_id}: group differs from the parent")
-    parent_home = {}
-    for name, ids in parent["partitions"].items():
-        for query_id in ids:
-            parent_home[parent["groups"][query_id]] = name
-    for query_id, name in sorted(child_where.items()):
-        group = child["groups"].get(query_id)
-        if group in parent_home and parent_home[group] != name:
-            errors.append(
-                f"group {group} spans parent {parent_home[group]} and child {name}"
-            )
+    # The rebuild catches everything else: reused groups, hand-moved new groups,
+    # wrong lineage hashes or new-group counts.
+    try:
+        expected = extend_split(
+            parent,
+            parent_rows,
+            rows,
+            parent["dataset_sha256"],
+            parent_manifest_sha256,
+            dataset_sha256,
+            child["seed"],
+        )
+    except (ValueError, TypeError) as error:
+        return errors + [f"child cannot be rebuilt from the parent: {error}"]
+    if child != expected:
+        errors.append("child differs from the manifest rebuilt from parent and rows")
     return errors
+
+
+def _get(manifest, key):
+    return manifest.get(key) if isinstance(manifest, dict) else None
 
 
 def check_split(manifest, rows, dataset_sha256):

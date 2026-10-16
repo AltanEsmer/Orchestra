@@ -6,7 +6,7 @@ Everything below ran on an artificial fixture in a temporary directory outside t
 
 ```text
 python -m orchestra split  --config <tmp>/split.json     # parent, PASS
-python -m orchestra extend --config <tmp>/extend.json
+python -m orchestra extend --config <tmp>/extend.json   # config pins parent_manifest_sha256
 ```
 
 Output of `extend` (exit 0, path shortened to `<tmp>`):
@@ -36,6 +36,14 @@ PASS: extension written to <tmp>/splits/m3.json
 - SHA-256: parent dataset `99e9428b75b9e1d5e3cc3ae4313dcf07931b69f99226aa6b915f5415810a94cd`, parent manifest `4448ecc3501b6cfd1fbf941854aefab895ed8e69711eff217ad5bd74ffcb10c4`, child dataset `005e25081e3eb97b3e42ea6dc7e3d4e2f04131f25a3ca89f3ef40bf6b9a8d05f`, child manifest `3f0ae8a8d7b8d07d78aa87111874fe58861c581a1d72239dad779ec8b3c64734`. The child records the first, second, and third as `parent_dataset_sha256`, `parent_manifest_sha256`, and `dataset_sha256`.
 - `python -m orchestra run --config <tmp>/extend.json --run-id m3-fixture` (with a B0 and L2 `C=1` configuration list in the temp config) printed `B0: ok`, `L2-C1: ok`, `PASS: run written to <tmp>/results/m3-fixture`.
 
+Refusal when `parent_manifest_sha256` is `null` (exit 1, nothing written):
+
+```text
+ERROR: parent_manifest_sha256 in the config is missing or does not match the parent manifest file
+```
+
+The pin is what stops a re-recorded parent manifest (for example a whole group moved between partitions with counts recomputed) from being accepted as the parent. `configs/m3.json` ships with `null` until the real M2 manifest hash is recorded. After the refactor the run was repeated from scratch and reproduced the same hashes and counts as above; the child records `parent_manifest_sha256` equal to the parent manifest hash.
+
 Refusal (one old text edited, same new-row set; exit 1; no m3b manifest or files written):
 
 ```text
@@ -48,4 +56,4 @@ ERROR: doc-g0-0: text, label or group_id differs from the parent; record the cor
 - Review of new candidates against all existing scenario families is human work and has not happened.
 - New-data collection bias and author exposure must be disclosed when real data is added; passing checks do not remove them.
 - Archive and restore of the frozen dataset and common split, as in P1, is not done.
-- `configs/m3.json` has an empty `configurations` list until P5.
+- `configs/m3.json` has `parent_manifest_sha256: null` (fill from the M2 evidence when the real split is frozen) and an empty `configurations` list until P5.

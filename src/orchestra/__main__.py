@@ -126,14 +126,22 @@ def run_extend(args):
     if not isinstance(parent, dict) or parent.get("dataset_sha256") != parent_digest:
         print("ERROR: parent dataset file does not match the parent manifest hash")
         return 1
+    parent_manifest_digest = file_sha256(config["parent_manifest"])
+    if config["parent_manifest_sha256"] != parent_manifest_digest:
+        print(
+            "ERROR: parent_manifest_sha256 in the config is missing or does not "
+            "match the parent manifest file"
+        )
+        return 1
     digest = file_sha256(config["dataset"])
     try:
         manifest = extend_split(
             parent,
             parent_rows,
             rows,
+            parent_digest,
+            parent_manifest_digest,
             digest,
-            file_sha256(config["parent_manifest"]),
             config["seed"],
         )
     except ValueError as error:
@@ -144,7 +152,9 @@ def run_extend(args):
     written = write_manifest(manifest, path)
     if written is None:
         return 1
-    errors = check_extension(written, parent, rows, digest)
+    errors = check_extension(
+        written, parent, parent_rows, rows, digest, parent_manifest_digest
+    )
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
