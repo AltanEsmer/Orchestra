@@ -140,6 +140,10 @@ One worker inspected existing contracts and another wrote the companion in a dis
 
 The preview stores three unanswered exercises covering lookup before calculation, paraphrase grouping and fit/transform, and accuracy versus macro-F1. No new response was supplied by Altan, so routing and split terminology remain **needs practice** and other topics remain **not yet reviewed**. The M1, M2, and M3 evidence-based PDFs and actual learning attempts are future deliverables. Nothing in the planning PR completes a research milestone or certifies oral readiness.
 
+## M1 to M3 implementation approval, October 16, 2026
+
+After PR #15 merged, Altan asked in chat to implement its plan with Sonnet worker agents and Opus reviewer agents. That instruction is the implementation approval the plan's first box requires. It does not authorize merging the implementation PRs, publishing data, recording a dataset license, or supplying labels on his behalf. The baseline before any change is commit `7999d69`. Every README check passed there: the smoke check, 15 unit tests, Ruff lint, Ruff format with 19 files formatted, and `git diff --check`.
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.
