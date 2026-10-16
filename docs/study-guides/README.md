@@ -48,6 +48,10 @@ M0 edition exported on October 8, 2026. The guide is delivered; the introductory
 - Verification: all 10 rendered pages inspected by the author and lead; the source text was checked against PDF text extraction. The author checked the numerical walkthrough in the locked project environment. Two consecutive exports produced identical hashes.
 - Authoring: Codex bundled ReportLab, with a local one-shot exporter at ignored `work/m0-pdf/export.py`. This helper is a convenience for this checkout, not an experiment dependency or a prerequisite for understanding the source. Future editions can be exported from the tracked Markdown through the PDF workflow.
 
+Closure snapshot: Altan closed M0 on October 16, 2026. The stable PDF was copied to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M0-preparation-2026-10-16.pdf` with SHA-256 `3c321a3b3be63f638fe9a16455926be78662b60e776cf0dccfb661a2b841ce07`, identical to the October 8 edition. The learning checkpoint was not answered before closure and carries into M1.
+
+M1 edition: not yet exported. It waits for pilot rows and the v1 guide decisions so that it can trace real annotation evidence.
+
 Inspected course source revisions for this edition:
 
 | File | SHA-256 |
