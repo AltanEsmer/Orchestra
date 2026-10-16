@@ -22,6 +22,10 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
 | `docs/m0-plan.md` | Accepted M0 scope, ordered delivery, checks, and the separate student-response gate. |
+| `docs/m1-m3-plan.md` | Proposed five-unit implementation sequence for M1 through M3, acceptance checks, split extension, resources, documentation, and the explicit approval boundary. |
+| `docs/study-guides/m1-m3-methods-preview.md` | Explanation of the proposed methods for exam, presentation, and report support. Contains no results or claimed student responses. |
+| `docs/evidence/m1-m3-planning.md` | Actual planning checks, review evidence, workflow adaptations, and remaining implementation limits. |
+| `docs/evidence/m1-m3-decisions.tsv` | Dated planning decisions with evidence pointers. Planned choices are labeled separately from verified checks. |
 | `docs/study-guides/README.md` | PDF location, edition evidence, refresh procedure, and coverage planned for each milestone. |
 | `docs/study-guides/m0-preparation.md` | Editable M0 lesson and technical appendix explaining the current script and its course connections. |
 | `docs/data-and-evaluation.md` | Proposed first-action labels, row schema, annotation/split protocol, experiments, confidence, and reproducibility. |

@@ -1,0 +1,10 @@
+ts	phase	decision	why	evidence	result
+2026-10-16T09:12:06Z	frame	Limit delivery to planning documentation and its merged PR	Altan requires separate approval before implementation	docs/m1-m3-plan.md	Implementation pending
+2026-10-16T09:12:06Z	ground	Use current merged M1 tooling as the baseline	PR 14 already integrated validator and guide v0	https://github.com/AltanEsmer/Orchestra/pull/14	Baseline 48abda0 verified
+2026-10-16T09:12:06Z	data	Separate dataset readiness from schema validation	Schema checks cannot establish human labels or sample sufficiency	scripts/validate_dataset.py	Planned readiness gate
+2026-10-16T09:12:06Z	storage	Place real pilot rows under ignored data/raw	The older data/annotation path is not ignored	.gitignore	Documentation corrected; no rows created
+2026-10-16T09:12:06Z	splits	Preserve M2 group assignments when growing the dataset	Previously inspected validation must not become final test	docs/m1-m3-plan.md#p4-freeze-the-expanded-dataset-without-moving-old-groups	Planned; runtime verification deferred
+2026-10-16T09:12:06Z	compute	Reserve all 10 SDU GPU hours for a conditional extension	The required sparse comparison uses the existing CPU stack	docs/m1-m3-plan.md#measure-resources-before-using-the-gpu-allocation	No GPU use; limits unmeasured
+2026-10-16T09:12:06Z	teaching	Deliver a methods preview and require later evidence-based milestone PDFs	The report and exam material must distinguish plans from actual work	docs/study-guides/m1-m3-methods-preview.md	Preview written; learning unchanged
+2026-10-16T09:15:12Z	verify	Run all README checks in a fresh worktree environment	Planning must preserve the existing executable preparation	docs/evidence/m1-m3-planning.md#actual-checks	Smoke passed; 15 tests OK; lint and format passed
+2026-10-16T09:15:12Z	verify	Resolve every local Markdown link and heading target	The new plan must be navigable from the existing documents	docs/evidence/m1-m3-planning.md#actual-checks	101 links and anchors passed across 16 files

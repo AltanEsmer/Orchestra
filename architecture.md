@@ -50,6 +50,8 @@ flowchart TD
 
 These paths describe intended responsibilities, not existing modules or runnable commands. Add reusable modules when the first baseline needs them. The [project plan](docs/project-plan.md#decisions-and-rejected-alternatives) records why a package, service framework, and complete tool sequences are deferred.
 
+The [M1 to M3 plan](docs/m1-m3-plan.md) refines this proposal into shared data validation, persisted splits, one experiment runner, and a small command entry point. M3 extends M2's group assignments without moving old rows between partitions. Training commands read separate training and validation inputs, leaving test content for M4. These components remain unimplemented pending approval.
+
 ## Query contract and boundaries
 
 The proposed input is one self-contained English query. The output is one label: `document_retrieval`, `knowledge_lookup`, `calculation`, or `direct_answer`. For example, “What is 18 percent of 250?” has the target `calculation`, because the required numbers are already present. A future trained classifier may predict that label correctly or incorrectly; the study measures that distinction. It does not run a calculator.
