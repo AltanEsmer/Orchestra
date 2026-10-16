@@ -11,7 +11,13 @@ import sklearn
 
 from orchestra.__main__ import main
 from orchestra.data import LABELS
-from orchestra.splits import check_split, make_split
+from orchestra.splits import (
+    check_extension,
+    check_split,
+    extend_split,
+    make_split,
+    row_hash,
+)
 
 SOURCES = {"fixture": {"author": "test", "license": None, "created": "2026-10-01"}}
 DIGEST = "a" * 64
@@ -95,6 +101,18 @@ class MakeSplitTest(unittest.TestCase):
              "doc-g5-1", "kno-g1-0", "kno-g1-1"],
         )  # fmt: skip
         self.assertEqual(len(partitions["train"]), 30)
+
+    def test_row_hashes_are_canonical_content_hashes(self):
+        row = {"text": "é?", "label": "calculation", "group_id": "g", "x": 1}
+        self.assertEqual(
+            row_hash(row),
+            "3bf3b31dd4d350afdc5740ae692ceee2ddc7b043329b0f70f7fa200566284a9e",
+        )
+        self.assertEqual(row_hash(dict(row, x=2)), row_hash(row))
+        self.assertNotEqual(row_hash(dict(row, text="e?")), row_hash(row))
+        m = self.manifest
+        self.assertEqual(m["row_sha256"]["doc-g0-0"], row_hash(self.rows[0]))
+        self.assertEqual(len(m["row_sha256"]), 48)
 
     def test_input_order_does_not_change_manifest(self):
         shuffled = copy.deepcopy(self.rows)
@@ -268,6 +286,21 @@ class CheckSplitTest(unittest.TestCase):
             self.check(m), ["ghost: manifest group for a row that is not accepted"]
         )
 
+    def test_rejects_changed_row_content_hash(self):
+        rows = copy.deepcopy(self.rows)
+        rows[0]["text"] = "edited"
+        self.assertEqual(
+            self.check(self.manifest, rows),
+            [f"{rows[0]['query_id']}: row content hash disagrees with dataset"],
+        )
+        m = copy.deepcopy(self.manifest)
+        m["row_sha256"]["ghost"] = "0" * 64
+        self.assertEqual(
+            self.check(m), ["ghost: row hash for a row that is not accepted"]
+        )
+        del m["row_sha256"]
+        self.assertEqual(self.check(m), ["manifest missing fields: row_sha256"])
+
     def test_rejects_group_mapping_disagreement(self):
         m = copy.deepcopy(self.manifest)
         m["groups"][self.rows[0]["query_id"]] = "other"
@@ -382,6 +415,324 @@ class SplitCliTest(unittest.TestCase):
         code, output = self.run_split()
         self.assertEqual(code, 1)
         self.assertIn("is not structurally valid", output)
+
+
+def new_rows():
+    """Artificial extension: 4 classes x 6 new independent groups x 2 rows."""
+    rows = fixture_rows()
+    for row in rows:
+        row["query_id"] = "new-" + row["query_id"]
+        row["group_id"] = "new-" + row["group_id"]
+        row["text"] = row["text"].replace("fixture text", "fixture extension text")
+    return rows
+
+
+PARENT_DIGEST = "c" * 64
+CHILD_DIGEST = "d" * 64
+
+
+class ExtendSplitTest(unittest.TestCase):
+    def setUp(self):
+        self.parent_rows = fixture_rows()
+        self.parent = make_split(self.parent_rows, PARENT_DIGEST)
+        self.rows = fixture_rows() + new_rows()
+        self.child = self.extend(self.rows)
+
+    def extend(self, rows, parent=None, seed=42):
+        return extend_split(
+            parent or self.parent,
+            self.parent_rows,
+            rows,
+            CHILD_DIGEST,
+            "e" * 64,
+            seed,
+        )
+
+    def test_parent_literal_memberships_are_frozen(self):
+        for name, ids in self.parent["partitions"].items():
+            self.assertTrue(set(ids) <= set(self.child["partitions"][name]))
+        self.assertEqual(
+            [q for q in self.child["partitions"]["validation"] if q[:3] != "new"],
+            [
+                "cal-g5-0", "cal-g5-1", "dir-g5-0", "dir-g5-1", "doc-g0-0",
+                "doc-g0-1", "doc-g2-0", "doc-g2-1", "kno-g4-0", "kno-g4-1",
+            ],
+        )  # fmt: skip
+        # M2 validation can never become M3 test.
+        validation = set(self.parent["partitions"]["validation"])
+        self.assertFalse(validation & set(self.child["partitions"]["test"]))
+
+    def test_child_records_lineage_and_combined_counts(self):
+        c = self.child
+        self.assertEqual(c["parent_manifest_sha256"], "e" * 64)
+        self.assertEqual(c["parent_dataset_sha256"], PARENT_DIGEST)
+        self.assertEqual(c["dataset_sha256"], CHILD_DIGEST)
+        self.assertEqual(sum(len(i) for i in c["partitions"].values()), 96)
+        self.assertEqual(len(c["row_sha256"]), 96)
+        # Mixed-label groups count once under each label they contain.
+        self.assertEqual(
+            c["new_groups"]["by_class"],
+            {
+                "document_retrieval": 6,
+                "knowledge_lookup": 6,
+                "calculation": 6,
+                "direct_answer": 8,
+            },
+        )
+        self.assertEqual(sum(c["new_groups"]["by_partition"].values()), 24)
+        for name, ids in c["partitions"].items():
+            self.assertEqual(c["proportions"][name], round(len(ids) / 96, 4))
+        self.assertEqual(check_extension(c, self.parent, self.rows), [])
+        self.assertEqual(check_split(c, self.rows, CHILD_DIGEST), [])
+
+    def test_new_rows_use_the_p2_allocation(self):
+        # New rows alone, split as P2 would, land in the same partitions.
+        alone = make_split(new_rows(), CHILD_DIGEST)["partitions"]
+        for name, ids in alone.items():
+            self.assertTrue(set(ids) <= set(self.child["partitions"][name]))
+
+    def test_new_row_order_does_not_change_child(self):
+        shuffled = copy.deepcopy(self.rows)
+        random.Random(3).shuffle(shuffled)
+        self.assertEqual(self.extend(shuffled), self.child)
+
+    def test_refuses_changed_old_text_label_group_and_missing_row(self):
+        for field, value in (("text", "edited"), ("label", LABELS[2])):
+            rows = copy.deepcopy(self.rows)
+            rows[5][field] = value
+            q = rows[5]["query_id"]
+            with self.assertRaisesRegex(
+                ValueError, f"{q}: text, label or group_id differs.*successor protocol"
+            ):
+                self.extend(rows)
+        rows = copy.deepcopy(self.rows)
+        rows[5]["group_id"] = "regrouped"
+        with self.assertRaisesRegex(ValueError, "differs from the parent"):
+            self.extend(rows)
+        rows = [r for r in self.rows if r["query_id"] != "cal-g1-0"]
+        with self.assertRaisesRegex(
+            ValueError, "cal-g1-0: parent row is missing from the extension"
+        ):
+            self.extend(rows)
+
+    def test_refuses_new_row_in_an_existing_group(self):
+        rows = copy.deepcopy(self.rows)
+        rows[-1]["group_id"] = "cal-g1"
+        with self.assertRaisesRegex(
+            ValueError,
+            f"{rows[-1]['query_id']}: group cal-g1 already exists.*challenge",
+        ):
+            self.extend(rows)
+
+    def test_refuses_needs_review_and_too_few_new_groups(self):
+        rows = copy.deepcopy(self.rows)
+        rows[-1]["status"] = "needs_review"
+        with self.assertRaisesRegex(ValueError, "needs_review rows: "):
+            self.extend(rows)
+        rows = [r for r in self.rows if not r["group_id"].startswith("new-cal-g5")]
+        self.extend(rows)  # five new groups per class is enough
+        rows = [r for r in rows if not r["group_id"].startswith("new-cal-g4")]
+        with self.assertRaisesRegex(
+            ValueError, "class calculation has 4 new groups; need at least 5"
+        ):
+            self.extend(rows)
+
+    def test_refuses_an_invalid_parent_manifest(self):
+        parent = copy.deepcopy(self.parent)
+        parent["partitions"]["train"].pop()
+        with self.assertRaisesRegex(ValueError, "parent manifest is invalid"):
+            self.extend(self.rows, parent)
+
+
+class CheckExtensionTest(unittest.TestCase):
+    def setUp(self):
+        self.parent_rows = fixture_rows()
+        self.parent = make_split(self.parent_rows, PARENT_DIGEST)
+        self.rows = fixture_rows() + new_rows()
+        self.child = extend_split(
+            self.parent, self.parent_rows, self.rows, CHILD_DIGEST, "e" * 64, 42
+        )
+
+    def check(self, child, rows=None, digest=CHILD_DIGEST):
+        return check_extension(child, self.parent, rows or self.rows, digest)
+
+    def test_rejects_moved_original_id(self):
+        child = copy.deepcopy(self.child)
+        moved = self.parent["partitions"]["validation"][0]
+        child["partitions"]["validation"].remove(moved)
+        child["partitions"]["test"].append(moved)
+        errors = self.check(child)
+        self.assertIn(f"{moved}: moved from parent validation to test", errors)
+
+    def test_rejects_dropped_original_id(self):
+        child = copy.deepcopy(self.child)
+        dropped = self.parent["partitions"]["test"][0]
+        child["partitions"]["test"].remove(dropped)
+        self.assertIn(
+            f"{dropped}: parent row missing from the child", self.check(child)
+        )
+
+    def test_rejects_changed_old_hash_and_group(self):
+        child = copy.deepcopy(self.child)
+        q = "cal-g1-0"
+        child["row_sha256"][q] = "0" * 64
+        child["groups"][q] = "elsewhere"
+        errors = self.check(child)
+        self.assertIn(f"{q}: content hash differs from the parent", errors)
+        self.assertIn(f"{q}: group differs from the parent", errors)
+
+    def test_rejects_stale_hashes(self):
+        child = copy.deepcopy(self.child)
+        child["parent_dataset_sha256"] = "f" * 64
+        self.assertEqual(
+            self.check(child),
+            ["stale parent dataset hash: child does not match the parent"],
+        )
+        self.assertEqual(
+            self.check(self.child, digest="9" * 64),
+            ["stale dataset hash: manifest does not match the dataset file"],
+        )
+
+    def test_rejects_family_across_parent_and_child_partitions(self):
+        rows = copy.deepcopy(self.rows)
+        child = copy.deepcopy(self.child)
+        new_id = "new-cal-g0-0"
+        row = next(r for r in rows if r["query_id"] == new_id)
+        home = next(n for n, ids in child["partitions"].items() if new_id in ids)
+        family = next(  # a parent group sitting in a different partition
+            r["group_id"]
+            for r in self.parent_rows
+            if r["query_id"]
+            in self.parent["partitions"]["train" if home != "train" else "test"]
+        )
+        row["group_id"] = family
+        child["groups"][new_id] = family
+        child["row_sha256"][new_id] = row_hash(row)
+        errors = self.check(child, rows)
+        parent_home = "train" if home != "train" else "test"
+        self.assertIn(
+            f"group {family} spans parent {parent_home} and child {home}", errors
+        )
+
+
+class ExtendCliTest(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.root = Path(directory.name)
+        self.parent_rows = fixture_rows()
+        self.rows = self.parent_rows + new_rows()
+        self.write("parent.jsonl", self.parent_rows)
+        self.write("child.jsonl", self.rows)
+        (self.root / "sources.json").write_text(json.dumps(SOURCES), encoding="utf-8")
+        self.split_config = self.root / "split.json"
+        self.split_config.write_text(
+            json.dumps(
+                {
+                    "dataset": str(self.root / "parent.jsonl"),
+                    "sources": str(self.root / "sources.json"),
+                    "seed": 42,
+                    "split_manifest": str(self.root / "splits" / "m2.json"),
+                    "train": str(self.root / "m2" / "train.jsonl"),
+                    "validation": str(self.root / "m2" / "validation.jsonl"),
+                    "sealed_test": str(self.root / "sealed" / "m2-test.jsonl"),
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.config = self.root / "extend.json"
+        self.write_config()
+        self.assertEqual(self.cli("split", self.split_config)[0], 0)
+
+    def write(self, name, rows):
+        (self.root / name).write_text(
+            "".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8"
+        )
+
+    def write_config(self, **changes):
+        config = {
+            "parent_dataset": str(self.root / "parent.jsonl"),
+            "parent_manifest": str(self.root / "splits" / "m2.json"),
+            "dataset": str(self.root / "child.jsonl"),
+            "sources": str(self.root / "sources.json"),
+            "seed": 42,
+            "split_manifest": str(self.root / "splits" / "m3.json"),
+            "train": str(self.root / "m3" / "train.jsonl"),
+            "validation": str(self.root / "m3" / "validation.jsonl"),
+            "sealed_test": str(self.root / "sealed" / "m3-test.jsonl"),
+            "results_dir": str(self.root / "results"),
+            "configurations": [{"family": "B0"}, {"family": "L2", "C": 1}],
+            **changes,
+        }
+        self.config.write_text(json.dumps(config), encoding="utf-8")
+
+    def cli(self, command, config, *extra):
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            code = main([command, "--config", str(config), *extra])
+        return code, output.getvalue()
+
+    def ids(self, name):
+        lines = (self.root / name).read_text().splitlines()
+        return [json.loads(line)["query_id"] for line in lines]
+
+    def test_extend_end_to_end_then_run(self):
+        code, output = self.cli("extend", self.config)
+        self.assertEqual(code, 0, output)
+        parent = json.loads((self.root / "splits" / "m2.json").read_text())
+        child = json.loads((self.root / "splits" / "m3.json").read_text())
+        for name, files in (
+            ("train", "m3/train.jsonl"),
+            ("validation", "m3/validation.jsonl"),
+            ("test", "sealed/m3-test.jsonl"),
+        ):
+            self.assertEqual(self.ids(files), child["partitions"][name])
+            self.assertTrue(set(parent["partitions"][name]) <= set(self.ids(files)))
+        self.assertEqual(child["new_groups"]["by_class"]["calculation"], 6)
+        self.assertIn('"new_groups"', output)
+        self.assertNotIn("artificial fixture", output)
+        self.assertTrue(
+            output.endswith(f"PASS: extension written to {self.root}/splits/m3.json\n")
+        )
+        self.assertEqual(self.cli("extend", self.config)[0], 0)  # idempotent
+        code, output = self.cli("run", self.config, "--run-id", "m3-test")
+        self.assertEqual(code, 0, output)
+        self.assertIn("B0: ok", output)
+
+    def test_refuses_stale_parent_dataset(self):
+        edited = copy.deepcopy(self.parent_rows)
+        edited[0]["text"] = "edited after the split"
+        self.write("parent.jsonl", edited)
+        code, output = self.cli("extend", self.config)
+        self.assertEqual(
+            (code, output),
+            (1, "ERROR: parent dataset file does not match the parent manifest hash\n"),
+        )
+        self.assertFalse((self.root / "splits" / "m3.json").exists())
+
+    def test_refuses_changed_old_row_in_new_dataset(self):
+        rows = copy.deepcopy(self.rows)
+        rows[0]["text"] = "silently corrected"
+        self.write("child.jsonl", rows)
+        code, output = self.cli("extend", self.config)
+        self.assertEqual(code, 1)
+        self.assertIn("record the correction and build a named successor", output)
+        self.assertFalse((self.root / "splits" / "m3.json").exists())
+        self.assertFalse((self.root / "sealed" / "m3-test.jsonl").exists())
+
+    def test_refuses_shared_output_paths(self):
+        self.write_config(sealed_test=str(self.root / "m3" / "test.jsonl"))
+        code, output = self.cli("extend", self.config)
+        self.assertEqual(code, 1)
+        self.assertIn("must be distinct files", output)
+
+    def test_reports_missing_config_key(self):
+        config = json.loads(self.config.read_text())
+        del config["parent_manifest"]
+        self.config.write_text(json.dumps(config))
+        self.assertEqual(
+            self.cli("extend", self.config),
+            (1, "ERROR: config is missing 'parent_manifest'\n"),
+        )
 
 
 if __name__ == "__main__":

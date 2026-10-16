@@ -1,0 +1,13 @@
+{
+  "parent_dataset": "data/processed/m1-v1.jsonl",
+  "parent_manifest": "data/splits/m2-split.json",
+  "dataset": "data/processed/m3-v1.jsonl",
+  "sources": "data/manifests/sources.json",
+  "seed": 42,
+  "split_manifest": "data/splits/m3-split.json",
+  "train": "data/processed/m3/train.jsonl",
+  "validation": "data/processed/m3/validation.jsonl",
+  "sealed_test": "data/processed/sealed/m3-test.jsonl",
+  "results_dir": "results",
+  "configurations": []
+}
