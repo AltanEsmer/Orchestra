@@ -4,7 +4,7 @@ Orchestra is a local classification study: given a query, predict the first acti
 
 ## Implemented today
 
-The only executable project code is [scripts/smoke.py](scripts/smoke.py). uv creates a Python environment from `.python-version`, `pyproject.toml`, and `uv.lock`.
+The executable project code is the environment check [scripts/smoke.py](scripts/smoke.py) and the dataset validator [scripts/validate_dataset.py](scripts/validate_dataset.py). The validator reads annotated JSONL rows and the source manifest and reports schema and provenance errors plus label and group counts; the [annotation guide](docs/annotation-guide.md) describes its input. uv creates a Python environment from `.python-version`, `pyproject.toml`, and `uv.lock`.
 
 ```mermaid
 flowchart LR
@@ -41,7 +41,7 @@ flowchart TD
 
 | Component | Responsibility and output | Proposed location |
 | --- | --- | --- |
-| Data validation | Check row fields, annotation status, duplicate IDs/text, and provenance. Only accepted rows enter supervised splits. | Reusable code under `src/orchestra/`; behavioral checks under `tests/`. |
+| Data validation | Implemented in M1. Check row fields, annotation status, duplicate IDs/text, group size, and provenance. Only accepted rows enter supervised splits. | `scripts/validate_dataset.py`, moving to `src/orchestra/` when split code reuses it; tests under `tests/`. |
 | Split generation | Keep related query groups together; persist IDs and reject overlap or missing classes. | `data/splits/` and `data/manifests/`. |
 | Training | Fit features and estimators on training rows through scikit-learn pipelines. Start with dummy and TF-IDF logistic regression. | `src/orchestra/`, `configs/`, and ignored `models/`. |
 | Evaluation | Save predictions, macro-F1, per-class metrics, confusion matrices, timing, and run provenance. Validation selects systems before the final test. | Ignored `results/<run-id>/`. |

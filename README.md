@@ -2,7 +2,7 @@
 
 Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The study will compare classifiers and text representations for choosing a query's first action, then analyze confidence and errors.
 
-Current status is preparation. The repository contains a project plan, data/evaluation protocol, learning routine, and a verified Python environment smoke check. There is no research dataset, trained router, or experiment result yet. Tool integration is optional and deferred.
+Current milestone is M1, the annotation pilot. The repository contains a project plan, data/evaluation protocol, draft [annotation guide](docs/annotation-guide.md), dataset validator, learning routine, and a verified Python environment smoke check. There is no research dataset, trained router, or experiment result yet. Tool integration is optional and deferred.
 
 ## Set up and check the environment
 
@@ -12,14 +12,15 @@ Use [uv](https://docs.astral.sh/uv/getting-started/installation/) and run these 
 uv python install 3.12.13
 uv sync --locked
 uv run --locked python scripts/smoke.py
+uv run --locked python -m unittest discover -s tests
 uv run --locked ruff check .
 uv run --locked ruff format --check .
 git diff --check
 ```
 
-The smoke check prints `PASS: environment-smoke-only` followed by the checks performed and runtime versions. It tests sparse TF-IDF, training-only vocabulary, and expected dummy-classifier predictions on artificial fixtures. It does not measure routing accuracy. Exact evidence is in the [learning log](docs/learning-log.md#preparation-evidence-october-7-2026).
+The smoke check prints `PASS: environment-smoke-only` followed by the checks performed and runtime versions. It tests sparse TF-IDF, training-only vocabulary, and expected dummy-classifier predictions on artificial fixtures. It does not measure routing accuracy. The unit tests check the dataset validator on small literal rows. Exact evidence is in the [learning log](docs/learning-log.md#preparation-evidence-october-7-2026).
 
-Training, dataset validation, experiment evaluation, and report generation are planned work. No runnable commands for those capabilities exist yet. No API key or GPU is needed for the current check.
+Check annotated rows with `uv run --locked python scripts/validate_dataset.py <file.jsonl>`; the [annotation guide](docs/annotation-guide.md) explains the format. Training, experiment evaluation, and report generation are planned work. No runnable commands for those capabilities exist yet. No API key or GPU is needed for the current check.
 
 ## Start the study
 

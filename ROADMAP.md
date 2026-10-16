@@ -1,10 +1,10 @@
 # Roadmap
 
-Last updated: October 8, 2026. This is the primary progress tracker for course project 13. Preparation was delivered through [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1); the milestone issues below track the remaining work. The [project plan](docs/project-plan.md) owns scope and decision rationale; [architecture](architecture.md) owns component responsibilities. The [learning log](docs/learning-log.md) tracks understanding separately.
+Last updated: October 16, 2026. This is the primary progress tracker for course project 13. Preparation was delivered through [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1); the milestone issues below track the remaining work. The [project plan](docs/project-plan.md) owns scope and decision rationale; [architecture](architecture.md) owns component responsibilities. The [learning log](docs/learning-log.md) tracks understanding separately.
 
 ## Current position
 
-Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orchestra/pull/2) on October 7, 2026, as [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b). Issue #1 is closed. The locked environment and smoke check have passed. M0 now delivers a course-linked study PDF and an introductory learning checkpoint under the [accepted plan](docs/m0-plan.md). Altan removed course confirmation as a gate on October 8. No research dataset, trained router, experimental metric, or submitted report exists yet.
+Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orchestra/pull/2) on October 7, 2026, as [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b). Issue #1 is closed. The locked environment and smoke check have passed. M0 now delivers a course-linked study PDF and an introductory learning checkpoint under the [accepted plan](docs/m0-plan.md). Altan removed course confirmation as a gate on October 8. On October 16 Altan closed issue #3, so M0 is closed by his decision. The introductory learning response was never recorded; it moves into M1 as an open learning gap rather than counting as answered. M1 has started with agent-side tooling: a draft annotation guide, a provenance manifest, and a row validator. Query writing and annotation decisions belong to Altan and have not started. No research dataset, trained router, experimental metric, or submitted report exists yet.
 
 Statuses mean **not started**, **in progress**, **in review**, **done**, or **blocked**. “Done” requires the stated completion evidence. A blocked item records what must change and who can resolve it. Dates are targets, not evidence of completion.
 
@@ -14,8 +14,8 @@ Dates use Europe/Copenhagen. December 6 is the course submission date; earlier d
 
 | ID | Target date | Milestone | Issue | Status | Completion evidence or remaining gate |
 | --- | --- | --- | --- | --- | --- |
-| M0 | October 11, 2026 | Preparation and course-linked study guide | [#3](https://github.com/AltanEsmer/Orchestra/issues/3) | In progress | Environment and planning reviewed and merged in PR #2. M0 PDF delivered and visually checked. Altan's introductory learning response remains pending. |
-| M1 | October 18 | Annotation pilot and first dataset | [#4](https://github.com/AltanEsmer/Orchestra/issues/4) | Not started | After M0: review 40 pilot queries, freeze guide v1, and accept 120 rows with provenance and group IDs. Record disagreements and exclusions. |
+| M0 | October 11, 2026 | Preparation and course-linked study guide | [#3](https://github.com/AltanEsmer/Orchestra/issues/3) | Done | Closed by Altan on October 16. Environment and planning merged in PR #2; M0 PDF delivered, checked, and snapshotted. Exception: no learning response was recorded, so the checkpoint carries into M1 unanswered. |
+| M1 | October 18 | Annotation pilot and first dataset | [#4](https://github.com/AltanEsmer/Orchestra/issues/4) | In progress | After M0: review 40 pilot queries, freeze guide v1, and accept 120 rows with provenance and group IDs. Record disagreements and exclusions. |
 | M2 | October 25 | First reproducible baseline | [#5](https://github.com/AltanEsmer/Orchestra/issues/5) | Not started | After M1: validate rows and splits; run dummy and TF-IDF logistic regression twice with identical split membership and predictions. Save validation metrics and provenance. |
 | M3 | November 8 | Main classifier and representation comparison | [#6](https://github.com/AltanEsmer/Orchestra/issues/6) | Not started | After M2: freeze the main dataset, target 400 accepted queries, and complete the 14 required configurations. Save all outcomes and validation selections. |
 | M4 | November 15 | Confidence, errors, and final test | [#7](https://github.com/AltanEsmer/Orchestra/issues/7) | Not started | After M3: complete calibration and validation error analysis; freeze selected systems and any fallback threshold, then evaluate the sealed test. Save confidence and error evidence. |
@@ -52,7 +52,7 @@ For example, “What is 18 percent of 250?” needs `calculation` as its first a
 - [x] Add the repository walkthrough, agent instructions, and honest learning record.
 - [x] Add the architecture overview and this progress tracker.
 - [x] Complete PR review and integration through PR #2 and merge commit `08cce7b`.
-- [ ] Complete the introductory learning checkpoint; the first response requested clarification.
+- [ ] Complete the introductory learning checkpoint; the first response requested clarification. M0 closed on October 16 without a recorded response, so this item carries into M1.
 - [x] Save the approved milestone-PDF plan and remove course confirmation as an agent gate.
 - [x] Deliver and verify the M0 lesson and technical appendix in the chosen study folder; see the [edition evidence](docs/study-guides/README.md#edition-evidence).
 
@@ -62,10 +62,11 @@ Altan owns course administration, annotation decisions, and the report. Agent wo
 
 | Action or decision | Owner | Evidence needed |
 | --- | --- | --- |
-| Complete the remaining M0 gates in issue #3. | Agent and Altan | Verified M0 study PDF and an actual introductory learning response; PR #2 is already merged. |
+| Answer the carried-forward M0 checkpoint questions. | Altan | An actual response recorded in the learning log. |
 | Refresh study guides as each milestone develops. | Agent and Altan | Current PDF, inspected lecture sources, report evidence, and recorded oral-practice feedback. |
 | Introduce routing with one everyday query before further practice. | Agent and Altan | Altan's actual response in the learning log. |
-| Start the 40-query annotation pilot. | Altan | Versioned rows, provenance, rationales, and reviewed boundary cases. |
+| Write the 40-query pilot using the [annotation guide](docs/annotation-guide.md). | Altan | `data/annotation/pilot-v0.jsonl` passing the validator, with rationales and reviewed boundary cases. |
+| Decide the open guide questions: general-knowledge facts, review method, data license, and tracking of rows. | Altan | Decisions recorded in the annotation guide before v1. |
 | Arrange a second human annotation review or document the delayed self-review alternative. | Altan | Recorded review method and disagreements before guide freeze. |
 
 ## Evidence ledger
@@ -78,6 +79,8 @@ Altan owns course administration, annotation decisions, and the report. Agent wo
 | October 7, 2026 | [`08cce7b`](https://github.com/AltanEsmer/Orchestra/commit/08cce7b) | PR #2 reviewed and merged; issue #1 closed. Learning and course-rule gates remain open. |
 | October 8, 2026 | [Milestone issues #3–#11](https://github.com/AltanEsmer/Orchestra/issues?q=is%3Aissue+%22%5BM%22) and [tracking update](docs/learning-log.md#milestone-issues-and-roadmap-rename-october-8-2026) | One issue per milestone, with objectives, dependencies, and completion criteria; roadmap renamed to `ROADMAP.md` and local references updated. No research milestone is claimed complete. |
 | October 8, 2026 | [M0 delivery plan](docs/m0-plan.md) and [study-guide edition](docs/study-guides/README.md#edition-evidence) | Course confirmation removed by Altan; M0 PDF delivered with code and lecture connections; M0-M8 issue learning checkpoints updated. Actual learning response remains pending. |
+| October 16, 2026 | Issue #3 closed by Altan; dated snapshot `M0-preparation-2026-10-16.pdf` (SHA-256 `3c321a3b…1ce07`, identical to the October 8 edition) | M0 closed by owner decision. The learning checkpoint was not answered and carries into M1. |
+| October 16, 2026 | Branch `claude/m1-annotation-start`: annotation guide v0, source manifest, and dataset validator with unit tests | M1 tooling ready for the pilot. No query rows exist yet. |
 
 ## Maintaining progress
 

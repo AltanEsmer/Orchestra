@@ -99,6 +99,33 @@ Two independent reviewers from one model family checked standards and the accept
 
 The M0 guide's three fresh questions cover a database-then-calculation request, the features and dummy prediction for unfamiliar held-out text, and the difference between passing a smoke check and evidence of generalization. They have no worked answers. Altan has not answered them yet. Data-contract and introductory split terminology remain **needs practice**; other concepts remain **not yet reviewed**. M0's agent deliverables are ready, but milestone closure waits for an actual learning response, with gaps carried forward. January practice will revisit those gaps using the submitted study and later lecture slides.
 
+## M0 closure and M1 start, October 16, 2026
+
+Altan closed issue #3 on October 16 and asked to begin M1. The roadmap now marks M0 done by his decision. The introductory checkpoint was never answered. That gap is carried into M1 unchanged, and no understanding status moved. The stable M0 PDF was copied to the dated snapshot `M0-preparation-2026-10-16.pdf`; its SHA-256 matches the October 8 edition.
+
+M1 started with three agent-side pieces. [`docs/annotation-guide.md`](annotation-guide.md) is a v0 procedure for choosing a first action, grouping paraphrases, writing rows, and running the pilot review. It lists four decisions that belong to Altan before v1. [`data/manifests/sources.json`](../data/manifests/sources.json) records the authored source with `license: null`. [`scripts/validate_dataset.py`](../scripts/validate_dataset.py) checks rows against the protocol schema, with 15 unit tests in `tests/test_validate_dataset.py`. No query rows were written. Authoring and labeling the pilot is Altan's work.
+
+The validator pulls the row checks forward from M2 so pilot rows are checked as they are written. It uses only the standard library, so no dependency was added. It stays a script until the M2 split code needs to import it. A worker wrote the validator and tests from a fixed specification. The lead reviewed the diff, changed the test command to `python -m unittest discover -s tests` instead of adding a package file, and updated the documents.
+
+Trace one row. Suppose a pilot line is `{"query_id": "q0001", "group_id": "g001", "text": "Add 40 and 2.", "label": "calculation", "status": "accepted", "source_id": "altan-authored", ...}`. The validator finds all nine fields, a known label, and a known source. It then checks the source entry and finds `license: null`, so it prints `ERROR: source altan-authored: missing license` and exits 1. This probe ran from a scratch file outside the repository. Once Altan records a license, the same row passes and the summary counts one accepted `calculation` row in one group.
+
+| Check on October 16 | Actual result |
+| --- | --- |
+| `uv run --locked python scripts/smoke.py` | PASS: environment-smoke-only. Python 3.12.13; scikit-learn 1.9.1. |
+| `uv run --locked python -m unittest discover -s tests` | Ran 15 tests, OK. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | 16 files already formatted. |
+| `git diff --check` | Exit 0. |
+| Validator on a one-row scratch probe with the real manifest | `ERROR: source altan-authored: missing license`, exit 1, as intended. |
+
+Limitations. The validator checks structure, not label correctness. Near-duplicate detection, length and source-mix reports, and agreement computation are not implemented. The M1 study PDF is deferred until pilot rows and the v1 decisions exist, because the guide must trace actual annotation evidence. Lecture slides were rechecked on October 16; no file newer than Lecture 6 exists, so the recorded source hashes still apply.
+
+Questions for Altan, to answer before seeing worked explanations:
+
+1. Carried from M0: for "Look up order 5521 in the sales database and tell me how many days late it shipped," what is the first action, and why is that a different problem from predicting the whole sequence of actions?
+2. Why does the validator reject a group of five paraphrases, and how could a large paraphrase group inflate a test score?
+3. Label "What is the boiling point of water in Fahrenheit?" under guide v0. Which open decision in the guide does it touch?
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.
