@@ -31,7 +31,7 @@ Altan labels every query with a rationale. Ask a second human to independently a
 
 ## Planned row format and validation
 
-Each JSONL row has the following fields. This schema is documentation until its validator is implemented.
+Each JSONL row has the following fields. `scripts/validate_dataset.py` enforces this schema; the [annotation guide](annotation-guide.md) gives the pilot conventions.
 
 | Field | Meaning |
 | --- | --- |
@@ -45,7 +45,7 @@ Each JSONL row has the following fields. This schema is documentation until its 
 | `annotator_ids` | Pseudonymous annotator identifiers, without contact information. |
 | `annotation_version` | Version of the label guide used. |
 
-The future validator must reject duplicate IDs, empty text, unknown labels, accepted rows with null labels, missing provenance, and absent group IDs. Check exact duplicates after whitespace/case normalization, inspect near duplicates, and merge related groups before splitting. Report class counts, group counts, lengths, source mix, exclusions, and disagreements. Review contradictory labels for related queries. Only accepted rows enter the supervised splits.
+The validator rejects duplicate IDs, empty text, unknown labels, accepted rows with null labels, missing provenance, and absent group IDs. It also rejects exact duplicates after whitespace/case normalization and groups above four rows. It reports status, class, and group counts and lists groups whose accepted rows carry different labels for review. Near-duplicate inspection, merging related groups, length and source-mix reports, and disagreement records are still manual; add them to the validator or the M2 data report when the pilot shows they are needed. Only accepted rows enter the supervised splits.
 
 ## Split responsibilities and leakage controls
 

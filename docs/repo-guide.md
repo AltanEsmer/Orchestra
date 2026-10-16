@@ -14,6 +14,10 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `.python-version` | Selects Python 3.12.13 so a newer system Python does not silently change the runtime. |
 | `uv.lock` | Generated dependency resolution, versions, sources, and distribution hashes. uv uses it during locked setup. It is tracked evidence, not handwritten model logic. |
 | `scripts/smoke.py` | Executable environment assertions on tiny artificial query lists. It prints a success label and runtime versions. It writes no research results. |
+| `scripts/validate_dataset.py` | Reads an annotated JSONL file and the source manifest, prints every schema or provenance error, then prints status, label, and group counts. Exit code 1 means the file is not ready. It does not judge whether a label is correct. |
+| `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts. |
+| `docs/annotation-guide.md` | Draft v0 procedure for choosing a first action, writing and grouping queries, the pilot row conventions, the review method, and decisions Altan must make before v1. |
+| `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, license, and creation date. The license is `null` until Altan chooses one. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
@@ -25,7 +29,7 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `docs/repo-guide.md` | This living explanation of authored files and data flow. |
 | `docs/learning-log.md` | Change explanations, actual verification, questions, and evidence-based understanding status. |
 
-There is no separate unit-test suite yet. The smoke script is the meaningful executable environment check for this preparation. Future behavioral tests belong under `tests/` when the baseline introduces a data validator, split generator, or model code. New files must be added to this guide when created.
+The smoke script checks the environment. Behavioral tests for project code live under `tests/` and run with `uv run --locked python -m unittest discover -s tests`. The validator lives in `scripts/` until the M2 split code needs to share it; then it moves to `src/orchestra/`. New files must be added to this guide when created.
 
 ## The executable flow today
 
@@ -41,7 +45,7 @@ Our code owns fixture selection, call order, and assertions. scikit-learn owns t
 
 Consider "Calculate the increase using the figures in the attached report." Its proposed first action is `document_retrieval`, because the numbers must be read before any calculation. Annotation records that rationale and a group ID shared by related paraphrases.
 
-A future validator accepts the row only after annotation review. A persisted split assigns its whole group to one partition. If the row belongs to validation, the fitted training pipeline transforms it and predicts one of the four actions. The evaluation compares that prediction with the annotated first action. A confidence policy may later abstain. No document is actually retrieved in the initial study.
+The validator now checks the row's fields and provenance. Only rows whose status is `accepted` after annotation review will enter the splits. A persisted split assigns its whole group to one partition. If the row belongs to validation, the fitted training pipeline transforms it and predicts one of the four actions. The evaluation compares that prediction with the annotated first action. A confidence policy may later abstain. No document is actually retrieved in the initial study.
 
 This flow is not executable yet. The first implementation session in the [plan](project-plan.md#first-work-session-after-preparation) defines the next steps and its completion condition.
 
