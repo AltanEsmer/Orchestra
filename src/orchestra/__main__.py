@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 
 from orchestra import experiment
@@ -189,6 +190,9 @@ def run_experiment(args):
     except ValueError as error:
         print(f"ERROR: {error}")
         return 1
+    unset = [v for v in experiment.THREAD_VARS if v not in os.environ]
+    if unset:
+        print(f"WARNING: thread variables not set before start: {', '.join(unset)}")
     for outcome in outcomes:
         print(f"{outcome['id']}: {outcome['status']}")
     if any(o["status"] != "ok" for o in outcomes):
@@ -229,8 +233,8 @@ def select(args):
 
 def report(args):
     try:
-        out, counts = experiment.report(
-            args.run_dir, args.selection, args.train, args.validation, args.out
+        out, counts, selection = experiment.report(
+            args.run_dir, args.selection, args.train, args.validation
         )
     except FileExistsError as error:
         print(f"ERROR: {error.filename} already exists; report needs a new directory")
@@ -240,6 +244,10 @@ def report(args):
         return 1
     for configuration, count in counts.items():
         print(f"{configuration}: {count} validation errors")
+    if not selection["valid"]:
+        reasons = selection["blocking"] + selection["missing"] + selection["unexpected"]
+        print(f"INVALID selection: {', '.join(reasons)}; report written to {out}")
+        return 1
     print(f"PASS: report written to {out}")
     return 0
 
@@ -272,7 +280,6 @@ def main(argv=None):
     report_parser.add_argument("--selection", required=True)
     report_parser.add_argument("--train", required=True)
     report_parser.add_argument("--validation", required=True)
-    report_parser.add_argument("--out", required=True)
     report_parser.set_defaults(run=guarded(report))
     args = parser.parse_args(argv)
     return args.run(args)

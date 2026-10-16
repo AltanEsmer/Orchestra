@@ -290,6 +290,47 @@ class ConvergenceRetryTest(RunTestCase):
         self.assertEqual(len(bad["attempts"]), 2)
         self.assertIn("InvalidParameterError", bad["attempts"][0]["error"])
         self.assertEqual(bad["status"], "failed")
+        self.assertEqual([a["max_iter"] for a in bad["attempts"]], [100, 1000])
+
+    def test_whole_family_reruns_when_one_member_warns(self):
+        family = {
+            **experiment.FAMILIES["L2"],
+            "build": lambda C, n: experiment.build_l2(C, n or (1 if C == 10 else 100)),
+        }
+        entries = [{"family": "L2", "C": 0.1}, {"family": "L2", "C": 10}]
+        self.config_path.write_text(
+            json.dumps({**self.config(), "configurations": entries})
+        )
+        with mock.patch.dict(experiment.FAMILIES, {"L2": family}):
+            self.assertEqual(self.run_id("a")[0], 0)
+        calm, warned = self.result("a", "outcomes.json")
+        self.assertEqual([a["max_iter"] for a in calm["attempts"]], [100, 1000])
+        self.assertEqual([a["converged"] for a in calm["attempts"]], [True, True])
+        self.assertEqual([a["max_iter"] for a in warned["attempts"]], [1, 1000])
+        self.assertEqual((calm["status"], warned["status"]), ("ok", "ok"))
+
+    def test_retry_limits_are_1000_for_logistic_and_10000_for_svm(self):
+        for family_id, expected in (("L1", 1000), ("L3", 1000), ("S1", 10000)):
+            real = experiment.FAMILIES[family_id]
+            family = {**real, "build": lambda C, n, b=real["build"]: b(C, n or 1)}
+            entries = [{"family": family_id, "C": 1}]
+            self.config_path.write_text(
+                json.dumps({**self.config(), "configurations": entries})
+            )
+            with mock.patch.dict(experiment.FAMILIES, {family_id: family}):
+                code, _ = self.run_id(family_id)
+            self.assertEqual(code, 0, family_id)
+            (outcome,) = self.result(family_id, "outcomes.json")
+            self.assertEqual(
+                [a["max_iter"] for a in outcome["attempts"]], [1, expected]
+            )
+            self.assertEqual(
+                outcome["attempts"][0]["warnings"][0]["category"],
+                "ConvergenceWarning",
+            )
+        params = self.result("S1", "config.json")["resolved_params"]["S1-C1"]
+        self.assertEqual(params["classifier"]["dual"], "auto")
+        self.assertEqual(params["classifier"]["max_iter"], 10000)
 
 
 class ArtifactTest(RunTestCase):
@@ -602,6 +643,17 @@ def write_run(directory, spec, run_id="fx", blocked=None):
     )
 
 
+def full_spec(**overrides):
+    """All 14 required configurations ok at macro-F1 0.5 unless overridden."""
+    spec = {}
+    for cid in experiment.REQUIRED_IDS:
+        family, _, c = cid.partition("-C")
+        spec[cid] = (family, float(c) if c else None, "ok", 0.5, 0.1)
+    for key, value in overrides.items():
+        spec[key.replace("_C", "-C")] = value
+    return spec
+
+
 class SelectionTest(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
@@ -613,8 +665,10 @@ class SelectionTest(unittest.TestCase):
         return experiment.select(self.root / "run")
 
     def test_tie_within_tolerance_picks_smallest_c(self):
+        # 0.80 - 0.79 is exactly the inclusive tolerance.
         selection = self.select(
             {
+                **full_spec(),
                 "L2-C0.1": ("L2", 0.1, "ok", 0.795, 0.1),
                 "L2-C1": ("L2", 1, "ok", 0.80, 0.1),
                 "L2-C10": ("L2", 10, "ok", 0.79, 0.1),
@@ -624,10 +678,12 @@ class SelectionTest(unittest.TestCase):
         self.assertEqual(family["tie_set"], ["L2-C0.1", "L2-C1", "L2-C10"])
         self.assertEqual(family["chosen"], "L2-C0.1")
         self.assertIs(selection["valid"], True)
+        self.assertIs(selection["complete_matrix"], True)
 
     def test_gap_of_0_011_is_not_a_tie(self):
         selection = self.select(
             {
+                **full_spec(),
                 "L2-C0.1": ("L2", 0.1, "ok", 0.789, 0.1),
                 "L2-C1": ("L2", 1, "ok", 0.80, 0.1),
             }
@@ -639,7 +695,7 @@ class SelectionTest(unittest.TestCase):
     def test_failed_configuration_invalidates_and_stays_listed(self):
         selection = self.select(
             {
-                "B0": ("B0", None, "ok", 0.1, 0.1),
+                **full_spec(),
                 "L2-C1": ("L2", 1, "unresolved_warning", 0.9, 0.1),
                 "L2-C10": ("L2", 10, "failed", None, 0.1),
             }
@@ -650,13 +706,34 @@ class SelectionTest(unittest.TestCase):
         self.assertIsNone(selection["families"]["B0"]["chosen"])
         self.assertIsNone(selection["overall"]["chosen"])
 
+    def test_incomplete_matrix_is_invalid_and_lists_missing(self):
+        selection = self.select(
+            {
+                "B0": ("B0", None, "ok", 0.1, 0.1),
+                "L2-C1": ("L2", 1, "ok", 0.8, 0.1),
+            }
+        )
+        self.assertIs(selection["valid"], False)
+        self.assertIs(selection["complete_matrix"], False)
+        self.assertEqual(selection["blocking"], [])
+        self.assertEqual(len(selection["missing"]), 12)
+        self.assertIn("S1-C0.1", selection["missing"])
+        self.assertNotIn("L2-C1", selection["missing"])
+        self.assertIsNone(selection["overall"]["chosen"])
+
+    def test_extra_configuration_is_invalid(self):
+        spec = {**full_spec(), "L2-C100": ("L2", 100, "ok", 0.5, 0.1)}
+        selection = self.select(spec)
+        self.assertIs(selection["valid"], False)
+        self.assertEqual(selection["unexpected"], ["L2-C100"])
+
     def test_overall_tie_prefers_the_simpler_family_over_latency(self):
         selection = self.select(
             {
+                **full_spec(),
                 "L3-C1": ("L3", 1, "ok", 0.80, 0.001),
                 "S1-C1": ("S1", 1, "ok", 0.795, 0.002),
                 "L2-C1": ("L2", 1, "ok", 0.79, 0.9),
-                "B0": ("B0", None, "ok", 0.20, 0.0),
             }
         )
         self.assertEqual(selection["overall"]["tie_set"], ["L2-C1", "S1-C1", "L3-C1"])
@@ -666,6 +743,7 @@ class SelectionTest(unittest.TestCase):
     def test_overall_gap_beyond_tolerance_keeps_only_the_best_winner(self):
         selection = self.select(
             {
+                **full_spec(),
                 "L1-C1": ("L1", 1, "ok", 0.70, 0.1),
                 "L3-C1": ("L3", 1, "ok", 0.80, 0.1),
             }
@@ -675,7 +753,7 @@ class SelectionTest(unittest.TestCase):
     def test_cli_writes_invalid_selection_and_exits_1_and_refuses_overwrite(self):
         write_run(
             self.root / "run",
-            {"B0": ("B0", None, "failed", None, 0.1)},
+            {**full_spec(), "B0": ("B0", None, "failed", None, 0.1)},
         )
         out = self.root / "selection.json"
         with contextlib.redirect_stdout(io.StringIO()) as output:
@@ -696,18 +774,11 @@ class SelectionTest(unittest.TestCase):
 class ReportTest(RunTestCase):
     def setUp(self):
         super().setUp()
-        config = {
-            **self.config(),
-            "configurations": [
-                {"family": "B0"},
-                {"family": "B1"},
-                {"family": "L1", "C": 1},
-                {"family": "L2", "C": 1},
-                {"family": "S1", "C": 1},
-                {"family": "L3", "C": 1},
-            ],
-        }
-        self.config_path.write_text(json.dumps(config))
+        path = Path(__file__).resolve().parents[1] / "configs" / "m3.json"
+        entries = json.loads(path.read_text())["configurations"]
+        self.config_path.write_text(
+            json.dumps({**self.config(), "configurations": entries})
+        )
         self.assertEqual(self.run_id("a")[0], 0)
         self.run_dir = self.root / "results/a"
         self.selection = self.root / "selection.json"
@@ -718,50 +789,49 @@ class ReportTest(RunTestCase):
             0,
         )
 
-    def report(self, out, validation=None):
+    def report(self, validation=None, run_dir=None, selection=None):
         return self.cli(
             "report",
             "--run",
-            str(self.run_dir),
+            str(run_dir or self.run_dir),
             "--selection",
-            str(self.selection),
+            str(selection or self.selection),
             "--train",
             str(self.root / "train.jsonl"),
             "--validation",
             str(validation or self.root / "validation.jsonl"),
-            "--out",
-            str(self.root / out),
         )
 
     def test_report_is_byte_identical_and_fits_nothing(self):
+        out = self.root / "results/a-report"
         with mock.patch(
             "sklearn.pipeline.Pipeline.fit", side_effect=AssertionError("fit called")
         ):
-            first = self.report("r1")
-            second = self.report("r2")
-        self.assertEqual(first[0], 0)
-        self.assertEqual(second[0], 0)
-        self.assertTrue(first[1].endswith(f"PASS: report written to {self.root}/r1\n"))
+            first = self.report()
+            saved = self.root / "first"
+            out.rename(saved)
+            second = self.report()
+        self.assertEqual((first[0], second[0]), (0, 0))
+        self.assertTrue(first[1].endswith(f"PASS: report written to {out}\n"))
         for name in ("comparison.md", "errors.jsonl"):
-            self.assertEqual(
-                (self.root / "r1" / name).read_bytes(),
-                (self.root / "r2" / name).read_bytes(),
-            )
-        text = (self.root / "r1/comparison.md").read_text()
+            self.assertEqual((saved / name).read_bytes(), (out / name).read_bytes())
+        text = (out / "comparison.md").read_text()
         self.assertIn("# Validation comparison for run `a`", text)
         self.assertIn("| B0 | ok | 0.3000 | ", text)
+        self.assertIn("| L3-C10 | ok | ", text)
         self.assertIn("### L2 vs L3: phrase features", text)
         self.assertIn("| document_retrieval | 6 | 4 | 4 | 4 |", text)
         self.assertIn("| document_retrieval | 3 | 5 | 5 | 5 |", text)
-        self.assertIn("tie set B1, L1-C1, L2-C1, S1-C1, L3-C1.", text)
         self.assertIn("Source: run `a`, `confusion.json`", text)
 
     def test_errors_cover_selected_configs_sorted_with_text(self):
-        code, output = self.report("r1")
+        code, output = self.report()
         self.assertEqual(code, 0)
         errors = [
             json.loads(x)
-            for x in (self.root / "r1/errors.jsonl").read_text().splitlines()
+            for x in (self.root / "results/a-report/errors.jsonl")
+            .read_text()
+            .splitlines()
         ]
         selected = {
             f["chosen"]
@@ -769,25 +839,43 @@ class ReportTest(RunTestCase):
         }
         self.assertEqual({e["configuration"] for e in errors} - selected, set())
         self.assertEqual(
-            [e["query_id"] for e in errors],
-            sorted(e["query_id"] for e in errors),
+            [e["query_id"] for e in errors], sorted(e["query_id"] for e in errors)
         )
         self.assertTrue(all("zzheldoutzz" in e["text"] for e in errors))
         self.assertTrue(all(e["label"] != e["prediction"] for e in errors))
         self.assertIn("B0: 7 validation errors", output)
         self.assertNotIn("zzheldoutzz", output)
 
+    def test_report_has_no_out_option(self):
+        with (
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(SystemExit),
+        ):
+            self.cli(
+                "report",
+                "--run",
+                "r",
+                "--selection",
+                "s",
+                "--train",
+                "t",
+                "--validation",
+                "v",
+                "--out",
+                str(self.root / "x"),
+            )
+
     def test_refuses_validation_file_that_differs_from_provenance(self):
         other = self.root / "other.jsonl"
         other.write_text((self.root / "validation.jsonl").read_text() + "\n")
-        code, output = self.report("r1", validation=other)
+        code, output = self.report(validation=other)
         self.assertEqual(code, 1)
         self.assertIn("does not match run a validation_sha256", output)
-        self.assertFalse((self.root / "r1").exists())
+        self.assertFalse((self.root / "results/a-report").exists())
 
     def test_refuses_existing_output_directory(self):
-        (self.root / "r1").mkdir()
-        code, output = self.report("r1")
+        (self.root / "results/a-report").mkdir()
+        code, output = self.report()
         self.assertEqual(code, 1)
         self.assertIn("already exists; report needs a new directory", output)
 
@@ -795,9 +883,46 @@ class ReportTest(RunTestCase):
         selection = json.loads(self.selection.read_text())
         selection["overall"]["chosen"] = "B0"
         self.selection.write_text(json.dumps(selection))
-        code, output = self.report("r1")
+        code, output = self.report()
         self.assertEqual(code, 1)
         self.assertIn("does not match the selection of run a", output)
+
+    def test_invalid_selection_still_writes_files_but_exits_1(self):
+        config = {**self.config(), "configurations": CONFIGURATIONS}
+        self.config_path.write_text(json.dumps(config))
+        self.assertEqual(self.run_id("b")[0], 0)
+        run_b, selection_b = self.root / "results/b", self.root / "selection-b.json"
+        code, _ = self.cli("select", "--run", str(run_b), "--out", str(selection_b))
+        self.assertEqual(code, 1)
+        code, output = self.report(run_dir=run_b, selection=selection_b)
+        self.assertEqual(code, 1)
+        self.assertIn("INVALID selection: ", output)
+        self.assertIn("S1-C10", output)
+        text = (self.root / "results/b-report/comparison.md").read_text()
+        self.assertTrue(text.startswith("# INVALID selection: Validation comparison"))
+        self.assertTrue((self.root / "results/b-report/errors.jsonl").is_file())
+
+
+class ThreadWarningTest(RunTestCase):
+    def test_run_warns_when_a_thread_variable_is_unset(self):
+        env = {k: "1" for k in experiment.THREAD_VARS}
+        del env["VECLIB_MAXIMUM_THREADS"]
+        with mock.patch.dict(os.environ, env, clear=True):
+            code, output = self.run_id("a")
+        self.assertEqual(code, 0)
+        self.assertIn(
+            "WARNING: thread variables not set before start: VECLIB_MAXIMUM_THREADS\n",
+            output,
+        )
+        provenance = self.result("a", "provenance.json")
+        self.assertIsNone(provenance["thread_env"]["VECLIB_MAXIMUM_THREADS"])
+        self.assertIsInstance(provenance["threadpools"], list)
+
+    def test_no_warning_when_all_set(self):
+        env = {k: "1" for k in experiment.THREAD_VARS}
+        with mock.patch.dict(os.environ, env, clear=True):
+            _, output = self.run_id("a")
+        self.assertNotIn("WARNING", output)
 
 
 if __name__ == "__main__":

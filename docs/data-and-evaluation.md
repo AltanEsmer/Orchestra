@@ -92,7 +92,7 @@ Add one frozen sentence-embedding representation plus logistic regression at the
 
 Select by validation macro-F1. Break ties within 0.01 by lower complexity, then prediction latency, recording the rule before comparing. Report each family's validation selection. Freeze the selected systems for one final test pass so classifier and feature comparisons remain visible. Do not choose a new winner by test score. Seeds 7 and 21 are optional training/validation-only stability checks with the original test groups held fixed.
 
-For M3, make that tie rule deterministic. Within each family, form the candidates within 0.01 of its best validation macro-F1 and prefer the smallest C. For an optional overall choice among tied family winners, use the declared simplicity order B0, B1, L1, L2, S1, L3. This is an explanatory and computational preference, not a theorem about model complexity. Use median prediction latency only if earlier keys tie, then configuration ID. Preserve per-family selections and matched-C comparisons regardless of the overall choice.
+For M3, make that tie rule deterministic. Within each family, form the candidates within 0.01 (inclusive) of its best validation macro-F1 and prefer the smallest C. For an optional overall choice among tied family winners, use the declared simplicity order B0, B1, L1, L2, S1, L3. This is an explanatory and computational preference, not a theorem about model complexity. Use median prediction latency only if earlier keys tie, then configuration ID. Preserve per-family selections and matched-C comparisons regardless of the overall choice.
 
 ## Metrics, confidence, and errors
 

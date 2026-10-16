@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy
 import scipy
 import sklearn
+import threadpoolctl
 from sklearn.dummy import DummyClassifier
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -50,7 +51,15 @@ PATH_KEYS = (
     "split_manifest",
     "results_dir",
 )
-THREAD_VARS = ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")
+THREAD_VARS = (
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+)
+REQUIRED_IDS = ["B0", "B1"] + [
+    f"{family}-C{c:g}" for family in ("L1", "L2", "S1", "L3") for c in (0.1, 1, 10)
+]
 
 
 TOKEN_SETTINGS = {
@@ -140,10 +149,30 @@ def build_s1(C, max_iter):
 FAMILIES = {
     "B0": {"build": build_b0, "retry_max_iter": None, "score": "probability"},
     "B1": {"build": build_b1, "retry_max_iter": None, "score": "probability"},
-    "L1": {"build": build_l1, "retry_max_iter": 1000, "score": "probability"},
-    "L2": {"build": build_l2, "retry_max_iter": 1000, "score": "probability"},
-    "S1": {"build": build_s1, "retry_max_iter": 10000, "score": "margin"},
-    "L3": {"build": build_l3, "retry_max_iter": 1000, "score": "probability"},
+    "L1": {
+        "max_iter": 100,
+        "build": build_l1,
+        "retry_max_iter": 1000,
+        "score": "probability",
+    },
+    "L2": {
+        "max_iter": 100,
+        "build": build_l2,
+        "retry_max_iter": 1000,
+        "score": "probability",
+    },
+    "S1": {
+        "max_iter": 1000,
+        "build": build_s1,
+        "retry_max_iter": 10000,
+        "score": "margin",
+    },
+    "L3": {
+        "max_iter": 100,
+        "build": build_l3,
+        "retry_max_iter": 1000,
+        "score": "probability",
+    },
 }
 
 
@@ -354,6 +383,7 @@ def provenance(config, manifest, started, rows):
         "numpy": numpy.__version__,
         "scipy": scipy.__version__,
         "thread_env": {name: os.environ.get(name) for name in THREAD_VARS},
+        "threadpools": json_safe(threadpoolctl.threadpool_info()),
         "started_utc": started,
         "ended_utc": now(),
     }
@@ -363,7 +393,9 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
 
 
-def try_fit(entry, train, validation, max_iter, results, errors):
+def try_fit(entry, train, validation, max_iter, results, errors, tried):
+    # The limit actually used: the retry limit, else the family's own default.
+    tried[entry["id"]] = max_iter or FAMILIES[entry["family"]].get("max_iter")
     try:
         results[entry["id"]] = fit_predict(entry, train, validation, max_iter)
     except Exception as error:  # noqa: BLE001 - a failed configuration must not stop the run
@@ -382,10 +414,10 @@ def run(config, run_id):
     out.mkdir(parents=True)  # refuses an existing run directory
 
     results = {}
-    errors = {}
+    errors, tried = {}, {}
     attempts = {c["id"]: [] for c in configurations}
     for entry in configurations:
-        try_fit(entry, train, validation, None, results, errors)
+        try_fit(entry, train, validation, None, results, errors, tried)
     # A family that did not converge is refit as a whole at the retry limit.
     for family, spec in FAMILIES.items():
         members = [c for c in configurations if c["family"] == family]
@@ -403,13 +435,21 @@ def run(config, run_id):
             else:  # the first attempt raised; keep it, then retry with the family
                 attempts[cid].append(
                     {
-                        "max_iter": None,
+                        "max_iter": tried[cid],
                         "converged": False,
                         "warnings": [],
                         "error": errors.pop(cid),
                     }
                 )
-            try_fit(entry, train, validation, spec["retry_max_iter"], results, errors)
+            try_fit(
+                entry,
+                train,
+                validation,
+                spec["retry_max_iter"],
+                results,
+                errors,
+                tried,
+            )
 
     outcomes, all_metrics, all_confusion, all_warnings, timing = [], {}, {}, {}, {}
     resolved, lines = {}, []
@@ -421,7 +461,7 @@ def run(config, run_id):
             status = "failed"
             attempts[cid].append(
                 {
-                    "max_iter": None,
+                    "max_iter": tried[cid],
                     "converged": False,
                     "warnings": [],
                     "error": errors[cid],
@@ -604,11 +644,14 @@ SELECTION_TOLERANCE = 0.01
 SIMPLICITY_ORDER = ("B0", "B1", "L1", "L2", "S1", "L3")
 SELECTION_RULES = (
     "Per family: candidates are configurations with status ok. The tie set is every "
-    "candidate whose validation macro-F1 is within 0.01 of the family best; choose "
+    "candidate whose validation macro-F1 is within 0.01 (inclusive) of the family best; choose "
     "the smallest C (a family without C has one member). Overall: among family "
-    "winners within 0.01 of the best winner, prefer B0, B1, L1, L2, S1, L3 in that "
+    "winners within 0.01 (inclusive) of the best winner, prefer B0, B1, L1, L2, S1, L3 in that "
     "order, then lower median prediction latency, then configuration ID. Any "
-    "configuration that is not ok makes the selection invalid and nothing is chosen."
+    "configuration that is not ok, or a run that is not exactly the 14 required "
+    "configurations, makes the selection invalid and nothing is chosen. With one winner "
+    "per family the latency and ID keys cannot decide an overall tie; the protocol "
+    "declares them anyway."
 )
 
 
@@ -630,7 +673,11 @@ def select(run_dir):
         if status.get(e["id"]) == "ok"
     }
     blocking = [e["id"] for e in entries if e["id"] not in scores_by_id]
-    valid = bool(entries) and not blocking
+    resolved_ids = [e["id"] for e in entries]
+    missing = [cid for cid in REQUIRED_IDS if cid not in resolved_ids]
+    unexpected = [cid for cid in resolved_ids if cid not in REQUIRED_IDS]
+    complete_matrix = not missing and not unexpected
+    valid = complete_matrix and not blocking
     c_of = {e["id"]: e["C"] for e in entries}
     latency = {
         cid: t["latency"]["median_seconds"]
@@ -675,6 +722,9 @@ def select(run_dir):
     return {
         "valid": valid,
         "blocking": blocking,
+        "complete_matrix": complete_matrix,
+        "missing": missing,
+        "unexpected": unexpected,
         "rules": {
             "text": SELECTION_RULES,
             "tolerance": SELECTION_TOLERANCE,
@@ -733,7 +783,7 @@ def fraction(value):
     return "-" if value is None else f"{value:.4f}"
 
 
-def report(run_dir, selection_path, train_path, validation_path, out_dir):
+def report(run_dir, selection_path, train_path, validation_path):
     """Write comparison.md and errors.jsonl from saved files; nothing is fitted."""
     run, problems = load_run(run_dir)
     if problems:
@@ -755,15 +805,18 @@ def report(run_dir, selection_path, train_path, validation_path, out_dir):
     train = load_rows(train_path, "train")
     validation = load_rows(validation_path, "validation")
     texts = {r["query_id"]: r["text"] for r in validation}
-    out = Path(out_dir)
-    out.mkdir(parents=True)
+    # A sibling of the run directory: results/ is untracked and errors.jsonl holds text.
+    out = Path(run_dir).parent / f"{run_id}-report"
+    out.mkdir()
 
     metrics_ = run["metrics.json"]
     timing = run["timing.json"]["configurations"]
     configs = selection["configurations"]
     cite = f"Source: run `{run_id}`"
+    flag = "INVALID selection: " if not selection["valid"] else ""
+    heading = f"# {flag}Validation comparison for run `{run_id}`\n"
     md = [
-        f"# Validation comparison for run `{run_id}`\n",
+        heading,
         (
             f"Validation only. Selection valid: `{selection['valid']}`. "
             f"Dataset sha256 `{prov['manifest_dataset_sha256']}`, split manifest "
@@ -772,6 +825,14 @@ def report(run_dir, selection_path, train_path, validation_path, out_dir):
     ]
     if selection["blocking"]:
         md.append("Blocking configurations: " + ", ".join(selection["blocking"]) + "\n")
+    if selection["missing"] or selection["unexpected"]:
+        md.append(
+            "Missing configurations: "
+            + (", ".join(selection["missing"]) or "none")
+            + ". Unexpected: "
+            + (", ".join(selection["unexpected"]) or "none")
+            + ".\n"
+        )
 
     rows = []
     for cid, info in configs.items():
@@ -896,4 +957,4 @@ def report(run_dir, selection_path, train_path, validation_path, out_dir):
     (out / "errors.jsonl").write_text(
         "".join(json.dumps(e) + "\n" for e in errors), encoding="utf-8"
     )
-    return out, counts
+    return out, counts, selection
