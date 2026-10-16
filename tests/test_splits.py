@@ -11,7 +11,7 @@ import sklearn
 
 from orchestra.__main__ import main
 from orchestra.data import LABELS
-from orchestra.splits import FOLD_PARTITION, check_split, make_split
+from orchestra.splits import check_split, make_split
 
 SOURCES = {"fixture": {"author": "test", "license": None, "created": "2026-10-01"}}
 DIGEST = "a" * 64
@@ -82,25 +82,19 @@ class MakeSplitTest(unittest.TestCase):
             labels = {r["label"] for r in self.rows if r["group_id"] == group}
             self.assertEqual(len(labels), 2)
 
-    def test_fold_three_is_validation_and_fold_four_is_test(self):
-        # Re-derive folds with the library and check literal assignment.
-        from sklearn.model_selection import StratifiedGroupKFold
-
-        rows = sorted(self.rows, key=lambda r: r["query_id"])
-        y = [r["label"] for r in rows]
-        g = [r["group_id"] for r in rows]
-        folds = list(
-            StratifiedGroupKFold(5, shuffle=True, random_state=42).split(y, y, g)
-        )
-        where = partition_of(self.manifest)
-        for index in folds[3][1]:
-            self.assertEqual(where[rows[index]["query_id"]], "validation")
-        for index in folds[4][1]:
-            self.assertEqual(where[rows[index]["query_id"]], "test")
-        for fold in (0, 1, 2):
-            for index in folds[fold][1]:
-                self.assertEqual(where[rows[index]["query_id"]], "train")
-        self.assertEqual(FOLD_PARTITION[3], "validation")
+    def test_literal_validation_and_test_membership(self):
+        partitions = self.manifest["partitions"]
+        self.assertEqual(
+            partitions["validation"],
+            ["cal-g5-0", "cal-g5-1", "dir-g5-0", "dir-g5-1", "doc-g0-0",
+             "doc-g0-1", "doc-g2-0", "doc-g2-1", "kno-g4-0", "kno-g4-1"],
+        )  # fmt: skip
+        self.assertEqual(
+            partitions["test"],
+            ["cal-g2-0", "cal-g2-1", "dir-g3-0", "dir-g3-1", "doc-g5-0",
+             "doc-g5-1", "kno-g1-0", "kno-g1-1"],
+        )  # fmt: skip
+        self.assertEqual(len(partitions["train"]), 30)
 
     def test_input_order_does_not_change_manifest(self):
         shuffled = copy.deepcopy(self.rows)
@@ -131,6 +125,41 @@ class MakeSplitTest(unittest.TestCase):
         ):
             make_split(rows, DIGEST)
 
+    def test_refuses_partition_missing_a_class(self):
+        # Mixed-label groups 2-0 and 2-3 leave validation without calculation.
+        spec = [
+            ("0-2-2", "document_retrieval"),
+            ("0-3-2", "document_retrieval"),
+            ("1-0-2", "knowledge_lookup"),
+            ("1-3-2", "knowledge_lookup"),
+            ("1-4-1", "knowledge_lookup"),
+            ("1-5-1", "knowledge_lookup"),
+            ("2-0-0", "calculation"),
+            ("2-0-1", "document_retrieval"),
+            ("2-0-2", "direct_answer"),
+            ("2-1-0", "calculation"),
+            ("2-2-3", "calculation"),
+            ("2-3-0", "document_retrieval"),
+            ("2-3-1", "knowledge_lookup"),
+            ("2-3-2", "calculation"),
+            ("2-4-0", "calculation"),
+            ("3-0-0", "document_retrieval"),
+            ("3-1-0", "direct_answer"),
+            ("3-2-1", "direct_answer"),
+            ("3-3-0", "direct_answer"),
+            ("3-4-1", "direct_answer"),
+        ]
+        rows = [
+            {"query_id": q, "group_id": q[:3], "label": label, "status": "accepted"}
+            for q, label in spec
+        ]
+        with self.assertRaisesRegex(
+            ValueError,
+            "partition validation has no rows for class calculation; "
+            "collect more groups instead of searching seeds",
+        ):
+            make_split(rows, DIGEST)
+
 
 class CheckSplitTest(unittest.TestCase):
     def setUp(self):
@@ -138,7 +167,7 @@ class CheckSplitTest(unittest.TestCase):
         self.manifest = make_split(self.rows, DIGEST)
 
     def check(self, manifest, rows=None, digest=DIGEST):
-        return check_split(manifest, rows or self.rows, digest)
+        return check_split(manifest, rows if rows is not None else self.rows, digest)
 
     def test_rejects_stale_hash(self):
         self.assertEqual(
@@ -208,6 +237,36 @@ class CheckSplitTest(unittest.TestCase):
         rows[0]["status"] = "needs_review"
         errors = self.check(self.manifest, rows)
         self.assertIn(f"{rows[0]['query_id']}: needs_review row in dataset", errors)
+
+    def test_rejects_non_string_ids_without_crashing(self):
+        malformed = "manifest partitions or groups are malformed"
+        for bad in (["x"], {"x": 1}, 7):
+            m = copy.deepcopy(self.manifest)
+            m["partitions"]["train"].append(bad)
+            self.assertEqual(self.check(m), [malformed])
+        m = copy.deepcopy(self.manifest)
+        m["groups"]["x"] = 5
+        self.assertEqual(self.check(m), [malformed])
+
+    def test_rejects_wrong_counts_and_constants(self):
+        m = copy.deepcopy(self.manifest)
+        m["counts"]["train"]["calculation"] += 1
+        self.assertEqual(
+            self.check(m), ["manifest counts differ from the counts of its partitions"]
+        )
+        m = copy.deepcopy(self.manifest)
+        m["n_splits"] = 3
+        self.assertEqual(self.check(m), ["manifest n_splits is 3, expected 5"])
+        m = copy.deepcopy(self.manifest)
+        m["fold_partition"]["3"] = "test"
+        self.assertEqual(len(self.check(m)), 1)
+
+    def test_rejects_extra_groups_key(self):
+        m = copy.deepcopy(self.manifest)
+        m["groups"]["ghost"] = "gx"
+        self.assertEqual(
+            self.check(m), ["ghost: manifest group for a row that is not accepted"]
+        )
 
     def test_rejects_group_mapping_disagreement(self):
         m = copy.deepcopy(self.manifest)
@@ -279,6 +338,29 @@ class SplitCliTest(unittest.TestCase):
         code, output = self.run_split()
         self.assertEqual(code, 1)
         self.assertIn("exists and differs; manifests are immutable", output)
+
+    def test_refuses_sealed_test_sharing_a_path_or_directory(self):
+        for changes in (
+            {"sealed_test": str(self.root / "out" / "train.jsonl")},
+            {"sealed_test": str(self.root / "out" / "test.jsonl")},
+        ):
+            self.write_config(**changes)
+            code, output = self.run_split()
+            self.assertEqual(code, 1)
+            self.assertIn("must be distinct files", output)
+            self.assertFalse((self.root / "splits").exists())
+
+    def test_reports_bad_config_without_traceback(self):
+        config = json.loads(self.config.read_text())
+        del config["seed"]
+        self.config.write_text(json.dumps(config))
+        self.assertEqual(self.run_split(), (1, "ERROR: config is missing 'seed'\n"))
+        missing = self.root / "nope.jsonl"
+        self.write_config(dataset=str(missing))
+        self.assertEqual(
+            self.run_split(),
+            (1, f"ERROR: cannot read {missing}: No such file or directory\n"),
+        )
 
     def test_refuses_needs_review_dataset(self):
         rows = copy.deepcopy(self.rows)

@@ -97,10 +97,20 @@ def check_split(manifest, rows, dataset_sha256):
         or set(parts) != set(PARTITIONS)
         or not all(isinstance(ids, list) for ids in parts.values())
         or not isinstance(manifest["groups"], dict)
+        or not all(isinstance(q, str) for ids in parts.values() for q in ids)
+        or not all(isinstance(g, str) for g in manifest["groups"].values())
     ):
         return ["manifest partitions or groups are malformed"]
 
     errors = []
+    for key, expected in (
+        ("algorithm", "StratifiedGroupKFold"),
+        ("n_splits", N_SPLITS),
+        ("fold_partition", {str(k): v for k, v in FOLD_PARTITION.items()}),
+        ("class_order", list(LABELS)),
+    ):
+        if manifest[key] != expected:
+            errors.append(f"manifest {key} is {manifest[key]!r}, expected {expected!r}")
     if manifest["dataset_sha256"] != dataset_sha256:
         errors.append("stale dataset hash: manifest does not match the dataset file")
     for row in rows:
@@ -118,6 +128,15 @@ def check_split(manifest, rows, dataset_sha256):
     for query_id, row in sorted(accepted.items()):
         if manifest["groups"].get(query_id) != row["group_id"]:
             errors.append(f"{query_id}: manifest group disagrees with dataset")
+
+    for query_id in sorted(set(manifest["groups"]) - set(accepted)):
+        errors.append(f"{query_id}: manifest group for a row that is not accepted")
+    recomputed = {
+        name: _counts(accepted, [q for q in ids if q in accepted])
+        for name, ids in parts.items()
+    }
+    if manifest["counts"] != recomputed:
+        errors.append("manifest counts differ from the counts of its partitions")
 
     where = {}
     for name, ids in parts.items():

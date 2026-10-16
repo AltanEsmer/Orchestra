@@ -39,5 +39,6 @@ Observed on this fixture: proportions are 62.5/20.8/16.7, not exactly 60/20/20, 
 
 - Sealing is a workflow boundary, not encryption. The splitter and the data steward read all rows; that exposure must be recorded when real data is split. Developers may check hashes, membership, and aggregate counts only.
 - The CLI prints counts and proportions, never query text.
-- The "partition lacks a class" guard in `make_split` is defensive; no small input was found that passes the five-groups-per-class check yet leaves a partition without a class, so it is covered through `check_split` only.
+- The "partition lacks a class" guard in `make_split` is reachable when groups mix labels. A literal 20-row input (found by random search over 5-6 groups per class and shrunk by hand-run row removal) makes validation lack `calculation`; `make_split` refuses it, and a test pins the message. The guard stops the split instead of searching seeds.
+- The CLI refuses unless train, validation and sealed test are three distinct files and the sealed file is not in the train or validation directory. Config or file errors print `ERROR: ...` and exit 1.
 - The splitter has not run on accepted M1 data. That depends on P1's human evidence (labels, review ledger, licenses).

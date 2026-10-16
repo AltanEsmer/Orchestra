@@ -6,12 +6,28 @@ from orchestra.data import file_sha256, read_jsonl, validate
 from orchestra.splits import check_split, make_split, materialize
 
 
-def split(args):
+def run_split(args):
     with open(args.config, encoding="utf-8") as file:
         config = json.load(file)
+    outputs = [
+        Path(config[k]).resolve() for k in ("train", "validation", "sealed_test")
+    ]
+    train, validation, sealed = outputs
+    if len(set(outputs)) < 3 or any(
+        d in sealed.parents for d in (train.parent, validation.parent)
+    ):
+        print(
+            "ERROR: train, validation and sealed_test must be distinct files, "
+            "and sealed_test must not sit in the train or validation directory"
+        )
+        return 1
     rows, errors = read_jsonl(config["dataset"])
     with open(config["sources"], encoding="utf-8") as file:
-        errors += validate(rows, json.load(file))
+        sources = json.load(file)
+    if not isinstance(sources, dict):
+        print(f"ERROR: {config['sources']}: must be a JSON object")
+        return 1
+    errors += validate(rows, sources)
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
@@ -50,6 +66,20 @@ def split(args):
     )
     print(f"PASS: split written to {path}")
     return 0
+
+
+def split(args):
+    try:
+        return run_split(args)
+    except OSError as error:
+        print(f"ERROR: cannot read {error.filename}: {error.strerror}")
+    except json.JSONDecodeError as error:
+        print(f"ERROR: invalid JSON: {error}")
+    except KeyError as error:
+        print(f"ERROR: config is missing {error}")
+    except (TypeError, AttributeError):
+        print("ERROR: config values have the wrong type")
+    return 1
 
 
 def main(argv=None):
