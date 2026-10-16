@@ -1,0 +1,57 @@
+# Annotation guide v0
+
+Status: draft for the M1 pilot, prepared on October 16, 2026. Altan freezes v1 after the 40-query pilot review. The [data protocol](data-and-evaluation.md#prediction-contract) defines the labels and remains authoritative if this guide disagrees with it. This guide turns those definitions into a repeatable procedure. It contains no dataset rows.
+
+## Choose the first action
+
+Read only the query text. Assume a named-document retriever, a structured knowledge lookup, and a calculator exist. Ask these questions in order and stop at the first decisive answer.
+
+1. Can a reader choose an action from the text alone? If the request leaves out which document, item, or source it means, mark it `needs_review` with the reason "missing context". If it needs live or external information that none of the three tools provides, mark it `excluded`.
+2. Which actions does the request need? Retrieval applies when the query identifies a document or passage to read. Lookup applies when it identifies a record in a structured source. Calculation applies when it asks for a numeric result. Direct answering applies when it asks for an explanation or rewrite that needs none of the tools.
+3. If only one action applies, that action is the label.
+4. If several apply, label the one whose output another action needs. Reading a report before calculating from its figures gives `document_retrieval`. If no action must come first, mark the query `needs_review` with the reason "no unique first action".
+
+Record the result in one sentence of the form "First action is X because Y." For an excluded or unresolved query, the rationale gives the reason instead. Never put the label or the rationale into the query text.
+
+## Write and group queries
+
+Write new queries rather than copying the examples in the protocol, so those examples stay available for teaching. Use fictional documents, catalogs, people, and records. Vary wording so one trigger word does not identify a label. Include hard negatives, such as a query that mentions numbers but asks for an explanation. Keep numbers and negations as written.
+
+A group is one scenario. Paraphrases and small variants of the same request share a `group_id`, even when they were written on different days. Keep at most four rows per group. Groups move between splits as a whole, so a group that is too large removes data from evaluation.
+
+## Row format
+
+Store pilot rows in `data/annotation/pilot-v0.jsonl`, one JSON object per line. Every row has all nine fields from the [protocol](data-and-evaluation.md#planned-row-format-and-validation).
+
+| Field | Convention for the pilot |
+| --- | --- |
+| `query_id` | `q0001`, `q0002`, and so on. Never reuse a retired ID. |
+| `group_id` | `g001`, `g002`, and so on, one per scenario. |
+| `label` | One of the four labels for `accepted` rows, or `null`. |
+| `status` | `accepted`, `needs_review`, or `excluded`. |
+| `source_id` | `altan-authored`, defined in `data/manifests/sources.json`. |
+| `annotator_ids` | `["A1"]` for Altan. A second annotator becomes `A2`. Contact details never enter the data. |
+| `annotation_version` | `guide-v0` during the pilot, then `guide-v1`. |
+
+Check the file after each writing session:
+
+```sh
+uv run --locked python scripts/validate_dataset.py data/annotation/pilot-v0.jsonl
+```
+
+The validator rejects missing fields, duplicate IDs, empty text, unknown labels, accepted rows without a label, unknown sources, exact duplicate text, and groups larger than four. It also prints status, label, and group counts and lists groups with more than one accepted label for review. It does not judge whether a label is correct.
+
+## Pilot review
+
+Write 10 queries per label, 40 in total. Label each with a rationale. Then ask a second person to label at least 20 percent of the rows, chosen evenly across labels, plus every `needs_review` row, without seeing your labels. If nobody is available, relabel the same rows yourself after a delay (one week is proposed) without looking at the first labels, and record that the study has one annotator.
+
+Record agreement before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
+
+## Decisions for Altan before v1
+
+| Decision | Why it matters |
+| --- | --- |
+| Does a general-knowledge fact such as a country's capital count as `direct_answer` or need `knowledge_lookup`? | The protocol limits lookup to an identified structured source, so these queries currently fall under `direct_answer`. The pilot should test whether that rule is easy to apply. |
+| Who performs the independent review, or is delayed self-review used? | The report must state the review method and any single-annotator bias. |
+| Which license applies to the authored rows? | The manifest records `license: null` until Altan chooses. The validator fails while a row's source has no license. |
+| Are the pilot rows tracked in this private repository? | Tracking makes them reproducible. They contain only fictional content, but publishing them later requires the license decision. |
