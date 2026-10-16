@@ -144,6 +144,35 @@ The preview stores three unanswered exercises covering lookup before calculation
 
 After PR #15 merged, Altan asked in chat to implement its plan with Sonnet worker agents and Opus reviewer agents. That instruction is the implementation approval the plan's first box requires. It does not authorize merging the implementation PRs, publishing data, recording a dataset license, or supplying labels on his behalf. The baseline before any change is commit `7999d69`. Every README check passed there: the smoke check, 15 unit tests, Ruff lint, Ruff format with 19 files formatted, and `git diff --check`.
 
+## M1 to M3 tooling, October 16, 2026
+
+The five delivery units are implemented as tooling on branch `claude/m1-m3-implementation`, from `72dc37b` to `315c7c4`. Five Sonnet workers wrote one unit each, in order. After each unit a separate Opus reviewer read the diff and attacked it with adversarial inputs. The worker then fixed the findings in a follow-up commit. The lead set each unit's design and data shape before any code was written, and reviewed every report.
+
+- **P1.** `scripts/validate_dataset.py --review LEDGER --ready` checks release requirements: 120 accepted rows, 30 per class, 15 groups per class, 20% review coverage per class, review of mixed-label groups, a license, and agreement between the ledger and the dataset. Structural validation no longer requires a license, so draft rows validate while permission is pending. Evidence is in [m1-data](evidence/m1-data.md).
+- **P2.** `src/orchestra/` became an installable package, with a pinned `setuptools==84.0.0` build requirement. `python -m orchestra split` writes an immutable split manifest. It writes the train and validation files apart from a sealed test file. Evidence is in [m2-splits](evidence/m2-splits.md).
+- **P3.** `run` fits B0 and L2. It reads only the train file, the validation file and the manifest, never the dataset or the sealed file. It writes hashed artifacts. `compare` checks that two separate processes produced identical runs. Evidence is in [m2-baselines](evidence/m2-baselines.md).
+- **P4.** `extend` appends only new groups to a frozen split, pinned to the parent manifest hash. It rebuilds the child to prove no old row moved. Evidence is in [m3-extension](evidence/m3-extension.md).
+- **P5.** `run` covers all 14 configurations with prediction latency. `select` applies the 0.01 inclusive tie rule. It is invalid unless all 14 configurations ran successfully. `report` writes tables and validation errors without fitting anything. Evidence is in [m3-comparison](evidence/m3-comparison.md).
+
+Reviewers found real defects, and each is now fixed and tested. Malformed ledgers and manifests crashed the code instead of being rejected. A config could write the sealed test file over the training file. `compare` passed when both runs were empty or had failed. An edited parent manifest could move M2 validation rows into M3 test. `select` called an incomplete matrix valid. `report` could write validation text into a tracked directory.
+
+Trace the teaching query "Calculate the increase using the figures in the attached report." It stays out of the dataset. Suppose a similar real row were labeled `document_retrieval` in group `g031`. `validate` checks its fields. `--ready` counts it toward the 30 rows its class needs. `split` puts the whole of `g031` in one fold. If that fold is 3, the row goes to validation. `run` fits the L2 pipeline on training text only, so a word that appears only in this row gets no feature. It then writes the row's predicted class and its four probabilities in label order. If the prediction is wrong, `report` lists the row in `errors.jsonl` for human inspection. None of this has run on real data.
+
+| Check at `315c7c4` | Actual result |
+| --- | --- |
+| `uv run --locked python scripts/smoke.py` | PASS: environment-smoke-only. Python 3.12.13; scikit-learn 1.9.1. |
+| `uv run --locked python -m unittest discover -s tests` | Ran 148 tests, OK. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | 31 files already formatted. |
+
+Limitations. Every number in the evidence documents comes from artificial fixtures and is not a research result. Several things are still missing: pilot rows, guide v1, human review, a license, the 120 and 400 accepted rows, the collection brief, archive and restore, inspection of real errors, and plots, which need a dependency decision. M1, M2, and M3 stay open. The M1 to M3 study PDFs wait for real evidence.
+
+Questions for Altan, to answer before seeing worked explanations:
+
+1. `--ready` requires 15 groups per class, not just 30 rows. Why does the number of groups matter more than the number of rows for a trustworthy validation score?
+2. `run` never opens the full dataset file, even though hashing it would be harmless to the model. Which mistake does that rule prevent?
+3. In the fixture comparison L1, L2, S1, and L3 tied on validation macro-F1, and `select` chose L1 at `C=0.1` overall. Which rule chose it, and why is that choice not evidence that L1 is better?
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.

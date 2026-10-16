@@ -64,7 +64,7 @@ Consider "Calculate the increase using the figures in the attached report." Its 
 
 The validator now checks the row's fields and provenance. Only rows whose status is `accepted` after annotation review will enter the splits. A persisted split assigns its whole group to one partition. If the row belongs to validation, the fitted training pipeline transforms it and predicts one of the four actions. The evaluation compares that prediction with the annotated first action. A confidence policy may later abstain. No document is actually retrieved in the initial study.
 
-This flow is not executable yet. The first implementation session in the [plan](project-plan.md#first-work-session-after-preparation) defines the next steps and its completion condition.
+Every step after annotation is now executable: `split`, `run`, `compare`, `extend`, `select`, and `report`. So far each has run only on artificial fixtures, recorded under `docs/evidence/`. No research row exists, so no research split, prediction, or metric exists. The [M1 to M3 plan](m1-m3-plan.md) lists the human gates that remain.
 
 ## Proposed layout as the study grows
 
@@ -72,7 +72,7 @@ The following directories are planned, not empty packages created in advance.
 
 | Path | Intended content and Git policy |
 | --- | --- |
-| `src/orchestra/` | Reusable validation and split code now; training and evaluation modules arrive with later units. Track authored modules. |
+| `src/orchestra/` | Validation, split, and experiment modules plus the `python -m orchestra` entry point. Calibration and test evaluation arrive in M4. Track authored modules. |
 | `tests/` and `tests/fixtures/` | Focused behavioral checks and small cleared fixtures. Track both. |
 | `data/raw/`, `data/processed/` | Local acquired and derived rows. Ignored. Preserve source/license manifests separately. |
 | `data/manifests/`, `data/splits/` | Proposed tracked provenance and stable split-ID manifests after privacy review. |
