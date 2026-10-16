@@ -245,14 +245,37 @@ class ReadinessTest(unittest.TestCase):
         reviews[2]["resolved_label"] = "direct_answer"
         self.assertEqual(
             self.check(reviews=reviews),
-            ["q2: ledger resolved direct_answer but dataset label is calculation"],
+            [
+                "q2: ledger resolved direct_answer but dataset accepted row expects calculation"
+            ],
         )
 
-    def test_review_of_unaccepted_row(self):
+    def test_excluded_row_must_resolve_to_null(self):
         data = READY_ROWS + [row("q9", "g9", None, status="excluded")]
-        reviews = READY_REVIEWS + [review("q9", "calculation")]
+        good = READY_REVIEWS + [review("q9", "calculation", resolved=None)]
+        good[-1]["resolved_label"] = None
+        self.assertEqual(self.check(data=data, reviews=good), [])
+        bad = READY_REVIEWS + [review("q9", "calculation")]
         self.assertEqual(
-            self.check(data=data, reviews=reviews), ["q9: reviewed row is not accepted"]
+            self.check(data=data, reviews=bad),
+            ["q9: ledger resolved calculation but dataset excluded row expects None"],
+        )
+
+    def test_mixed_label_group_needs_review_of_every_row(self):
+        data = [
+            row("q0", "g0", "document_retrieval"),
+            row("q1", "g0", "knowledge_lookup"),
+            row("q2", "g2", "calculation"),
+            row("q3", "g3", "direct_answer"),
+        ]
+        reviews = [review(f"q{i}", data[i]["label"]) for i in (0, 2, 3)]
+        self.assertEqual(
+            self.check(
+                data=data,
+                reviews=reviews,
+                requirements={**SMALL, "review_fraction": 0},
+            ),
+            ["group g0: mixed labels need review of q1"],
         )
 
 
@@ -285,6 +308,34 @@ class ReviewLedgerTest(unittest.TestCase):
             ],
         )
 
+    def test_null_resolved_label_only(self):
+        ok = {**review("q0", "calculation"), "resolved_label": None}
+        self.assertEqual(validate_reviews([ok], READY_ROWS), [])
+        bad = {**review("q1", "calculation"), "original_label": None}
+        self.assertEqual(
+            validate_reviews([bad], READY_ROWS),
+            ["q1: review original_label None is not a label"],
+        )
+
+    def test_second_human_must_not_be_an_annotator(self):
+        data = copy.deepcopy(READY_ROWS)
+        data[0]["annotator_ids"] = ["r1"]
+        self.assertEqual(
+            validate_reviews(READY_REVIEWS[:1], data),
+            ["q0: second_human reviewer is an annotator"],
+        )
+        delayed = [review("q0", "document_retrieval", kind="delayed_self")]
+        self.assertEqual(validate_reviews(delayed, data), [])
+
+    def test_unhashable_query_ids_do_not_crash(self):
+        data = copy.deepcopy(READY_ROWS)
+        data[0]["query_id"] = ["q0"]
+        bad = {**review("q1", "calculation"), "query_id": ["q1"]}
+        self.assertEqual(
+            validate_reviews([bad], data),
+            ["['q1']: review empty query_id"],
+        )
+
 
 class AgreementTest(unittest.TestCase):
     def test_three_of_four_match(self):
@@ -300,7 +351,10 @@ class AgreementTest(unittest.TestCase):
                 "matching": 3,
                 "reviewed": 4,
                 "rate": 0.75,
-                "by_kind": {"second_human": 3, "delayed_self": 1},
+                "by_kind": {
+                    "second_human": {"matching": 2, "reviewed": 3},
+                    "delayed_self": {"matching": 1, "reviewed": 1},
+                },
             },
         )
 
@@ -330,7 +384,13 @@ class FileTest(unittest.TestCase):
         path = self.write("data.jsonl", ['{"a": 1}', "", "not json", "[1, 2]"])
         self.assertEqual(
             read_jsonl(path),
-            ([{"a": 1}], ["line 3: not a JSON object", "line 4: not a JSON object"]),
+            (
+                [{"a": 1}],
+                [
+                    f"{path} line 3: not a JSON object",
+                    f"{path} line 4: not a JSON object",
+                ],
+            ),
         )
 
     def test_main_passes_valid_file(self):
@@ -343,7 +403,9 @@ class FileTest(unittest.TestCase):
         path = self.write("data.jsonl", [json.dumps(VALID_ROWS[0]), "oops"])
         code, output = self.run_main(path)
         self.assertEqual(code, 1)
-        self.assertEqual(output, "ERROR: line 2: not a JSON object\nFAIL: 1 errors\n")
+        self.assertEqual(
+            output, f"ERROR: {path} line 2: not a JSON object\nFAIL: 1 errors\n"
+        )
 
     def test_ready_requires_review(self):
         path = self.write("data.jsonl", [json.dumps(r) for r in VALID_ROWS])
@@ -385,6 +447,44 @@ class FileTest(unittest.TestCase):
         self.assertEqual(
             output, "ERROR: q9999: review for unknown query_id\nFAIL: 1 errors\n"
         )
+
+    def test_malformed_query_ids_fail_cleanly(self):
+        rows_ = [{**VALID_ROWS[0], "query_id": ["q1"]}, VALID_ROWS[1]]
+        path = self.write("data.jsonl", [json.dumps(r) for r in rows_])
+        bad = {**review("q0002", "document_retrieval"), "query_id": ["q0002"]}
+        ledger = self.write("ledger.jsonl", [json.dumps(bad)])
+        code, output = self.run_main(path, "--review", ledger)
+        self.assertEqual(code, 1)
+        self.assertIn("ERROR: ['q0002']: review empty query_id\n", output)
+        self.assertTrue(output.endswith("errors\n"))
+
+    def test_ready_passes_full_size_fixture(self):
+        data, ledger = [], []
+        for number, label in enumerate(L * 30, start=1):
+            qid = f"q{number:03d}"
+            data.append(
+                {
+                    **VALID_ROWS[0],
+                    "query_id": qid,
+                    "group_id": f"g{number:03d}",
+                    "text": f"distinct text {number}",
+                    "label": label,
+                }
+            )
+            if number % 3 == 0:
+                ledger.append(review(qid, label))
+        path = self.write("data.jsonl", [json.dumps(r) for r in data])
+        review_path = self.write("ledger.jsonl", [json.dumps(r) for r in ledger])
+        sources = {"s1": {**SOURCES["s1"]}}
+        self.sources.write_text(json.dumps(sources), encoding="utf-8")
+        code, output = self.run_main(path, "--review", review_path, "--ready")
+        self.assertEqual(code, 0, output)
+        self.assertTrue(
+            output.endswith(
+                "PASS: M1 readiness checks passed (120 accepted rows, 40 reviewed)\n"
+            )
+        )
+        self.assertIn('"ledger_sha256"', output)
 
     def test_main_reports_missing_file(self):
         code, output = self.run_main(str(self.folder / "absent.jsonl"))

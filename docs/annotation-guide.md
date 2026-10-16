@@ -53,7 +53,7 @@ Record the review in a JSONL ledger, one object per reviewed row, before discuss
 {"query_id": "q0001", "original_label": "calculation", "review_label": "direct_answer", "reviewer_id": "r1", "review_date": "2026-10-20", "review_kind": "second_human", "resolved_label": "calculation"}
 ```
 
-`review_kind` is `second_human` or `delayed_self`; all fields are required and `resolved_label` must match the released dataset label. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Agreement is the share of rows whose `original_label` equals `review_label`.
+`review_kind` is `second_human` or `delayed_self`; all fields are required. A `second_human` reviewer must not be listed in the row's `annotator_ids`. `resolved_label` must match the released dataset label, or be null if the row was excluded after review. Every accepted row in a mixed-label group needs an entry. The ledger cannot mark ambiguity, so check by hand that every ambiguous row was reviewed. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Agreement is the share of rows whose `original_label` equals `review_label`.
 
 Record agreement before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
 

@@ -63,7 +63,7 @@ def read_jsonl(path):
             if isinstance(row, dict):
                 rows.append(row)
             else:
-                errors.append(f"line {number}: not a JSON object")
+                errors.append(f"{path} line {number}: not a JSON object")
     return rows, errors
 
 
@@ -139,7 +139,7 @@ def validate(rows, sources):
 
 def validate_reviews(reviews, rows):
     errors = []
-    known_ids = {row.get("query_id") for row in rows}
+    by_id = {row["query_id"]: row for row in rows if is_filled(row.get("query_id"))}
     seen_ids = set()
     for index, review in enumerate(reviews, start=1):
         ref = review.get("query_id") or f"review {index}"
@@ -154,15 +154,26 @@ def validate_reviews(reviews, rows):
 
         if not is_filled(review["query_id"]):
             errors.append(f"{ref}: review empty query_id")
-        elif review["query_id"] not in known_ids:
+        elif review["query_id"] not in by_id:
             errors.append(f"{ref}: review for unknown query_id")
         elif review["query_id"] in seen_ids:
             errors.append(f"{ref}: duplicate review")
-        seen_ids.add(review["query_id"])
+        else:
+            seen_ids.add(review["query_id"])
+            annotators = by_id[review["query_id"]].get("annotator_ids")
+            if (
+                review["review_kind"] == "second_human"
+                and isinstance(annotators, list)
+                and review["reviewer_id"] in annotators
+            ):
+                errors.append(f"{ref}: second_human reviewer is an annotator")
         if not is_filled(review["reviewer_id"]):
             errors.append(f"{ref}: review empty reviewer_id")
         for field in ("original_label", "review_label", "resolved_label"):
-            if review[field] not in LABELS:
+            # null resolved_label records a row excluded after review
+            if review[field] not in LABELS and not (
+                field == "resolved_label" and review[field] is None
+            ):
                 errors.append(f"{ref}: review {field} {review[field]!r} is not a label")
         if review["review_kind"] not in REVIEW_KINDS:
             errors.append(f"{ref}: unknown review_kind {review['review_kind']!r}")
@@ -183,7 +194,14 @@ def agreement(reviews):
         "reviewed": reviewed,
         "rate": matching / reviewed if reviewed else None,
         "by_kind": {
-            k: sum(r["review_kind"] == k for r in reviews) for k in REVIEW_KINDS
+            k: {
+                "matching": sum(
+                    r["review_kind"] == k and r["original_label"] == r["review_label"]
+                    for r in reviews
+                ),
+                "reviewed": sum(r["review_kind"] == k for r in reviews),
+            }
+            for k in REVIEW_KINDS
         },
     }
 
@@ -201,6 +219,7 @@ def readiness(rows, sources, reviews, requirements):
         errors.append(f"{unresolved} rows still need review")
 
     by_id = {row["query_id"]: row for row in accepted}
+    # Exact arithmetic: float math.ceil(0.2 * 35) is 8, not 7.
     fraction = Fraction(str(requirements["review_fraction"]))
     reviewed_by_label = Counter(
         by_id[r["query_id"]]["label"] for r in reviews if r["query_id"] in by_id
@@ -224,14 +243,30 @@ def readiness(rows, sources, reviews, requirements):
 
     if not reviews:
         errors.append("no review evidence")
+    all_by_id = {row["query_id"]: row for row in rows}
     for review in reviews:
-        row = by_id.get(review["query_id"])
-        if row is None:
-            errors.append(f"{review['query_id']}: reviewed row is not accepted")
-        elif review["resolved_label"] != row["label"]:
+        row = all_by_id[review["query_id"]]
+        # needs_review rows are already reported as unresolved.
+        expected = {"accepted": row["label"], "excluded": None}.get(
+            row["status"], "skip"
+        )
+        if expected != "skip" and review["resolved_label"] != expected:
             errors.append(
                 f"{review['query_id']}: ledger resolved {review['resolved_label']}"
-                f" but dataset label is {row['label']}"
+                f" but dataset {row['status']} row expects {expected}"
+            )
+
+    labels_by_group = {}
+    for row in accepted:
+        labels_by_group.setdefault(row["group_id"], set()).add(row["label"])
+    reviewed_ids = {r["query_id"] for r in reviews}
+    for row in accepted:
+        if (
+            len(labels_by_group[row["group_id"]]) > 1
+            and row["query_id"] not in reviewed_ids
+        ):
+            errors.append(
+                f"group {row['group_id']}: mixed labels need review of {row['query_id']}"
             )
 
     for source_id in sorted({row["source_id"] for row in accepted}):
@@ -325,10 +360,14 @@ def main(argv=None):
     summary = summarize(rows, digest)
     if args.review:
         summary["agreement"] = agreement(reviews)
+        summary["ledger_sha256"] = file_sha256(args.review)
     print(json.dumps(summary, indent=2))
     if args.ready:
         accepted = summary["status"]["accepted"]
-        print(f"PASS: ready for M2 ({accepted} accepted rows, {len(reviews)} reviewed)")
+        print(
+            f"PASS: M1 readiness checks passed ({accepted} accepted rows, "
+            f"{len(reviews)} reviewed)"
+        )
     else:
         print(f"PASS: {len(rows)} rows valid")
     return 0
