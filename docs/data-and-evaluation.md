@@ -47,7 +47,15 @@ Each JSONL row has the following fields. `scripts/validate_dataset.py` enforces 
 | `annotator_ids` | Pseudonymous annotator identifiers, without contact information. |
 | `annotation_version` | Version of the label guide used. |
 
-The validator rejects duplicate IDs, empty text, unknown labels, accepted rows with null labels, missing provenance, and absent group IDs. It also rejects exact duplicates after whitespace/case normalization and groups above four rows. It reports status, class, and group counts and lists groups whose accepted rows carry different labels for review. Near-duplicate inspection, merging related groups, length and source-mix reports, and disagreement records are still manual; add them to the validator or the M2 data report when the pilot shows they are needed. Only accepted rows enter the supervised splits.
+The validator rejects duplicate IDs, empty text, unknown labels, accepted rows with null labels, missing author or creation date in provenance, and absent group IDs. It also rejects exact duplicates after whitespace/case normalization and groups above four rows. A missing license is not a structural error, so an unresolved draft validates while permission is pending. The summary reports the dataset SHA-256, status, class, and group counts, word-length minimum/median/maximum, source mix, group-size distribution, and excluded rows with reasons, and lists groups whose accepted rows carry different labels for review. Near-duplicate inspection and merging related groups remain manual. Only accepted rows enter the supervised splits.
+
+### Review ledger and readiness
+
+Review evidence is a JSONL ledger with one object per reviewed row and exactly these fields: `query_id`, `original_label`, `review_label`, `reviewer_id`, `review_date` (ISO `YYYY-MM-DD`), `review_kind` (`second_human` or `delayed_self`), and `resolved_label`. All three labels must be one of the four labels. `query_id` must exist in the dataset and appear once. Save `original_label` and `review_label` before discussion; `resolved_label` records the adjudicated result.
+
+`--review LEDGER` validates the ledger and prints agreement: reviewed rows whose `original_label` equals `review_label`, divided by reviewed rows, with counts by `review_kind`. Report the sampling method alongside the denominator.
+
+`--ready` (requires `--review`) adds the M1 acceptance checks and exits 1 if any fails: at least 120 accepted rows; at least 30 accepted rows and 15 distinct groups per class; no `needs_review` row; a nonempty license for every source used by accepted rows; per class at least ceil(0.2 x accepted rows of that class) reviewed rows; a nonempty ledger; and every ledger `resolved_label` equal to the dataset label of that accepted row. These checks establish counts, permission records, and ledger consistency. They do not judge whether any label is semantically correct.
 
 ## Split responsibilities and leakage controls
 

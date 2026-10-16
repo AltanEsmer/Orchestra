@@ -14,12 +14,13 @@ This guide distinguishes the executable preparation from the planned routing exp
 | `.python-version` | Selects Python 3.12.13 so a newer system Python does not silently change the runtime. |
 | `uv.lock` | Generated dependency resolution, versions, sources, and distribution hashes. uv uses it during locked setup. It is tracked evidence, not handwritten model logic. |
 | `scripts/smoke.py` | Executable environment assertions on tiny artificial query lists. It prints a success label and runtime versions. It writes no research results. |
-| `scripts/validate_dataset.py` | Reads an annotated JSONL file and the source manifest, prints every schema or provenance error, then prints status, label, and group counts. Exit code 1 means the file is not ready. It does not judge whether a label is correct. |
-| `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts. |
+| `scripts/validate_dataset.py` | Reads an annotated JSONL file and the source manifest, prints every schema or provenance error, then prints a summary (dataset hash, status, label, and group counts, word lengths, source mix, group sizes, exclusions). With `--review LEDGER` it validates the review ledger and reports agreement. With `--ready` it also enforces the M1 acceptance requirements (counts, permission, review coverage, ledger/dataset agreement). Exit code 1 means the file is not valid or not ready. It does not judge whether a label is correct. |
+| `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts, including readiness rejections and ledger agreement. |
 | `docs/annotation-guide.md` | Draft v0 procedure for choosing a first action, writing and grouping queries, the pilot row conventions, the review method, and decisions Altan must make before v1. |
 | `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, license, and creation date. The license is `null` until Altan chooses one. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
+| `docs/evidence/m1-data.md` | Tooling evidence for P1: real CLI output on an artificial fixture, and the human gates still open. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
 | `docs/m0-plan.md` | Accepted M0 scope, ordered delivery, checks, and the separate student-response gate. |
 | `docs/m1-m3-plan.md` | Proposed five-unit implementation sequence for M1 through M3, acceptance checks, split extension, resources, documentation, and the explicit approval boundary. |

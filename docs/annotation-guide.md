@@ -41,11 +41,19 @@ Check the file after each writing session:
 uv run --locked python scripts/validate_dataset.py data/raw/pilot-v0.jsonl
 ```
 
-The validator rejects missing fields, duplicate IDs, empty text, unknown labels, accepted rows without a label, unknown sources, exact duplicate text, and groups larger than four. It also prints status, label, and group counts and lists groups with more than one accepted label for review. It does not judge whether a label is correct.
+The validator rejects missing fields, duplicate IDs, empty text, unknown labels, accepted rows without a label, unknown sources, sources without an author or date, exact duplicate text, and groups larger than four. A missing license passes this check and fails the readiness check below. It also prints status, label, and group counts and lists groups with more than one accepted label for review. It does not judge whether a label is correct.
 
 ## Pilot review
 
 Write 10 queries per label, 40 in total. Label each with a rationale. Then ask a second person to label at least 20 percent of the rows, chosen evenly across labels, plus every `needs_review` row, without seeing your labels. If nobody is available, relabel the same rows yourself after a delay (one week is proposed) without looking at the first labels, and record that the study has one annotator.
+
+Record the review in a JSONL ledger, one object per reviewed row, before discussing differences:
+
+```json
+{"query_id": "q0001", "original_label": "calculation", "review_label": "direct_answer", "reviewer_id": "r1", "review_date": "2026-10-20", "review_kind": "second_human", "resolved_label": "calculation"}
+```
+
+`review_kind` is `second_human` or `delayed_self`; all fields are required and `resolved_label` must match the released dataset label. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Agreement is the share of rows whose `original_label` equals `review_label`.
 
 Record agreement before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
 
@@ -55,5 +63,5 @@ Record agreement before discussing differences. For each disagreement, note both
 | --- | --- |
 | Does a general-knowledge fact such as a country's capital count as `direct_answer` or need `knowledge_lookup`? | The protocol limits lookup to an identified structured source, so these queries currently fall under `direct_answer`. The pilot should test whether that rule is easy to apply. |
 | Who performs the independent review, or is delayed self-review used? | The report must state the review method and any single-annotator bias. |
-| Which license applies to the authored rows? | The manifest records `license: null` until Altan chooses. The validator fails while a row's source has no license. |
+| Which license applies to the authored rows? | The manifest records `license: null` until Altan chooses. The readiness check (`--ready`) fails while a used source has no license. |
 | Are the pilot rows tracked in this private repository? | Tracking makes them reproducible. They contain only fictional content, but publishing them later requires the license decision. |
