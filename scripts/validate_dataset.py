@@ -1,138 +1,16 @@
 import argparse
 import json
-from collections import Counter
 
-LABELS = ("document_retrieval", "knowledge_lookup", "calculation", "direct_answer")
-STATUSES = ("accepted", "needs_review", "excluded")
-FIELDS = (
-    "query_id",
-    "group_id",
-    "text",
-    "label",
-    "status",
-    "source_id",
-    "rationale",
-    "annotator_ids",
-    "annotation_version",
+from orchestra.data import (
+    M1_REQUIREMENTS,
+    agreement,
+    file_sha256,
+    read_jsonl,
+    readiness,
+    summarize,
+    validate,
+    validate_reviews,
 )
-SOURCE_FIELDS = ("author", "license", "created")
-MAX_GROUP_SIZE = 4
-TEXT_FIELDS = ("query_id", "group_id", "text", "rationale", "annotation_version")
-
-
-def is_filled(value):
-    return isinstance(value, str) and value.strip() != ""
-
-
-def normalize(text):
-    return " ".join(text.split()).casefold()
-
-
-def read_jsonl(path):
-    rows, errors = [], []
-    with open(path, encoding="utf-8") as file:
-        for number, line in enumerate(file, start=1):
-            if not line.strip():
-                continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError:
-                row = None
-            if isinstance(row, dict):
-                rows.append(row)
-            else:
-                errors.append(f"line {number}: not a JSON object")
-    return rows, errors
-
-
-def validate(rows, sources):
-    errors = []
-    complete = []
-    seen_ids = set()
-    for index, row in enumerate(rows, start=1):
-        ref = row.get("query_id") or f"row {index}"
-        missing = [field for field in FIELDS if field not in row]
-        unknown = sorted(set(row) - set(FIELDS))
-        if missing:
-            errors.append(f"{ref}: missing fields {', '.join(missing)}")
-        if unknown:
-            errors.append(f"{ref}: unknown fields {', '.join(unknown)}")
-        if missing:
-            continue
-        complete.append((ref, row))
-
-        if is_filled(row["query_id"]):
-            if row["query_id"] in seen_ids:
-                errors.append(f"{ref}: duplicate query_id")
-            seen_ids.add(row["query_id"])
-        for field in TEXT_FIELDS:
-            if not is_filled(row[field]):
-                errors.append(f"{ref}: empty {field}")
-
-        if row["status"] not in STATUSES:
-            errors.append(f"{ref}: unknown status {row['status']}")
-        if row["label"] is not None and row["label"] not in LABELS:
-            errors.append(f"{ref}: unknown label {row['label']}")
-        if row["status"] == "accepted" and row["label"] is None:
-            errors.append(f"{ref}: accepted row has no label")
-
-        annotators = row["annotator_ids"]
-        if not (
-            isinstance(annotators, list)
-            and annotators
-            and all(is_filled(name) for name in annotators)
-        ):
-            errors.append(f"{ref}: annotator_ids must be a non-empty list of strings")
-
-        # Check the type first: a list source_id is unhashable and would crash `in`.
-        if not (isinstance(row["source_id"], str) and row["source_id"] in sources):
-            errors.append(f"{ref}: unknown source_id {row['source_id']}")
-
-    first_ref_by_text = {}
-    group_sizes = Counter()
-    used_sources = set()
-    for ref, row in complete:
-        if is_filled(row["text"]):
-            key = normalize(row["text"])
-            if key in first_ref_by_text:
-                errors.append(f"{ref}: same text as {first_ref_by_text[key]}")
-            else:
-                first_ref_by_text[key] = ref
-        if is_filled(row["group_id"]):
-            group_sizes[row["group_id"]] += 1
-        if isinstance(row["source_id"], str) and row["source_id"] in sources:
-            used_sources.add(row["source_id"])
-
-    for group_id, size in group_sizes.items():
-        if size > MAX_GROUP_SIZE:
-            errors.append(f"group {group_id}: {size} rows exceeds {MAX_GROUP_SIZE}")
-
-    for source_id in sorted(used_sources):
-        entry = sources[source_id] if isinstance(sources[source_id], dict) else {}
-        for field in SOURCE_FIELDS:
-            if not is_filled(entry.get(field)):
-                errors.append(f"source {source_id}: missing {field}")
-    return errors
-
-
-def summarize(rows):
-    accepted = [row for row in rows if row["status"] == "accepted"]
-    groups_by_label = {label: set() for label in LABELS}
-    labels_by_group = {}
-    for row in accepted:
-        groups_by_label[row["label"]].add(row["group_id"])
-        labels_by_group.setdefault(row["group_id"], set()).add(row["label"])
-    return {
-        "rows": len(rows),
-        "status": {s: sum(r["status"] == s for r in rows) for s in STATUSES},
-        "accepted_by_label": {
-            label: sum(r["label"] == label for r in accepted) for label in LABELS
-        },
-        "groups_by_label": {label: len(groups_by_label[label]) for label in LABELS},
-        "mixed_label_groups": sorted(
-            group for group, labels in labels_by_group.items() if len(labels) > 1
-        ),
-    }
 
 
 def main(argv=None):
@@ -141,10 +19,19 @@ def main(argv=None):
     )
     parser.add_argument("dataset")
     parser.add_argument("--sources", default="data/manifests/sources.json")
+    parser.add_argument("--review", help="review ledger JSONL")
+    parser.add_argument(
+        "--ready", action="store_true", help="also check M1 readiness (needs --review)"
+    )
     args = parser.parse_args(argv)
+    if args.ready and not args.review:
+        parser.error("--ready requires --review")
 
     try:
         rows, errors = read_jsonl(args.dataset)
+        reviews, review_errors = read_jsonl(args.review) if args.review else ([], [])
+        errors += review_errors
+        digest = file_sha256(args.dataset)
         with open(args.sources, encoding="utf-8") as file:
             sources = json.load(file)
     except OSError as error:
@@ -158,13 +45,28 @@ def main(argv=None):
         return 1
 
     errors += validate(rows, sources)
+    if args.review:
+        errors += validate_reviews(reviews, rows)
+    if args.ready and not errors:
+        errors += readiness(rows, sources, reviews, M1_REQUIREMENTS)
     for error in errors:
         print(f"ERROR: {error}")
     if errors:
         print(f"FAIL: {len(errors)} errors")
         return 1
-    print(json.dumps(summarize(rows), indent=2))
-    print(f"PASS: {len(rows)} rows valid")
+    summary = summarize(rows, digest)
+    if args.review:
+        summary["agreement"] = agreement(reviews)
+        summary["ledger_sha256"] = file_sha256(args.review)
+    print(json.dumps(summary, indent=2))
+    if args.ready:
+        accepted = summary["status"]["accepted"]
+        print(
+            f"PASS: M1 readiness checks passed ({accepted} accepted rows, "
+            f"{len(reviews)} reviewed)"
+        )
+    else:
+        print(f"PASS: {len(rows)} rows valid")
     return 0
 
 

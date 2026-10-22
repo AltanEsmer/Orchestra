@@ -140,6 +140,39 @@ One worker inspected existing contracts and another wrote the companion in a dis
 
 The preview stores three unanswered exercises covering lookup before calculation, paraphrase grouping and fit/transform, and accuracy versus macro-F1. No new response was supplied by Altan, so routing and split terminology remain **needs practice** and other topics remain **not yet reviewed**. The M1, M2, and M3 evidence-based PDFs and actual learning attempts are future deliverables. Nothing in the planning PR completes a research milestone or certifies oral readiness.
 
+## M1 to M3 implementation approval, October 16, 2026
+
+After PR #15 merged, Altan asked in chat to implement its plan with Sonnet worker agents and Opus reviewer agents. That instruction is the implementation approval the plan's first box requires. It does not authorize merging the implementation PRs, publishing data, recording a dataset license, or supplying labels on his behalf. The baseline before any change is commit `7999d69`. Every README check passed there: the smoke check, 15 unit tests, Ruff lint, Ruff format with 19 files formatted, and `git diff --check`.
+
+## M1 to M3 tooling, October 16, 2026
+
+The five delivery units are implemented as tooling on branch `claude/m1-m3-implementation`, from `72dc37b` to `315c7c4`. Five Sonnet workers wrote one unit each, in order. After each unit a separate Opus reviewer read the diff and attacked it with adversarial inputs. The worker then fixed the findings in a follow-up commit. The lead set each unit's design and data shape before any code was written, and reviewed every report.
+
+- **P1.** `scripts/validate_dataset.py --review LEDGER --ready` checks release requirements: 120 accepted rows, 30 per class, 15 groups per class, 20% review coverage per class, review of mixed-label groups, a license, and agreement between the ledger and the dataset. Structural validation no longer requires a license, so draft rows validate while permission is pending. Evidence is in [m1-data](evidence/m1-data.md).
+- **P2.** `src/orchestra/` became an installable package, with a pinned `setuptools==84.0.0` build requirement. `python -m orchestra split` writes an immutable split manifest. It writes the train and validation files apart from a sealed test file. Evidence is in [m2-splits](evidence/m2-splits.md).
+- **P3.** `run` fits B0 and L2. It reads only the train file, the validation file and the manifest, never the dataset or the sealed file. It writes hashed artifacts. `compare` checks that two separate processes produced identical runs. Evidence is in [m2-baselines](evidence/m2-baselines.md).
+- **P4.** `extend` appends only new groups to a frozen split, pinned to the parent manifest hash. It rebuilds the child to prove no old row moved. Evidence is in [m3-extension](evidence/m3-extension.md).
+- **P5.** `run` covers all 14 configurations with prediction latency. `select` applies the 0.01 inclusive tie rule. It is invalid unless all 14 configurations ran successfully. `report` writes tables and validation errors without fitting anything. Evidence is in [m3-comparison](evidence/m3-comparison.md).
+
+Reviewers found real defects, and each is now fixed and tested. Malformed ledgers and manifests crashed the code instead of being rejected. A config could write the sealed test file over the training file. `compare` passed when both runs were empty or had failed. An edited parent manifest could move M2 validation rows into M3 test. `select` called an incomplete matrix valid. `report` could write validation text into a tracked directory.
+
+Trace the teaching query "Calculate the increase using the figures in the attached report." It stays out of the dataset. Suppose a similar real row were labeled `document_retrieval` in group `g031`. `validate` checks its fields. `--ready` counts it toward the 30 rows its class needs. `split` puts the whole of `g031` in one fold. If that fold is 3, the row goes to validation. `run` fits the L2 pipeline on training text only, so a word that appears only in this row gets no feature. It then writes the row's predicted class and its four probabilities in label order. If the prediction is wrong, `report` lists the row in `errors.jsonl` for human inspection. None of this has run on real data.
+
+| Check at `315c7c4` | Actual result |
+| --- | --- |
+| `uv run --locked python scripts/smoke.py` | PASS: environment-smoke-only. Python 3.12.13; scikit-learn 1.9.1. |
+| `uv run --locked python -m unittest discover -s tests` | Ran 148 tests, OK. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | 31 files already formatted. |
+
+Limitations. Every number in the evidence documents comes from artificial fixtures and is not a research result. Several things are still missing: pilot rows, guide v1, human review, a license, the 120 and 400 accepted rows, the collection brief, archive and restore, inspection of real errors, and plots, which need a dependency decision. M1, M2, and M3 stay open. The M1 to M3 study PDFs wait for real evidence.
+
+Questions for Altan, to answer before seeing worked explanations:
+
+1. `--ready` requires 15 groups per class, not just 30 rows. Why does the number of groups matter more than the number of rows for a trustworthy validation score?
+2. `run` never opens the full dataset file, even though hashing it would be harmless to the model. Which mistake does that rule prevent?
+3. In the fixture comparison L1, L2, S1, and L3 tied on validation macro-F1, and `select` chose L1 at `C=0.1` overall. Which rule chose it, and why is that choice not evidence that L1 is better?
+
 ## Concepts introduced by preparation
 
 TF-IDF represents each query as a vector of weighted terms. With scikit-learn's default smoothed IDF, `idf(t) = log((1 + n)/(1 + df(t))) + 1`. Term frequency multiplies this weight, then the vector is L2-normalized. Here `n` and `df` come from training documents only. Vocabulary membership is also learned from training.
@@ -188,3 +221,49 @@ No specific ML misconception has been established. The first response shows that
 By November 29, rehearse with an unfamiliar query, an actual saved model/configuration, a confusion matrix, and a confidence result. Altan must trace the query through preprocessing and prediction, explain a model and its features, interpret the results, justify one design choice, reproduce a run, and discuss an error or limitation. Record each attempt and revisit weak topics before the December 4 freeze. The rehearsal is planned; no oral readiness has been certified.
 
 After submission, continue with the frozen project and accumulated study PDFs through January 2027. For each newly available lecture, identify which principle the project uses, where it appears, and what assumption or limitation accompanies it. Record the attempt and revise explanations without rewriting the submitted experimental record.
+
+## PR #16 local setup, October 16, 2026
+
+Altan requested all setup that can proceed without his data or decisions. The locked environment synchronized successfully with uv 0.11.7 and Python 3.12.13. No dependency, model, row schema, or evaluation rule changed.
+
+The executable `scripts/run_experiment.sh` sets the four numerical thread variables to `1` before invoking the existing run CLI. It resolves relative paths from the repository root and preserves command arguments and exit codes. The [experiment runbook](run-experiments.md) replaces the README's incomplete command sequence and names the readiness gate before splitting. The annotation guide now records the existing implementation approval without freezing guide v1.
+
+Local setup prepared an ignored blank worksheet at `data/raw/pilot-intake.md` and empty `data/raw/pilot-v0.jsonl` and `data/raw/reviews-v1.jsonl` files. Existing files were preserved. No query, human label, reviewer identity, review date, license, or agreement was supplied. The empty pilot fails `--ready` with `ERROR: no accepted rows: the training dataset is empty`, exit 1. The source license and M3 parent hash remain null. The latter can be calculated only after the real M2 split exists.
+
+A worker owned the five-line launcher. A separate read-only explainer confirmed that the existing split and extension commands perform structural validation but do not enforce complete readiness. The lead wrote the runbook and inspected the actual launcher and evidence. The final independent reviewer found no actionable issues in the integrated setup. It independently checked shell syntax, real help from another directory, the saved fixture transcript and thread provenance, empty intake files, and local links. Comment review found no actionable comments or suppressions. These agents use one model family, not cross-family review.
+
+The lead ran the complete command sequence under ignored `work/poteto/pr16-setup/workflow-proof/` using the existing artificial test fixture. The actual M2 split, two launcher runs, comparison, overwrite refusal, M3 hash-pinned extension, two 14-configuration launcher runs, comparison, valid selection, and report all behaved as expected. Provenance recorded all four thread variables and all loaded numerical thread pools at one thread. These are tooling checks, not research results. The local rerun script is `work/poteto/pr16-setup/verify_workflow.py`; it deliberately requires a fresh proof directory.
+
+| Check | Actual result |
+| --- | --- |
+| `uv python install 3.12.13` and `uv sync --locked` | Python already installed; resolved and checked 9 packages. |
+| Real launcher help from `/tmp` | Exit 0. |
+| Launcher with temporary fake uv | Preserved arguments and working directory, forced caller thread values from 8 to 1, propagated exit 37, and handled a repository path containing spaces. |
+| `sh -n scripts/run_experiment.sh` | Exit 0. |
+| Complete artificial M2 and M3 command sequence | PASS, including both reproduction checks and report files. |
+| Empty pilot with `--review data/raw/reviews-v1.jsonl --ready` | Expected exit 1, no accepted rows. |
+| `uv run --locked python scripts/smoke.py` | PASS, environment-smoke-only; Python 3.12.13 and scikit-learn 1.9.1. |
+| `uv run --locked python -m unittest discover -s tests` | Ran 148 tests, OK. |
+| `uv run --locked ruff check .` | All checks passed. |
+| `uv run --locked ruff format --check .` | 32 files already formatted. |
+| `git diff --check` | Exit 0. |
+| `git check-ignore` on all three intake files | All ignored. |
+| Local Markdown links in the six changed documents | 54 links and anchors resolve. |
+
+Trace the existing teaching query about calculating an increase from an attached report. Altan still supplies its first-action rationale and scenario group for any distinct real example. The readiness command checks accepted data and review evidence. After splitting, the launcher fixes the timing environment and passes train and validation paths to the runner. The runner predicts the first action without executing tools. The teaching query stays outside the dataset.
+
+Still needed from Altan are the 40-query pilot with labels, rationales, and groups; actual dataset permission; a review method and real blind review evidence; and pilot boundary resolutions before guide v1. The 120-row release and reviewed expansion toward 400 remain future work. No research split or metric exists. No learning status changed.
+
+Two unanswered exercises remain for later practice. Why can structural validation pass an empty draft while readiness fails? Why must the parent-manifest hash come from the frozen M2 artifact rather than a chosen value?
+
+## Frozen-input integrity repair, October 22, 2026
+
+Altan authorized completing the remaining automation, creating and merging PRs, updating issues, and then guiding manual work one step at a time. This does not supply queries, human review decisions, permission, or learning responses.
+
+An independent review of PR #16 found three reproducible gaps. The runner accepted changed materialized text, labels, and groups under an old split identity. Split outputs could overwrite an input dataset. Relocated M3 parent paths caused a false reproduction mismatch. The repair checks visible rows against canonical manifest hashes and group memberships, rejects input/output aliases before writing, preserves existing materialized files, and excludes parent path locations from semantic run comparison while retaining their hashes.
+
+Four regression checks failed against the original implementation. After repair, 59 experiment tests and 52 split tests passed. Focused Ruff lint and format checks passed. The complete current test run was attempted while a separate M4 worker had written a failing test before its module existed; that transient import failure is not a passing full-suite claim. The integrated full suite will run after all writers finish.
+
+The teaching query about an attached report still stays outside the research data. If a real validation row is edited after splitting, the runner now refuses its changed content hash before fitting. Neither passing checks nor this explanation changes Altan's learning status.
+
+Next practice remains one introductory routing query, followed by the meaning of an unseen example. The new integrity question is why a stable query ID alone cannot prove that its text and label stayed unchanged.

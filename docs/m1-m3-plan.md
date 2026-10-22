@@ -2,13 +2,13 @@
 
 This plan defines the next implementation for Altan's routing study. It is a documentation deliverable dated October 16, 2026. The user authorized its PR and merge, then required a stop until separate implementation approval. M1 remains in progress. M2 and M3 remain not started.
 
-Read the [methods preview](study-guides/m1-m3-methods-preview.md) for explanations and report or presentation support. Use the [roadmap](../ROADMAP.md) for dates and status, and the [data protocol](data-and-evaluation.md) for scientific rules. Planned paths and commands below do not exist yet unless explicitly identified as current.
+Read the [methods preview](study-guides/m1-m3-methods-preview.md) for explanations and report or presentation support. Use the [roadmap](../ROADMAP.md) for dates and status, and the [data protocol](data-and-evaluation.md) for scientific rules. The tooling is implemented in PR #16. Follow the [experiment runbook](run-experiments.md) for current setup and commands. Real data, review, permissions, archives, and research runs remain pending.
 
 ## Start only after implementation approval
 
-- [ ] Record Altan's explicit implementation approval in the learning log. A merged planning PR does not satisfy this box.
-- [ ] Re-read the current repository instructions, this plan, and the protocol. Preserve unrelated work and verify the GitHub remote.
-- [ ] Run every README check before changing code. Record the baseline commit and outputs.
+- [x] Record Altan's explicit implementation approval in the learning log. A merged planning PR does not satisfy this box.
+- [x] Re-read the current repository instructions, this plan, and the protocol. Preserve unrelated work and verify the GitHub remote.
+- [x] Run every README check before changing code. Record the baseline commit and outputs.
 - [ ] Execute the delivery units below in dependency order. End each unit with focused checks and a reviewable commit.
 - [ ] Keep human annotation, data permissions, and learning evidence truthful. If required evidence is absent, finish independent tooling with fixtures and record the remaining gate.
 

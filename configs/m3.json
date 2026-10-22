@@ -1,0 +1,29 @@
+{
+  "parent_dataset": "data/processed/m1-v1.jsonl",
+  "parent_manifest": "data/splits/m2-split.json",
+  "parent_manifest_sha256": null,
+  "dataset": "data/processed/m3-v1.jsonl",
+  "sources": "data/manifests/sources.json",
+  "seed": 42,
+  "split_manifest": "data/splits/m3-split.json",
+  "train": "data/processed/m3/train.jsonl",
+  "validation": "data/processed/m3/validation.jsonl",
+  "sealed_test": "data/processed/sealed/m3-test.jsonl",
+  "results_dir": "results",
+  "configurations": [
+    {"family": "B0"},
+    {"family": "B1"},
+    {"family": "L1", "C": 0.1},
+    {"family": "L1", "C": 1},
+    {"family": "L1", "C": 10},
+    {"family": "L2", "C": 0.1},
+    {"family": "L2", "C": 1},
+    {"family": "L2", "C": 10},
+    {"family": "S1", "C": 0.1},
+    {"family": "S1", "C": 1},
+    {"family": "S1", "C": 10},
+    {"family": "L3", "C": 0.1},
+    {"family": "L3", "C": 1},
+    {"family": "L3", "C": 10}
+  ]
+}

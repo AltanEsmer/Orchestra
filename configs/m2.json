@@ -1,0 +1,11 @@
+{
+  "dataset": "data/processed/m1-v1.jsonl",
+  "sources": "data/manifests/sources.json",
+  "seed": 42,
+  "split_manifest": "data/splits/m2-split.json",
+  "train": "data/processed/m2/train.jsonl",
+  "validation": "data/processed/m2/validation.jsonl",
+  "sealed_test": "data/processed/sealed/m2-test.jsonl",
+  "results_dir": "results",
+  "configurations": [{"family": "B0"}, {"family": "L2", "C": 1}]
+}

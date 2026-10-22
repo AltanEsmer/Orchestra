@@ -8,7 +8,7 @@ Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orc
 
 Statuses mean **not started**, **in progress**, **in review**, **done**, or **blocked**. “Done” requires the stated completion evidence. A blocked item records what must change and who can resolve it. Dates are targets, not evidence of completion.
 
-The October 16 [M1 to M3 plan](docs/m1-m3-plan.md) is a documentation-only delivery, accompanied by an [exam, presentation, and report methods preview](docs/study-guides/m1-m3-methods-preview.md). Altan authorized creating and merging the planning PR, then stopping for implementation approval. That approval is pending. Milestone statuses and human-review requirements remain unchanged.
+The October 16 [M1 to M3 plan](docs/m1-m3-plan.md) is a documentation-only delivery, accompanied by an [exam, presentation, and report methods preview](docs/study-guides/m1-m3-methods-preview.md). Altan authorized creating and merging the planning PR, then stopping for implementation approval. He gave that approval on October 16 after PR #15 merged. The five delivery units are now implemented as tooling and tested on artificial fixtures only. M2 and M3 are blocked on accepted M1 data, which needs Altan's labels, review, and a recorded dataset license. No research split, run, or metric exists.
 
 ## Milestones
 
@@ -18,8 +18,8 @@ Dates use Europe/Copenhagen. December 6 is the course submission date; earlier d
 | --- | --- | --- | --- | --- | --- |
 | M0 | October 11, 2026 | Preparation and course-linked study guide | [#3](https://github.com/AltanEsmer/Orchestra/issues/3) | Done | Closed by Altan on October 16. Environment and planning merged in PR #2; M0 PDF delivered, checked, and snapshotted. Exception: no learning response was recorded, so the checkpoint carries into M1 unanswered. |
 | M1 | October 18 | Annotation pilot and first dataset | [#4](https://github.com/AltanEsmer/Orchestra/issues/4) | In progress | After M0: review 40 pilot queries, freeze guide v1, and accept 120 rows with provenance and group IDs. Record disagreements and exclusions. |
-| M2 | October 25 | First reproducible baseline | [#5](https://github.com/AltanEsmer/Orchestra/issues/5) | Not started | After M1: validate rows and splits; run dummy and TF-IDF logistic regression twice with identical split membership and predictions. Save validation metrics and provenance. |
-| M3 | November 8 | Main classifier and representation comparison | [#6](https://github.com/AltanEsmer/Orchestra/issues/6) | Not started | After M2: freeze the main dataset, target 400 accepted queries, and complete the 14 required configurations. Save all outcomes and validation selections. |
+| M2 | October 25 | First reproducible baseline | [#5](https://github.com/AltanEsmer/Orchestra/issues/5) | Blocked | Split, run, and compare commands exist and pass on fixtures. Blocked on accepted M1 data (Altan). After M1: validate rows and splits; run dummy and TF-IDF logistic regression twice with identical split membership and predictions. Save validation metrics and provenance. |
+| M3 | November 8 | Main classifier and representation comparison | [#6](https://github.com/AltanEsmer/Orchestra/issues/6) | Blocked | Extend, 14-configuration run, select, and report commands exist and pass on fixtures. Blocked on M2 evidence and the 400-row collection (Altan). After M2: freeze the main dataset, target 400 accepted queries, and complete the 14 required configurations. Save all outcomes and validation selections. |
 | M4 | November 15 | Confidence, errors, and final test | [#7](https://github.com/AltanEsmer/Orchestra/issues/7) | Not started | After M3: complete calibration and validation error analysis; freeze selected systems and any fallback threshold, then evaluate the sealed test. Save confidence and error evidence. |
 | M5 | November 22 | Report draft | [#8](https://github.com/AltanEsmer/Orchestra/issues/8) | Not started | After M4: write a 5–12 page IEEE two-column draft with traceable figures, methods, results, and limitations in Altan's own words. |
 | M6 | November 29 | Clean reproduction and oral rehearsal | [#9](https://github.com/AltanEsmer/Orchestra/issues/9) | Not started | After M5: reproduce the study from a clean environment and archive; record a rehearsal using actual queries, predictions, and figures. Carry knowledge gaps forward. |
@@ -60,14 +60,15 @@ For example, “What is 18 percent of 250?” needs `calculation` as its first a
 
 ## Next actions and open decisions
 
-Altan owns course administration, annotation decisions, and the report. Agent work proceeds within his approved scope. After separate implementation approval, follow the [M1 to M3 delivery units](docs/m1-m3-plan.md#deliver-the-work-in-five-units). Use the plan's local data paths instead of the draft guide's unignored pilot path.
+Altan owns course administration, annotation decisions, and the report. Agent work proceeds within his approved scope. Implementation of the [M1 to M3 delivery units](docs/m1-m3-plan.md#deliver-the-work-in-five-units) was approved on October 16 and the tooling is built; the remaining gates are human data evidence. Use the plan's local data paths instead of the draft guide's unignored pilot path.
 
 | Action or decision | Owner | Evidence needed |
 | --- | --- | --- |
 | Answer the carried-forward M0 checkpoint questions. | Altan | An actual response recorded in the learning log. |
 | Refresh study guides as each milestone develops. | Agent and Altan | Current PDF, inspected lecture sources, report evidence, and recorded oral-practice feedback. |
 | Introduce routing with one everyday query before further practice. | Agent and Altan | Altan's actual response in the learning log. |
-| Approve implementation after the planning PR merges. | Altan | Explicit subsequent approval recorded in the learning log. |
+| Record a dataset license or study-use permission in `data/manifests/sources.json`. | Altan | A nonempty, accurate `license` entry. `--ready` refuses accepted rows without it. |
+| Run the M1 readiness check on the accepted 120 rows and review ledger. | Altan, then agent | `scripts/validate_dataset.py <rows> --review <ledger> --ready` printing PASS, saved in `docs/evidence/m1-data.md`. |
 | Write and review the 40-query pilot using the [annotation guide](docs/annotation-guide.md). | Altan, with disclosed agent candidate assistance if used | Local `data/raw/pilot-v0.jsonl` passing the validator, with actual human rationales and reviewed boundary cases. No rows exist yet. |
 | Decide the open guide questions: general-knowledge facts, review method, data license, and tracking of rows. | Altan | Decisions recorded in the annotation guide before v1. |
 | Arrange a second human annotation review or document the delayed self-review alternative. | Altan | Recorded review method and disagreements before guide freeze. |
@@ -86,6 +87,7 @@ Altan owns course administration, annotation decisions, and the report. Agent wo
 | October 16, 2026 | Branch `claude/m1-annotation-start`: annotation guide v0, source manifest, and dataset validator with unit tests | M1 tooling ready for the pilot. No query rows exist yet. |
 | October 16, 2026 | [PR #14](https://github.com/AltanEsmer/Orchestra/pull/14), merged as `48abda0` | M1 preparation integrated into main. Data collection and acceptance remain unfinished. |
 | October 16, 2026 | [M1 to M3 plan](docs/m1-m3-plan.md), [methods preview](docs/study-guides/m1-m3-methods-preview.md), and [planning evidence](docs/evidence/m1-m3-planning.md) | Proposed implementation, data-growth safeguards, study-document workflow, and CPU/GPU resource decisions. No implementation approval, new research data, or experiment result is implied. |
+| October 16, 2026 | Branch `claude/m1-m3-implementation` (`c48d60e` to the lead docs commit) and [tooling log](docs/learning-log.md#m1-to-m3-tooling-october-16-2026) | P1 to P5 tooling with 148 passing tests and fixture-only evidence. No research data, split, run, or metric. M1 to M3 remain open. |
 
 ## Maintaining progress
 
