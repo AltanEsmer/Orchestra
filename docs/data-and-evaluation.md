@@ -1,8 +1,8 @@
 # Data and evaluation protocol
 
-This is the proposed v1 protocol. No research dataset, trained router, or experimental score exists yet. The tiny examples in `scripts/smoke.py` are environment fixtures and must never enter the study.
+This is the study protocol implemented by the current tooling. No research dataset, trained research router, or experimental score exists yet. The examples in `scripts/smoke.py`, tests, and `scripts/verify_workflow.py` are software fixtures and must never enter the study.
 
-The October 16 [M1 to M3 plan](m1-m3-plan.md) specifies the proposed implementation of this protocol. Its refinements below are planning decisions. They add no dataset, schema implementation, fitted model, or measured outcome. Implementation requires Altan's separate approval after the documentation PR merges.
+The October 16 [M1 to M3 plan](m1-m3-plan.md) specifies the data and comparison work. Altan approved it on October 16 and approved completion automation on October 22. The [automation plan](automation-plan.md) records current artifact contracts. Implementation and fixture evidence do not establish research outcomes.
 
 ## Prediction contract
 
@@ -113,3 +113,15 @@ The current setup needs package downloads, one CPU, and no credentials. The plan
 On October 16, Altan reported that SDU will provide 10 GPU hours. The required M1 through M3 sparse study reserves that allocation and uses the CPU. No SDU access or hardware has been verified. The [compute plan](m1-m3-plan.md#measure-resources-before-using-the-gpu-allocation) gives a conditional optional-embedding budget and the access information needed only if measured CPU limits justify using SDU. No GPU job or model download is authorized by this planning change.
 
 Keep raw downloads, processed data, models, local results, caches, `.env*`, and course PDFs out of Git. Commit small cleared fixtures, source/license manifests, split/configuration versions, and selected anonymized report evidence deliberately. Ignored results need an explicit backup or course submission archive containing the manifests and files required for reproduction. Record the archive location and checksum in the final handoff. Never load untrusted pickle/joblib artifacts. No secrets or API keys are required for the present scaffold.
+
+## Implemented completion artifact contracts
+
+`prepare-study` runs schema, provenance, review-ledger, and M1 readiness checks before splitting. It records `study_evidence` with the dataset, source manifest, review ledger, and collection-brief SHA-256 values. Later confidence work compares this snapshot with the split and verifies the supporting files without reopening the complete dataset. The preparation step cannot certify semantic labels or identify undisclosed ambiguity.
+
+The selected logistic model is the best validation macro-F1 among the selected L1/L2/L3 winners, using the inclusive 0.01 tolerance and existing family order. Calibration uses `CalibratedClassifierCV(method="sigmoid", ensemble=True, n_jobs=1)` with explicit three-fold group indices and the complete feature pipeline. This is three fold-specific classifiers/calibrators whose probabilities are averaged. It differs from calibrating one already fitted full-training model and is recorded explicitly.
+
+Confidence artifacts preserve actual predicted labels when computing reliability accuracy. This avoids a different tie rule after score columns are reordered. Zero-acceptance selective accuracy and empty reliability bins are null. Freeze binds the exact classifier settings, raw validation reproduction, training-fold calibration, threshold evidence, code/lock hashes, and completed validation interpretations. Research final-test receipts live at a canonical repository path keyed by split identity. They record identical recovery attempts and reject new decision sets after exposure.
+
+The agent can classify observed validation mistakes as hypotheses. Research freeze requires interpretations for at least 20 selected-system errors, or all if fewer, plus a correct comparison when available. The field checks do not validate those interpretations scientifically. Test error interpretation follows the frozen evaluation and never changes the reported selection.
+
+Figure artifacts contain exact numeric inputs and source hashes. Archives preserve byte identity and executable permissions. A successful restore alone proves integrity, while running the restored study and comparing artifacts establishes reproduction. Fixture-mode outputs remain explicitly artificial and cannot satisfy a research milestone.

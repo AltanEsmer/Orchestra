@@ -1,10 +1,10 @@
 # Architecture
 
-Orchestra is a local classification study: given a query, predict the first action needed to answer it. A router chooses an action; it does not itself answer the query. This document describes the implemented environment check and the proposed study. Progress and completion evidence live in the [roadmap](ROADMAP.md).
+Orchestra is a local classification study: given a query, predict the first action needed to answer it. A router chooses an action; it does not itself answer the query. This document describes the implemented tooling and the research workflow awaiting accepted data. Progress and completion evidence live in the [roadmap](ROADMAP.md).
 
 ## Implemented today
 
-The executable project code is the environment check [scripts/smoke.py](scripts/smoke.py) and the dataset validator [scripts/validate_dataset.py](scripts/validate_dataset.py). The validator reads annotated JSONL rows and the source manifest and reports schema and provenance errors plus label and group counts; the [annotation guide](docs/annotation-guide.md) describes its input. uv creates a Python environment from `.python-version`, `pyproject.toml`, and `uv.lock`.
+The local `python -m orchestra` CLI covers preparation, splitting, experiment runs, selection, confidence, final evaluation, figures, and archives. The [walkthrough](docs/repo-guide.md) maps each module. All software acceptance runs use artificial fixtures; no research result exists. uv creates the locked Python environment. The small smoke script remains an independent environment check:
 
 ```mermaid
 flowchart LR
@@ -19,9 +19,9 @@ flowchart LR
 
 The script verifies sparse features, training-only vocabulary, and expected dummy predictions. It writes no dataset, model, or experiment results. Its `simple` and `complex` labels are fixtures, not the study's action labels. The [walkthrough](docs/repo-guide.md#the-executable-flow-today) explains the calls and library responsibilities.
 
-## Proposed study
+## Study workflow
 
-All components below are planned. The initial implementation remains a local batch workflow, with no server, UI, or tool execution. The [data and evaluation protocol](docs/data-and-evaluation.md) is authoritative for labels, row fields, splits, configurations, and metrics.
+All components below are implemented and fixture-tested. The study remains a local batch workflow, with no server, UI, or tool execution. The [data and evaluation protocol](docs/data-and-evaluation.md) is authoritative for labels, row fields, splits, configurations, and metrics.
 
 ```mermaid
 flowchart TD
@@ -39,22 +39,20 @@ flowchart TD
     J --> K[Saved evidence and report figures]
 ```
 
-| Component | Responsibility and output | Proposed location |
+| Component | Responsibility | Module |
 | --- | --- | --- |
-| Data validation | Implemented in M1. Check row fields, annotation status, duplicate IDs/text, group size, and provenance. Only accepted rows enter supervised splits. | `scripts/validate_dataset.py`, moving to `src/orchestra/` when split code reuses it; tests under `tests/`. |
-| Split generation | Keep related query groups together; persist IDs and reject overlap or missing classes. | `data/splits/` and `data/manifests/`. |
-| Training | Fit features and estimators on training rows through scikit-learn pipelines. Start with dummy and TF-IDF logistic regression. | `src/orchestra/`, `configs/`, and ignored `models/`. |
-| Evaluation | Save predictions, macro-F1, per-class metrics, confusion matrices, timing, and run provenance. Validation selects systems before the final test. | Ignored `results/<run-id>/`. |
-| Confidence analysis | Compare raw and calibrated probabilities. Fit calibration using group-aware training folds; select any fallback threshold on validation. | Training and evaluation code, resolved configurations, and run outputs. |
-| Report evidence | Produce figures and explanations traceable to saved runs. Archive the files needed to reproduce ignored outputs. | Selected cleared files in `docs/evidence/` and a documented submission archive. |
+| Data and preparation | Validate rows, provenance, permission and human review; make blind worksheets and hash-bound prepared configs. | `data.py`, `study.py` |
+| Split generation | Keep groups intact; bind content hashes; extend without moving old rows. | `splits.py` |
+| Training and selection | Fit complete pipelines on train only; record all 14 outcomes; select on validation; compare relocated reproduction. | `experiment.py` |
+| Confidence and final test | Reproduce raw scores, calibrate in grouped train folds, interpret validation errors, freeze choices, and evaluate through a split-specific receipt. | `confidence.py` |
+| Figures | Export saved evidence with exact plot data and fixture labeling. | `figures.py` |
+| Reproduction | Archive explicit regular files, validate hashes and paths, restore executable permissions into a fresh directory. | `archive.py` |
 
-These paths describe intended responsibilities, not existing modules or runnable commands. Add reusable modules when the first baseline needs them. The [project plan](docs/project-plan.md#decisions-and-rejected-alternatives) records why a package, service framework, and complete tool sequences are deferred.
-
-The [M1 to M3 plan](docs/m1-m3-plan.md) refines this proposal into shared data validation, persisted splits, one experiment runner, and a small command entry point. M3 extends M2's group assignments without moving old rows between partitions. Training commands read separate training and validation inputs, leaving test content for M4. These components remain unimplemented pending approval.
+The CLI is a thin dispatcher. There is no service, workflow scheduler, or tool executor. The [automation plan](docs/automation-plan.md) records the design and library choices. Source, dependency, input, and artifact hashes keep the selected experiment distinct from a changed rerun. Preparation can read full data to make splits; fitting and calibration read only train and validation until the explicit final-test command.
 
 ## Query contract and boundaries
 
-The proposed input is one self-contained English query. The output is one label: `document_retrieval`, `knowledge_lookup`, `calculation`, or `direct_answer`. For example, “What is 18 percent of 250?” has the target `calculation`, because the required numbers are already present. A future trained classifier may predict that label correctly or incorrectly; the study measures that distinction. It does not run a calculator.
+The input contract is one self-contained English query. The output is one label: `document_retrieval`, `knowledge_lookup`, `calculation`, or `direct_answer`. For example, “What is 18 percent of 250?” has the target `calculation`, because the required numbers are already present. A future trained classifier may predict that label correctly or incorrectly; the study measures that distinction. It does not run a calculator.
 
 Annotation metadata, including the gold label and rationale, must not enter the model's text features. `needs_review` describes an unresolved annotation and is not a target class. A later optional abstention decision is separate from both annotation status and action prediction.
 
@@ -62,7 +60,7 @@ Training alone learns vocabulary, weights, and model parameters. Related paraphr
 
 ## Dependencies and storage
 
-Our code owns data checks, split assignment, experiment configuration, and evidence recording as those components are implemented. scikit-learn supplies representations and estimators; NumPy and SciPy supply numerical arrays and sparse operations. uv pins and installs the environment.
+Our code owns data checks, split assignment, experiment configuration, and evidence recording through the implemented modules. scikit-learn supplies representations and estimators; NumPy and SciPy supply numerical arrays and sparse operations. Matplotlib exports scientific figures. uv pins and installs the environment.
 
 The current smoke check needs no credentials or GPU. The planned sparse study runs on a local CPU. External datasets and optional frozen embeddings require the protocol's license and resource checks before adoption.
 

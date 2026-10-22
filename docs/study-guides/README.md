@@ -2,7 +2,7 @@
 
 These guides help Altan explain what Orchestra implements, why each choice was made, and how course concepts apply. They supply traceable material for the December report and practice for the January oral exam. They do not establish understanding without Altan's own responses.
 
-The [M1 to M3 methods preview](m1-m3-methods-preview.md) explains the proposed study before implementation. It accompanies the [delivery plan](../m1-m3-plan.md), with report and presentation evidence to collect and unanswered practice prompts. It is Markdown planning material, not a delivered M1, M2, or M3 PDF or a completion record.
+The [M1 to M3 methods preview](m1-m3-methods-preview.md) explains the proposed study before implementation. It accompanies the [delivery plan](../m1-m3-plan.md), with report and presentation evidence to collect and unanswered practice prompts. It is historical Markdown planning material, not a delivered M1, M2, or M3 PDF or a completion record. Implementation is now covered by the [repository walkthrough](../repo-guide.md), [automation evidence](../evidence/automation-completion.md), and [manual guide](../manual-steps.md); those do not establish student understanding.
 
 ## Files and editions
 

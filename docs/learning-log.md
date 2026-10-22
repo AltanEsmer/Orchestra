@@ -267,3 +267,15 @@ Four regression checks failed against the original implementation. After repair,
 The teaching query about an attached report still stays outside the research data. If a real validation row is edited after splitting, the runner now refuses its changed content hash before fitting. Neither passing checks nor this explanation changes Altan's learning status.
 
 Next practice remains one introductory routing query, followed by the meaning of an unseen example. The new integrity question is why a stable query ID alone cannot prove that its text and label stayed unchanged.
+
+## Complete automation and manual handoff, October 22, 2026
+
+The remaining command workflow is implemented: check readiness, prepare a blind review, freeze input evidence and splits, reproduce experiments, analyze calibration, freeze choices, evaluate the final test, export figures, and archive/restore the study. The IEEE report template compiles. [Completion evidence](evidence/automation-completion.md) records checks and limitations; the [walkthrough](repo-guide.md) explains each new module.
+
+Two candidate designs were compared before implementation. One existing CLI with focused modules keeps the project explainable. Matplotlib is the only new experiment dependency; it supplies scientific figures. Calibration reuses scikit-learn and wraps the full pipeline in grouped training folds so held-out fold vocabulary cannot leak into fitting. Review found and repaired score-tie reliability, missing readiness/environment gates, final-test reservation/recovery problems, and lost fixture labels. A POSIX lock and atomic receipt updates keep retries exclusive and auditable.
+
+For a concrete teaching trace, consider “Calculate the increase using the figures in the attached report.” Its first action is document retrieval. The real dataset still needs Altan's original examples and actual review; this supplied teaching example stays outside it. Once a real group is accepted, preparation binds its data/review hashes and assigns the entire group to a partition. Training learns from train text only. Validation supports model and confidence choices. The final-test command uses those frozen choices, and plots read saved outcomes rather than choosing a new winner. An archive lets another checkout repeat the same prediction process.
+
+The end-to-end fixture run restored the executable launcher and a clean locked environment, then reproduced M3 predictions and metrics. This is software evidence, not research performance or proof of learning. PR #16 is merged; final automation review and checks are listed in the completion evidence. The real pilot and review ledgers are empty, and dataset permission remains unset.
+
+First manual action: write one original query and explain what must happen first. Two later teach-back prompts remain unanswered: why must related paraphrases stay in one partition, and why must model/confidence choices be fixed before opening the test set? Let Altan answer before providing worked explanations. No understanding status changed.

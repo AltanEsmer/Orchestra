@@ -1,0 +1,32 @@
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\title{Orchestra: Learning to Route Queries in AI Systems}
+\author{\IEEEauthorblockN{Altan Esmer}}
+\begin{document}
+\maketitle
+\begin{abstract}
+\textbf{Author draft required.} State the routing question, the actual dataset, the compared methods, the measured findings, and the main limitation in your own words. This template contains no research results.
+\end{abstract}
+\section{Introduction}
+Explain why selecting the first action is useful. Define the four available actions and the single-turn English scope. State the research question and the comparisons that answer it.
+\section{Data and exploratory analysis}
+Describe the actual authorship, permissions, annotation guide, review method, disagreements, exclusions, and independent scenario groups. Report achieved counts rather than collection targets. Insert the generated class-balance and query-length figures after checking their source manifests.
+\section{Methods}
+Explain the persisted group split and training-only feature fitting. Describe the dummy, naive Bayes, logistic-regression, and linear-SVM systems. Explain counts, TF-IDF, and unigram/bigram features. State the bounded parameter grid and validation selection rule. Describe grouped sigmoid calibration and the frozen fallback policy. Define the metrics you use.
+\section{Results}
+Insert saved validation and final-test tables with their run IDs and configuration identities. Keep validation selection separate from final-test estimates. Include matched-parameter comparisons of weighting, classifier, and phrase features. Do not select a new winner from test scores.
+\section{Confidence and error analysis}
+Interpret the reliability bins and their counts, log loss, Brier score, and accuracy-versus-coverage results. Explain representative errors as hypotheses, including correct examples for comparison. State when no threshold meets the target.
+\section{Discussion and limitations}
+Discuss synthetic language, author exposure, sample size, overlapping action meanings, and uncertainty. Explain what the evidence supports and what it cannot establish. Document useful rejected alternatives.
+\section{Conclusion}
+Write conclusions only after the experiments exist. Tie each conclusion to saved evidence and avoid claims about all AI systems.
+\section*{Reproducibility and assistance}
+Identify the final code commit, lockfile, data and split hashes, archive checksum, and reproduction commands. Describe agent assistance accurately under the applicable course requirements.
+\begin{thebibliography}{1}
+\bibitem{calibration} Scikit-learn developers, ``CalibratedClassifierCV,'' scikit-learn 1.9.1 documentation. \url{https://scikit-learn.org/stable/modules/generated/sklearn.calibration.CalibratedClassifierCV.html}. Accessed October 22, 2026.
+\end{thebibliography}
+\end{document}

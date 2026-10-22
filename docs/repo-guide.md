@@ -1,11 +1,24 @@
 # Repository walkthrough
 
-This guide distinguishes the executable preparation from the planned routing experiment. Start with the [README commands](../README.md), then read the script alongside this explanation.
+This guide distinguishes verified tooling from research work that still needs accepted data. Start with the [README commands](../README.md), then read the script alongside this explanation.
 
 ## Authored files and their roles
 
 | File | Purpose, input, and output |
 | --- | --- |
+| `src/orchestra/study.py` | Readiness status and next action; deterministic shuffled blind-review worksheet with a separate steward key; immutable prepared config with actual review, permission, brief, and parent hashes. Reuses the existing validator and split commands. |
+| `src/orchestra/confidence.py` | Verifies saved M3 artifacts and reproduces raw predictions; fits grouped training-only calibration; computes probability, reliability, and coverage diagnostics; freezes validation interpretations and choices; runs one auditable final-test decision set per split. |
+| `src/orchestra/figures.py` | Reads verified artifacts and exports scientific SVG/PNG plots with exact source JSON and hashes. Artificial inputs retain visible fixture labels. |
+| `src/orchestra/archive.py` | Creates local-only allowlisted ZIP archives with content hashes and executable modes; verifies every member before restoring into a fresh directory. Rejects path traversal, links, secrets, and PDFs. |
+| `tests/test_study.py`, `tests/test_archive.py`, `tests/test_confidence.py`, `tests/test_figures.py` | Behavioral contracts for preparation, corruption and unsafe paths, train-only calibration, confidence metrics, immutable freezes, interrupted test recovery, plot provenance, and artifact tampering. All data are artificial. |
+| `scripts/check.sh` | Locked setup, smoke, complete unit tests, Ruff lint/format, and diff whitespace checks. |
+| `scripts/verify_workflow.py` | Runs the real command chain on 120/400 artificial rows, proves confidence works without the sealed file, checks final-test receipts, exports plots, and restores/reproduces M3 in a clean environment. Writes a transcript and acceptance record under ignored work. |
+| `.github/workflows/check.yml` | Runs both verification scripts on PRs and main pushes with pinned actions, uv, and Python. |
+| `report/main.tex`, `report/README.md` | Compilable IEEE conference template and editing instructions. Prompts and placeholders, with no invented research results. |
+| `docs/automation-plan.md` | Accepted automation scope, design tradeoffs, dependencies, verification units, and boundaries. |
+| `docs/manual-steps.md` | Human work in order, beginning with one original query; commands remain agent-operated. |
+| `docs/collection-brief.md` | Expansion rules fixed before baseline-error inspection. Prepared study configs bind its hash. |
+| `docs/evidence/automation-completion.md`, `docs/evidence/automation-decisions.tsv` | Observed checks, review and merge evidence, remaining limitations, and dated decision trail. |
 | `README.md` | Entry point with executable setup/check commands and links to the project documents. |
 | `architecture.md` | Current and proposed components, query flow, library responsibilities, and storage boundaries. |
 | `ROADMAP.md` | Primary milestone tracker with target dates, statuses, completion gates, linked GitHub issues, owners, and evidence. Includes plain-language milestone objectives. |
@@ -66,15 +79,15 @@ Consider "Calculate the increase using the figures in the attached report." Its 
 
 The validator now checks the row's fields and provenance. Only rows whose status is `accepted` after annotation review will enter the splits. A persisted split assigns its whole group to one partition. If the row belongs to validation, the fitted training pipeline transforms it and predicts one of the four actions. The evaluation compares that prediction with the annotated first action. A confidence policy may later abstain. No document is actually retrieved in the initial study.
 
-Every step after annotation is now executable: `split`, `run`, `compare`, `extend`, `select`, and `report`. So far each has run only on artificial fixtures, recorded under `docs/evidence/`. No research row exists, so no research split, prediction, or metric exists. The [M1 to M3 plan](m1-m3-plan.md) lists the human gates that remain.
+The command flow now includes readiness, blind review, prepared splits, repeated runs, selection, confidence, freezing, final test, figures, archive, and restoration. The exact commands and recovery rules are in the [runbook](run-experiments.md). So far each has run only on artificial fixtures, recorded under `docs/evidence/`. No research row exists, so no research split, prediction, or metric exists. The [M1 to M3 plan](m1-m3-plan.md) lists the human gates that remain.
 
-## Proposed layout as the study grows
+## Storage layout
 
-The following directories are planned, not empty packages created in advance.
+Some storage directories are created only when their commands run.
 
 | Path | Intended content and Git policy |
 | --- | --- |
-| `src/orchestra/` | Validation, split, and experiment modules plus the `python -m orchestra` entry point. Calibration and test evaluation arrive in M4. Track authored modules. |
+| `src/orchestra/` | Validation, split, and experiment modules plus the `python -m orchestra` entry point. Calibration and final-test evaluation are implemented and fixture-tested. Track authored modules. |
 | `tests/` and `tests/fixtures/` | Focused behavioral checks and small cleared fixtures. Track both. |
 | `data/raw/`, `data/processed/` | Local acquired and derived rows. Ignored. Preserve source/license manifests separately. |
 | `data/manifests/`, `data/splits/` | Proposed tracked provenance and stable split-ID manifests after privacy review. |
