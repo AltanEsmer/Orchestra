@@ -2,13 +2,13 @@
 
 Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The study will compare classifiers and text representations for choosing a query's first action, then analyze confidence and errors.
 
-Current milestone is M1, the annotation pilot. The repository contains a project plan, data/evaluation protocol, draft [annotation guide](docs/annotation-guide.md), dataset validator with readiness checks, the M2 and M3 experiment tooling, a learning routine, and a verified Python environment smoke check. The tooling has run only on artificial fixtures. There is no research dataset, trained router, or experiment result yet. Tool integration is optional and deferred.
+Current research milestone is M1, the annotation pilot. The repository provides readiness and blind-review tools, M2/M3 experiments, M4 confidence and frozen final-test commands, scientific figures, verified local archives, and an IEEE report template. The tooling has run only on artificial fixtures. There is no research dataset, trained research router, or experiment result yet. Tool integration is optional and deferred.
 
 The [M1 to M3 implementation plan](docs/m1-m3-plan.md) defines the proposed data, baseline, and comparison work. Its [methods preview](docs/study-guides/m1-m3-methods-preview.md) supports the exam, presentation, and report. Altan approved implementation on October 16. The five units are built and tested on fixtures. Their research runs wait for accepted, reviewed, and licensed M1 data.
 
 ## Set up and check the environment
 
-Use [uv](https://docs.astral.sh/uv/getting-started/installation/) and run these commands from the repository root. The checked setup used uv 0.11.29 and Python 3.12.13. `.python-version` pins Python, and `uv.lock` pins package versions and distribution hashes. Setup needs network access when Python or packages are not cached.
+Use [uv](https://docs.astral.sh/uv/getting-started/installation/) and run these commands from the repository root. The checked setup used uv 0.11.7 and Python 3.12.13. `.python-version` pins Python, and `uv.lock` pins package versions and distribution hashes. Setup needs network access when Python or packages are not cached.
 
 ```sh
 uv python install 3.12.13
@@ -20,21 +20,25 @@ uv run --locked ruff format --check .
 git diff --check
 ```
 
-The smoke check prints `PASS: environment-smoke-only` followed by the checks performed and runtime versions. It tests sparse TF-IDF, training-only vocabulary, and expected dummy-classifier predictions on artificial fixtures. It does not measure routing accuracy. The unit tests check the dataset validator on small literal rows. Exact evidence is in the [learning log](docs/learning-log.md#preparation-evidence-october-7-2026).
+The smoke check prints `PASS: environment-smoke-only` followed by the checks performed and runtime versions. It tests sparse TF-IDF, training-only vocabulary, and expected dummy-classifier predictions on artificial fixtures. It does not measure routing accuracy. The unit tests cover validation, splitting, experiments, confidence, figures, preparation, and archives using artificial inputs. Exact evidence is in the [learning log](docs/learning-log.md#preparation-evidence-october-7-2026).
 
 Check annotated rows with `uv run --locked python scripts/validate_dataset.py <file.jsonl>`; the [annotation guide](docs/annotation-guide.md) explains the format. Add `--review <ledger.jsonl> --ready` to also check the M1 release requirements.
 
-The [experiment runbook](docs/run-experiments.md) gives the data intake checklist, readiness gate, complete M2 and M3 commands, and parent-hash procedure. Research runs wait for accepted, reviewed data and a permission record.
+The [experiment runbook](docs/run-experiments.md) gives the complete preparation-to-archive command sequence. Research runs wait for accepted, reviewed data and a permission record.
 
-Use `scripts/run_experiment.sh --config configs/m2.json --run-id m2-a` after the readiness check and split. The launcher sets all four timing thread variables to `1` before starting the existing runner. It resolves relative paths from the repository root. No API key or GPU is needed.
+Start the [manual sequence](docs/manual-steps.md) with one original query. The agent can operate the commands. `uv run --locked python -m orchestra status` reports the current data blocker. `prepare-study` enforces readiness, records collection/review hashes, and calculates the parent hash before splitting. Later commands cover `confidence`, `freeze`, `final-test`, `figures`, `archive`, and `restore`.
+
+Run `sh scripts/check.sh` for the complete software checks. Run `uv run --locked python scripts/verify_workflow.py --out work/fixture-proof` with a new output path for the artificial CLI workflow and clean restored reproduction. The workflow creates no research evidence. GitHub Actions runs both checks on pull requests and main.
+
+Use `scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id m2-a` after `prepare-study` writes that prepared configuration and split. The launcher sets all four timing thread variables to `1` before starting the existing runner. It resolves relative paths from the repository root. No API key or GPU is needed.
 
 ## Start the study
 
 - Track milestones, completion evidence, and next actions in the [roadmap](ROADMAP.md).
-- Read the [architecture](architecture.md) for the current smoke check and proposed routing workflow.
+- Read the [architecture](architecture.md) for the implemented components and research workflow.
 - Read the [project plan](docs/project-plan.md) for scope, decisions, the report outline, and the ordered first work session.
 - Use the [data and evaluation protocol](docs/data-and-evaluation.md) for labels, annotation, leakage controls, the experiment matrix, and confidence analysis.
-- Follow the [repository walkthrough](docs/repo-guide.md) to explain each file and trace today's check versus the proposed prediction flow.
+- Follow the [repository walkthrough](docs/repo-guide.md) to explain each file and trace the verified tooling and the research flow awaiting data.
 - Maintain the [learning log](docs/learning-log.md) for evidence, teach-back questions, and knowledge gaps.
 - Use the [milestone study guides](docs/study-guides/README.md) for implementation explanations, course connections, report evidence, and oral preparation. PDFs are saved outside the repository in `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/`.
 - Consult [course sources](docs/course-sources.md) for file locations and verified page references. Course PDFs are not redistributed here.

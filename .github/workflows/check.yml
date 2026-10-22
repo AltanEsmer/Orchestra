@@ -1,0 +1,19 @@
+name: Verify tooling
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9
+        with:
+          version: '0.11.7'
+          python-version: '3.12.13'
+      - run: sh scripts/check.sh
+      - run: uv run --locked python scripts/verify_workflow.py --out work/ci-proof

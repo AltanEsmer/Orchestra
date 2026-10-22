@@ -1,0 +1,12 @@
+date	phase	decision	why	evidence	result
+2026-10-22	scope	Finish independent tooling and merge reviewed PRs	Explicit user authorization	../../AGENTS.md; ../automation-plan.md	Human evidence remains a separate gate
+2026-10-22	ground	Repair PR 16 before adding M4	Frozen content and output aliases were not fully checked	frozen-input-integrity.md	Four red regressions repaired; 153 exact-commit tests passed
+2026-10-22	ship	Merge reviewed PR 16 head f973d92	Independent re-review and full checks passed	https://github.com/AltanEsmer/Orchestra/pull/16	Merged as d666988
+2026-10-22	design	Extend the existing CLI with focused modules	Two designs tied at 22/25; avoid a second workflow engine	../automation-plan.md	Implemented
+2026-10-22	data	Bind preparation to review and permission evidence	Later stages must verify readiness without rereading full data	../../src/orchestra/study.py	Artificial readiness and immutable preparation verified
+2026-10-22	confidence	Reproduce raw M3 scores before calibrating	Prevents comparing calibration against a different model	../../src/orchestra/confidence.py	Group-only training folds; no sealed file needed
+2026-10-22	final-test	Use canonical split receipts with POSIX lock and atomic writes	Prevent changed decisions or concurrent retries after exposure	../../src/orchestra/confidence.py	Failed and interrupted identical retries preserve history
+2026-10-22	figures	Pin Matplotlib and save exact figure inputs	Scientific axes and traceable exports are required for the report	../../pyproject.toml; ../../src/orchestra/figures.py	Fixture identity propagates to visible labels
+2026-10-22	archive	Restore allowlisted local files with executable modes	Checksum success alone does not prove reproduction	../../src/orchestra/archive.py; ../../scripts/verify_workflow.py	Clean restored environment reproduced M3 predictions
+2026-10-22	report	Prepare a compiling IEEE template with author prompts	Research results and student authorship cannot be invented	../../report/README.md	Compilation succeeded; final report still pending
+2026-10-22	teaching	Start with one original query and its rationale	Student response required before feedback or learning claims	../manual-steps.md	Awaiting first response

@@ -2,7 +2,7 @@
 
 Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation currently verifies the Python environment and validates annotated row structure and provenance.
 
-The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the next implementation, its acceptance gates, resource limits, and supporting documents. Its planning PR is authorized for merge. Implementation waits for Altan's subsequent approval. The ordered units in that plan refine the first-session outline below without claiming any dataset or trained model exists.
+The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records the completed tooling scope and its human evidence boundary. No dataset or trained research model exists.
 
 ## Research question and scope
 
@@ -77,7 +77,7 @@ References and final pagination must fit the course limit. Each result or figure
 7. Rerun and compare split IDs and predictions. Inspect at least five validation errors, or all errors if fewer exist.
 8. Update the walkthrough and learning log, then answer the first-slice teach-back questions. Stop when the vertical-slice completion condition above is met.
 
-Training and evaluation commands are intentionally not published as runnable commands yet.
+Executable commands are in the [runbook](run-experiments.md). Their research execution waits for accepted data and the recorded human evidence.
 
 ## Source authority
 

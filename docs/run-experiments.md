@@ -1,6 +1,6 @@
-# Prepare data and run the M1 to M3 experiments
+# Prepare data and run the required study
 
-Use this procedure from the repository root on PR #16's implementation branch.
+Use this procedure from the repository root. The agent can execute these steps after each human prerequisite is satisfied.
 The [data protocol](data-and-evaluation.md) defines the scientific rules.
 The commands below become research runs only after the human data gates pass.
 
@@ -86,9 +86,9 @@ Keep the supplied paths and seed 42 in `configs/m2.json` unless a recorded proje
 After the data gate passes, run:
 
 ```sh
-uv run --locked python -m orchestra split --config configs/m2.json
-scripts/run_experiment.sh --config configs/m2.json --run-id m2-a
-scripts/run_experiment.sh --config configs/m2.json --run-id m2-b
+uv run --locked python -m orchestra prepare-study --config configs/m2.json --review data/raw/reviews-v1.jsonl --collection-brief docs/collection-brief.md --out data/processed/m2-prepared.json
+scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id m2-a
+scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id m2-b
 uv run --locked python -m orchestra compare --left results/m2-a --right results/m2-b
 ```
 
@@ -106,20 +106,13 @@ Freeze the expanded dataset as `data/processed/m3-v1.jsonl` and the complete rev
 Run the readiness check against those two files before extension.
 The current readiness check enforces M1 minimums. Check the M3 collection target and expansion protocol separately.
 
-Calculate the parent manifest hash after the actual M2 split exists:
-
-```sh
-shasum -a 256 data/splits/m2-split.json
-```
-
-Replace `parent_manifest_sha256: null` in `configs/m3.json` with the printed 64-character digest as a JSON string.
-Leave the placeholder unset until that file exists. The agent can calculate and record the digest without another human decision.
+The agent runs `prepare-study` to validate the expanded rows and review ledger, record the collection-brief hash, and calculate the actual parent manifest hash. The original tracked config remains a reusable template. A supplied non-null parent hash must match.
 Then run:
 
 ```sh
-uv run --locked python -m orchestra extend --config configs/m3.json
-scripts/run_experiment.sh --config configs/m3.json --run-id m3-a
-scripts/run_experiment.sh --config configs/m3.json --run-id m3-b
+uv run --locked python -m orchestra prepare-study --config configs/m3.json --review data/raw/m3-reviews-v1.jsonl --collection-brief docs/collection-brief.md --out data/processed/m3-prepared.json
+scripts/run_experiment.sh --config data/processed/m3-prepared.json --run-id m3-a
+scripts/run_experiment.sh --config data/processed/m3-prepared.json --run-id m3-b
 uv run --locked python -m orchestra compare --left results/m3-a --right results/m3-b
 uv run --locked python -m orchestra select --run results/m3-a --out results/m3-a-selection.json
 uv run --locked python -m orchestra report --run results/m3-a --selection results/m3-a-selection.json --train data/processed/m3/train.jsonl --validation data/processed/m3/validation.jsonl
@@ -128,4 +121,69 @@ uv run --locked python -m orchestra report --run results/m3-a --selection result
 Read the comparison table and validation mistakes in `results/m3-a-report/`.
 Keep validation text out of Git.
 Archive complete results and provenance with the data release.
-Calibration, fallback, plots, and final test evaluation are later work.
+Use the following commands for confidence, freezing, final evaluation, and plots after the real M3 artifacts exist.
+
+## Prepare blind review
+
+After draft rows pass structural validation, generate the reviewer worksheet:
+
+```sh
+uv run --locked python -m orchestra prepare-review --dataset data/raw/pilot-v0.jsonl --out data/raw/pilot-blind-review
+```
+
+Give the reviewer only `reviewer.jsonl`. Keep `steward.json` hidden until the reviewer has recorded independent labels. The command samples 20 percent per accepted class and includes mixed-label groups and unresolved rows. Repeat `--extra-id QUERY_ID` for additional known ambiguous cases. A human must still identify ambiguity and related scenarios that code cannot infer.
+
+The agent can convert the returned human answers into the existing review ledger. It cannot supply reviewer identities, actual review dates, independent labels, or adjudication on Altan's behalf.
+
+## Analyze confidence and record interpretations
+
+Run the new commands under the same single-thread environment as training:
+
+```sh
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+uv run --locked python -m orchestra confidence --run results/m3-a --selection results/m3-a-selection.json --out results/m4-validation
+```
+
+Research confidence requires the evidence written by `prepare-study`. The command verifies the saved M3 environment, refits every selected family on training only, and checks raw validation reproduction before calibration. It selects the logistic family by the recorded validation tolerance and family order. Its full pipeline is calibrated with sigmoid models on three grouped training folds. A class shortage or unresolved convergence warning produces saved diagnostics and a nonzero exit code. It blocks freezing.
+
+Inspect at least 20 selected-system validation errors, or all if fewer exist, across true and predicted classes. Include correct comparisons. The agent can perform this inspection and propose explanations as hypotheses. Discuss questionable labels with Altan. Store the completed interpretations separately at `results/validation-interpretations.jsonl`, leaving the original prediction artifacts unchanged. Each row contains:
+
+```json
+{"configuration":"L2-C1","query_id":"ACTUAL_QUERY_ID","category":"vocabulary_mismatch","hypothesis":"A reasoned interpretation tied to the actual observed query."}
+```
+
+This is a format example, not a completed interpretation. The configuration and ID must match actual selected-system validation predictions. Allowed categories are `annotation_ambiguity`, `missing_context`, `vocabulary_mismatch`, `negation`, `multi_action_dependencies`, `out_of_scope`, and `other`. A correct comparison can use `other`. The freeze checks coverage and required fields, not the truth of an interpretation.
+
+## Freeze decisions and evaluate once
+
+```sh
+uv run --locked python -m orchestra freeze --confidence results/m4-validation --error-review results/validation-interpretations.jsonl --out results/frozen-study.json
+uv run --locked python -m orchestra final-test --freeze results/frozen-study.json --out results/final-test
+```
+
+Freeze binds selected systems, exact inputs and code, calibration folds, validation fallback choice, and the interpretation ledger. Do not edit those inputs afterward. No qualifying threshold is a valid recorded outcome. The final command evaluates all frozen family winners and calibrated logistic probabilities. It applies only the already selected threshold to test predictions.
+
+The canonical research receipt lives under `results/test-receipts/` and is keyed by split hash. Repeating an identical completed request verifies and returns its existing artifacts. A changed freeze or output location is refused. For an identical request that recorded a failure, add `--resume`. The command preserves failed attempts and partial output before retrying. Never delete a receipt to try a new model on exposed test data. An exact interrupted request can also resume after its process exits. A split-specific POSIX file lock excludes active evaluations; the operating system releases it on process exit. Receipt updates are atomic, and every resumed attempt stays in history. This recovery currently targets macOS and Linux.
+
+`--fixture` on confidence is only for artificial software verification. It bypasses research evidence gates, marks artifacts as fixtures, and uses an isolated fixture receipt store. Never use it to bypass missing real review or permission.
+
+## Render saved evidence
+
+```sh
+uv run --locked python -m orchestra figures --run results/m3-a --selection results/m3-a-selection.json --train data/processed/m3/train.jsonl --validation data/processed/m3/validation.jsonl --confidence results/m4-validation --final results/final-test --out results/figures
+```
+
+Omit `--final` before final evaluation. Omit both optional artifact directories for M3-only figures. The renderer verifies hashes and exports SVG/PNG figures plus exact numeric inputs, per-figure source records, and a checksum manifest. It does not fit a model or open sealed source rows. Use a fresh output directory. The report source template is `report/main.tex`.
+
+## Back up and reproduce
+
+Create a JSON array of exact repository-relative regular-file paths at `work/archive-files.json`. Include the tracked source, Python/lock files, launcher, prepared configs, permitted local rows, sources/review ledger, collection brief, split manifests, complete runs, confidence/freeze/final artifacts, receipts, and figure source records. Include the files needed by any absolute references in configs. Do not include `.venv`, secrets, or course PDFs. The backup is local-only; distribution permission is a separate human decision. Keep the final report and study PDFs separately.
+
+```sh
+uv run --locked python -m orchestra archive --files work/archive-files.json --out work/study-backup.zip
+uv run --locked python -m orchestra restore --archive work/study-backup.zip --out work/restored-study
+```
+
+The restore verifies member hashes and safe paths before writing a new directory, and preserves executable modes. Save the printed archive checksum. Reproduction also requires execution. In the restored directory, run `uv sync --locked`, create a new run config with relocated paths, and rerun training with a fresh ID. Compare the new run to the saved original. Keep content and lineage hashes unchanged. Do not use live test data for another selection. The agent handles the path relocation.
+
+The committed `scripts/verify_workflow.py` demonstrates this entire sequence with artificial rows and a clean restored environment. It is a software acceptance check, not the real study or a substitute for its archive.

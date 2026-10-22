@@ -1,6 +1,6 @@
 # Roadmap
 
-Last updated: October 16, 2026. This is the primary progress tracker for course project 13. Preparation was delivered through [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1); the milestone issues below track the remaining work. The [project plan](docs/project-plan.md) owns scope and decision rationale; [architecture](architecture.md) owns component responsibilities. The [learning log](docs/learning-log.md) tracks understanding separately.
+Last updated: October 22, 2026. This is the primary progress tracker for course project 13. Preparation was delivered through [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1); the milestone issues below track the remaining work. The [project plan](docs/project-plan.md) owns scope and decision rationale; [architecture](architecture.md) owns component responsibilities. The [learning log](docs/learning-log.md) tracks understanding separately.
 
 ## Current position
 
@@ -9,6 +9,12 @@ Preparation was reviewed and merged in [PR #2](https://github.com/AltanEsmer/Orc
 Statuses mean **not started**, **in progress**, **in review**, **done**, or **blocked**. “Done” requires the stated completion evidence. A blocked item records what must change and who can resolve it. Dates are targets, not evidence of completion.
 
 The October 16 [M1 to M3 plan](docs/m1-m3-plan.md) is a documentation-only delivery, accompanied by an [exam, presentation, and report methods preview](docs/study-guides/m1-m3-methods-preview.md). Altan authorized creating and merging the planning PR, then stopping for implementation approval. He gave that approval on October 16 after PR #15 merged. The five delivery units are now implemented as tooling and tested on artificial fixtures only. M2 and M3 are blocked on accepted M1 data, which needs Altan's labels, review, and a recorded dataset license. No research split, run, or metric exists.
+
+## Automation handoff, October 22
+
+PR #16 is merged as `d666988`. The remaining tooling now includes readiness and blind-review preparation, frozen study configs, confidence/calibration, validation interpretation checks, final-test receipts, scientific figures, a compiling IEEE report template, verified local archives, clean reproduction, and CI. [Completion evidence](docs/evidence/automation-completion.md) distinguishes artificial checks from research results. [The manual guide](docs/manual-steps.md) starts with one original query; the agent operates the commands as human evidence arrives.
+
+All currently independent software work is implemented. Actual research execution remains dependent on accepted human-authored data. M1–M8 stay open because their acceptance conditions include data, research results, writing, learning, or submission. Passing fixture checks does not close them. The October 18 M1 target has passed; no replacement date is inferred.
 
 ## Milestones
 
@@ -20,9 +26,9 @@ Dates use Europe/Copenhagen. December 6 is the course submission date; earlier d
 | M1 | October 18 | Annotation pilot and first dataset | [#4](https://github.com/AltanEsmer/Orchestra/issues/4) | In progress | After M0: review 40 pilot queries, freeze guide v1, and accept 120 rows with provenance and group IDs. Record disagreements and exclusions. |
 | M2 | October 25 | First reproducible baseline | [#5](https://github.com/AltanEsmer/Orchestra/issues/5) | Blocked | Split, run, and compare commands exist and pass on fixtures. Blocked on accepted M1 data (Altan). After M1: validate rows and splits; run dummy and TF-IDF logistic regression twice with identical split membership and predictions. Save validation metrics and provenance. |
 | M3 | November 8 | Main classifier and representation comparison | [#6](https://github.com/AltanEsmer/Orchestra/issues/6) | Blocked | Extend, 14-configuration run, select, and report commands exist and pass on fixtures. Blocked on M2 evidence and the 400-row collection (Altan). After M2: freeze the main dataset, target 400 accepted queries, and complete the 14 required configurations. Save all outcomes and validation selections. |
-| M4 | November 15 | Confidence, errors, and final test | [#7](https://github.com/AltanEsmer/Orchestra/issues/7) | Not started | After M3: complete calibration and validation error analysis; freeze selected systems and any fallback threshold, then evaluate the sealed test. Save confidence and error evidence. |
-| M5 | November 22 | Report draft | [#8](https://github.com/AltanEsmer/Orchestra/issues/8) | Not started | After M4: write a 5–12 page IEEE two-column draft with traceable figures, methods, results, and limitations in Altan's own words. |
-| M6 | November 29 | Clean reproduction and oral rehearsal | [#9](https://github.com/AltanEsmer/Orchestra/issues/9) | Not started | After M5: reproduce the study from a clean environment and archive; record a rehearsal using actual queries, predictions, and figures. Carry knowledge gaps forward. |
+| M4 | November 15 | Confidence, errors, and final test | [#7](https://github.com/AltanEsmer/Orchestra/issues/7) | Blocked | Tooling verified on artificial fixtures. Requires actual M3 evidence. After M3: complete calibration and validation error analysis; freeze selected systems and any fallback threshold, then evaluate the sealed test. Save confidence and error evidence. |
+| M5 | November 22 | Report draft | [#8](https://github.com/AltanEsmer/Orchestra/issues/8) | Blocked | IEEE template compiles and figure export works; actual results and Altan’s own writing remain. After M4: write a 5–12 page IEEE two-column draft with traceable figures, methods, results, and limitations in Altan's own words. |
+| M6 | November 29 | Clean reproduction and oral rehearsal | [#9](https://github.com/AltanEsmer/Orchestra/issues/9) | Blocked | Artificial archive restored and reproduced in a clean environment; research archive and oral responses remain. After M5: reproduce the study from a clean environment and archive; record a rehearsal using actual queries, predictions, and figures. Carry knowledge gaps forward. |
 | M7 | December 4 | Submission freeze | [#10](https://github.com/AltanEsmer/Orchestra/issues/10) | Not started | After M6: verify final report, citations, code, archive checksum, submission instructions, and remaining high-priority knowledge gaps. |
 | M8 | December 6 | Submission | [#11](https://github.com/AltanEsmer/Orchestra/issues/11) | Not started | After M7: submit report through itslearning and code through the confirmed method. Record receipt or equivalent submission evidence. |
 
@@ -44,7 +50,7 @@ Every milestone also requires its updated [study PDF](docs/study-guides/README.m
 | M7 — Make it ready to hand in | Check the final report, citations, code, archive, and submission steps. | A verified final package with a recorded version/checksum and remaining learning gaps. |
 | M8 — Hand it in | Submit the report and code through the confirmed channels. | Recorded receipts or equivalent proof identifying exactly what was submitted. |
 
-For example, “What is 18 percent of 250?” needs `calculation` as its first action. M1 records that label, M2 learns to predict it, M3 compares approaches, and M4 checks predictions and confidence on unseen examples. M5–M8 explain, reproduce, finalize, and submit the study. Today's smoke script still uses toy labels; this research flow is planned.
+For example, “What is 18 percent of 250?” needs `calculation` as its first action. M1 records that label, M2 learns to predict it, M3 compares approaches, and M4 checks predictions and confidence on unseen examples. M5–M8 explain, reproduce, finalize, and submit the study. The entire command flow is tested with artificial data; accepted research data is still absent.
 
 ## Preparation checklist
 

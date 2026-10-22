@@ -44,6 +44,8 @@ RUN_FILES = (
     "timing.json",
 )
 PATH_KEYS = (
+    "review",
+    "collection_brief",
     "parent_dataset",
     "parent_manifest",
     "dataset",
