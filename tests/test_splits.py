@@ -345,6 +345,25 @@ class SplitCliTest(unittest.TestCase):
         path = self.root / name
         return [json.loads(line)["query_id"] for line in path.read_text().splitlines()]
 
+    def test_refuses_output_aliasing_input_before_any_write(self):
+        path = self.root / "raw/data.jsonl"
+        path.parent.mkdir()
+        path.write_bytes((self.root / "data.jsonl").read_bytes())
+        before = path.read_bytes()
+        self.write_config(dataset=str(path), train=str(path))
+        code, output = self.run_split()
+        self.assertEqual(code, 1, output)
+        self.assertEqual(path.read_bytes(), before)
+        self.assertFalse((self.root / "splits").exists())
+
+    def test_refuses_changed_materialized_file_without_rewriting_others(self):
+        self.assertEqual(self.run_split()[0], 0)
+        path = self.root / "sealed/test.jsonl"
+        path.write_text("changed\n")
+        code, output = self.run_split()
+        self.assertEqual(code, 1, output)
+        self.assertEqual(path.read_text(), "changed\n")
+
     def test_split_writes_manifest_and_three_files(self):
         code, output = self.run_split()
         self.assertEqual(code, 0)

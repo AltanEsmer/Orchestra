@@ -31,6 +31,7 @@ class RunTestCase(unittest.TestCase):
         for row in self.rows:
             if row["query_id"] in validation:
                 row["text"] += " zzheldoutzz"
+        self.manifest = make_split(self.rows, DIGEST)
         materialize(
             self.manifest,
             self.rows,
@@ -66,6 +67,57 @@ class RunTestCase(unittest.TestCase):
 
 
 class BaselineBehaviorTest(RunTestCase):
+    def test_changed_content_with_frozen_id_is_refused(self):
+        path = self.root / "train.jsonl"
+        rows = [json.loads(line) for line in path.read_text().splitlines()]
+        rows[0]["text"] += " changed"
+        path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+        code, output = self.run_id("tampered")
+        self.assertEqual(code, 1)
+        self.assertIn("content hash", output)
+
+    def test_frozen_label_group_and_partition_corruption_is_refused(self):
+        train_path = self.root / "train.jsonl"
+        original = train_path.read_text()
+        for key, value in (
+            ("label", LABELS[-1]),
+            ("group_id", "another-group"),
+            ("status", "excluded"),
+        ):
+            with self.subTest(key=key):
+                rows = [json.loads(line) for line in original.splitlines()]
+                if key == "label":
+                    value = next(label for label in LABELS if label != rows[0]["label"])
+                rows[0][key] = value
+                train_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+                self.assertEqual(self.run_id("bad-" + key)[0], 1)
+        train_path.write_text(original)
+        self.manifest["partitions"]["test"].append(
+            self.manifest["partitions"]["train"][0]
+        )
+        (self.root / "split.json").write_text(json.dumps(self.manifest))
+        self.assertEqual(self.run_id("overlap")[0], 1)
+
+    def test_parent_paths_do_not_change_comparable_configuration(self):
+        left = {
+            "config": {
+                "seed": 42,
+                "parent_dataset": "/a/data",
+                "parent_manifest": "/a/split",
+            }
+        }
+        right = {
+            "config": {
+                "seed": 42,
+                "parent_dataset": "/b/data",
+                "parent_manifest": "/b/split",
+            }
+        }
+        self.assertEqual(
+            experiment.comparable_config({"config.json": left}),
+            experiment.comparable_config({"config.json": right}),
+        )
+
     def test_b0_predicts_training_majority_for_every_validation_row(self):
         self.assertEqual(self.run_id("a")[0], 0)
         lines = (self.root / "results/a/predictions.jsonl").read_text().splitlines()

@@ -255,3 +255,15 @@ Trace the existing teaching query about calculating an increase from an attached
 Still needed from Altan are the 40-query pilot with labels, rationales, and groups; actual dataset permission; a review method and real blind review evidence; and pilot boundary resolutions before guide v1. The 120-row release and reviewed expansion toward 400 remain future work. No research split or metric exists. No learning status changed.
 
 Two unanswered exercises remain for later practice. Why can structural validation pass an empty draft while readiness fails? Why must the parent-manifest hash come from the frozen M2 artifact rather than a chosen value?
+
+## Frozen-input integrity repair, October 22, 2026
+
+Altan authorized completing the remaining automation, creating and merging PRs, updating issues, and then guiding manual work one step at a time. This does not supply queries, human review decisions, permission, or learning responses.
+
+An independent review of PR #16 found three reproducible gaps. The runner accepted changed materialized text, labels, and groups under an old split identity. Split outputs could overwrite an input dataset. Relocated M3 parent paths caused a false reproduction mismatch. The repair checks visible rows against canonical manifest hashes and group memberships, rejects input/output aliases before writing, preserves existing materialized files, and excludes parent path locations from semantic run comparison while retaining their hashes.
+
+Four regression checks failed against the original implementation. After repair, 59 experiment tests and 52 split tests passed. Focused Ruff lint and format checks passed. The complete current test run was attempted while a separate M4 worker had written a failing test before its module existed; that transient import failure is not a passing full-suite claim. The integrated full suite will run after all writers finish.
+
+The teaching query about an attached report still stays outside the research data. If a real validation row is edited after splitting, the runner now refuses its changed content hash before fitting. Neither passing checks nor this explanation changes Altan's learning status.
+
+Next practice remains one introductory routing query, followed by the meaning of an unseen example. The new integrity question is why a stable query ID alone cannot prove that its text and label stayed unchanged.

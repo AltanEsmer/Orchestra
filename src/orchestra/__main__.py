@@ -24,6 +24,8 @@ def guarded(function):
             print(f"ERROR: invalid JSON: {error}")
         except KeyError as error:
             print(f"ERROR: config is missing {error}")
+        except ValueError as error:
+            print(f"ERROR: {error}")
         except (TypeError, AttributeError):
             print("ERROR: config values have the wrong type")
         return 1
@@ -31,7 +33,7 @@ def guarded(function):
     return command
 
 
-def outputs_are_distinct(config):
+def outputs_are_distinct(config, config_path=None):
     train, validation, sealed = (
         Path(config[k]).resolve() for k in ("train", "validation", "sealed_test")
     )
@@ -43,6 +45,22 @@ def outputs_are_distinct(config):
             "and sealed_test must not sit in the train or validation directory"
         )
         return False
+    inputs = [
+        Path(config[k]).resolve()
+        for k in ("dataset", "sources", "parent_dataset", "parent_manifest")
+        if k in config
+    ]
+    if config_path is not None:
+        inputs.append(Path(config_path).resolve())
+    outputs = [train, validation, sealed, Path(config["split_manifest"]).resolve()]
+    for index, output in enumerate(outputs):
+        for other in inputs + outputs[index + 1 :]:
+            same = output == other or (
+                output.exists() and other.exists() and output.samefile(other)
+            )
+            if same or output in other.parents or other in output.parents:
+                print(f"ERROR: input/output paths collide: {output} and {other}")
+                return False
     return True
 
 
@@ -77,7 +95,7 @@ def write_manifest(manifest, path, kind="manifest"):
 def run_split(args):
     with open(args.config, encoding="utf-8") as file:
         config = json.load(file)
-    if not outputs_are_distinct(config):
+    if not outputs_are_distinct(config, args.config):
         return 1
     rows = load_valid(config["dataset"], config["sources"])
     if rows is None:
@@ -115,7 +133,7 @@ def run_split(args):
 def run_extend(args):
     with open(args.config, encoding="utf-8") as file:
         config = json.load(file)
-    if not outputs_are_distinct(config):
+    if not outputs_are_distinct(config, args.config):
         return 1
     parent_rows = load_valid(config["parent_dataset"], config["sources"])
     rows = load_valid(config["dataset"], config["sources"])

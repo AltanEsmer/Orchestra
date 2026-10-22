@@ -290,12 +290,89 @@ def check_split(manifest, rows, dataset_sha256):
     return errors
 
 
+def check_materialized(manifest, partitions):
+    """Check visible partitions against frozen content without opening test rows."""
+    if not isinstance(manifest, dict) or any(k not in manifest for k in MANIFEST_KEYS):
+        return ["split manifest is malformed or missing fields"]
+    parts = manifest["partitions"]
+    if (
+        not isinstance(parts, dict)
+        or set(parts) != set(PARTITIONS)
+        or not all(
+            isinstance(ids, list) and all(isinstance(q, str) for q in ids)
+            for ids in parts.values()
+        )
+        or not isinstance(manifest["groups"], dict)
+        or not isinstance(manifest["row_sha256"], dict)
+    ):
+        return ["manifest partitions or groups are malformed"]
+    errors = []
+    for key, expected in (
+        ("manifest_version", MANIFEST_VERSION),
+        ("algorithm", "StratifiedGroupKFold"),
+        ("n_splits", N_SPLITS),
+        ("fold_partition", {str(k): v for k, v in FOLD_PARTITION.items()}),
+    ):
+        if manifest[key] != expected:
+            errors.append(f"manifest {key} differs from the split contract")
+    ids = [q for members in parts.values() for q in members]
+    if len(ids) != len(set(ids)):
+        errors.append("query IDs overlap across partitions")
+    if set(ids) != set(manifest["groups"]) or set(ids) != set(manifest["row_sha256"]):
+        errors.append("manifest group and content hash IDs differ from partitions")
+    group_parts = {}
+    for name, members in parts.items():
+        for q in members:
+            group = manifest["groups"].get(q)
+            if not isinstance(group, str) or not group:
+                errors.append(f"{q}: manifest group is invalid")
+                continue
+            group_parts.setdefault(group, set()).add(name)
+    if any(len(names) > 1 for names in group_parts.values()):
+        errors.append("group spans multiple partitions")
+    if manifest["class_order"] != list(LABELS):
+        errors.append("manifest class_order differs from required labels")
+    for name, rows in partitions.items():
+        if sorted(r["query_id"] for r in rows) != sorted(parts[name]):
+            errors.append(f"{name} query_ids differ from the split manifest")
+        for row in rows:
+            q = row["query_id"]
+            if row.get("status") != "accepted":
+                errors.append(f"{q}: materialized row is not accepted")
+            if not isinstance(row.get("group_id"), str) or manifest["groups"].get(
+                q
+            ) != row.get("group_id"):
+                errors.append(f"{q}: manifest group disagrees with materialized row")
+            if not all(k in row for k in ("text", "label", "group_id")) or manifest[
+                "row_sha256"
+            ].get(q) != row_hash(row):
+                errors.append(f"{q}: content hash disagrees with materialized row")
+        counts = {label: sum(r["label"] == label for r in rows) for label in LABELS}
+        if any(n == 0 for n in counts.values()):
+            errors.append(f"{name} is missing a class")
+        if (
+            not isinstance(manifest["counts"], dict)
+            or manifest["counts"].get(name) != counts
+        ):
+            errors.append(f"{name} counts differ from split manifest")
+    return errors
+
+
 def materialize(manifest, rows, train_path, validation_path, test_path):
     rows_by_id = {r["query_id"]: r for r in rows}
     paths = {"train": train_path, "validation": validation_path, "test": test_path}
+    contents = {}
     for name, path in paths.items():
-        Path(path).parent.mkdir(parents=True, exist_ok=True)
         ids = sorted(manifest["partitions"][name])
-        lines = (json.dumps(rows_by_id[q], ensure_ascii=False) + "\n" for q in ids)
-        with open(path, "w", encoding="utf-8") as file:
-            file.writelines(lines)
+        contents[Path(path)] = "".join(
+            json.dumps(rows_by_id[q], ensure_ascii=False) + "\n" for q in ids
+        )
+    for path, text in contents.items():
+        if path.exists() and path.read_text(encoding="utf-8") != text:
+            raise ValueError(
+                f"{path} exists and differs; materialized files are immutable"
+            )
+    for path, text in contents.items():
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")

@@ -85,3 +85,7 @@ The following directories are planned, not empty packages created in advance.
 | `work/` | Ignored agent scratch notes, not required to run the project. |
 
 No runtime credential, paid API, external dataset, or pretrained model is needed for today's smoke check. Setup downloads Python or packages when missing. Future artifact retention and resource limits are defined in the [protocol](data-and-evaluation.md#reproducibility-and-resource-budget).
+
+### Frozen materialized inputs
+
+`orchestra.splits.check_materialized` checks already separated partitions against the manifest's IDs, canonical content hashes, groups, counts, and class order. The experiment runner supplies train and validation only, so this check does not open sealed test rows. Split and extension commands reject input/output aliases before writing. `materialize` checks all existing output contents first and refuses changed files. Reproduction ignores relocated parent input paths while retaining parent hash comparisons.

@@ -29,6 +29,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
 from orchestra.data import LABELS, file_sha256, read_jsonl
+from orchestra.splits import check_materialized
 
 MODEL_SEED = 42
 SCORE_TOLERANCE = 1e-10
@@ -43,6 +44,8 @@ RUN_FILES = (
     "timing.json",
 )
 PATH_KEYS = (
+    "parent_dataset",
+    "parent_manifest",
     "dataset",
     "sources",
     "train",
@@ -321,10 +324,9 @@ def load_rows(path, label):
 def check_inputs(config, train, validation):
     with open(config["split_manifest"], encoding="utf-8") as file:
         manifest = json.load(file)
-    parts = manifest["partitions"]
-    for name, rows in (("train", train), ("validation", validation)):
-        if [r["query_id"] for r in rows] != sorted(parts[name]):
-            raise ValueError(f"{name} query_ids differ from the split manifest")
+    problems = check_materialized(manifest, {"train": train, "validation": validation})
+    if problems:
+        raise ValueError("; ".join(problems))
     return manifest
 
 
