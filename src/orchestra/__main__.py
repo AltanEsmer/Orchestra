@@ -270,6 +270,93 @@ def report(args):
     return 0
 
 
+def study_status(args):
+    from orchestra.study import status
+
+    result = status(args.dataset, args.sources, args.review)
+    print(json.dumps(result, indent=2))
+    return 0 if result["ready"] else 1
+
+
+def prepare_review(args):
+    from orchestra.study import prepare_review
+
+    out = prepare_review(args.dataset, args.sources, args.out, args.seed, args.extra_id)
+    print(f"PASS: blind review worksheet written to {out / 'reviewer.jsonl'}")
+    print("Keep steward.json hidden until independent labels are recorded.")
+    return 0
+
+
+def analyze_confidence(args):
+    from orchestra.confidence import analyze, load_artifacts
+
+    out = analyze(args.run_dir, args.selection, args.out, fixture=args.fixture)
+    outcome = load_artifacts(out)["outcomes.json"]
+    if outcome["status"] != "ok":
+        print(f"BLOCKED: calibration {outcome['status']}; evidence written to {out}")
+        return 1
+    print(f"PASS: validation confidence written to {out}")
+    return 0
+
+
+def freeze_study(args):
+    from orchestra.confidence import freeze
+
+    freeze(args.confidence, args.out, error_review=args.error_review)
+    print(f"PASS: final-test decisions frozen at {args.out}")
+    return 0
+
+
+def final_test(args):
+    from orchestra.confidence import final_test
+
+    out = final_test(args.freeze, args.out, resume=args.resume)
+    print(f"PASS: frozen final-test evidence at {out}")
+    return 0
+
+
+def render_figures(args):
+    from orchestra.figures import render
+
+    out = render(
+        args.run_dir,
+        args.selection,
+        args.train,
+        args.validation,
+        args.out,
+        confidence_dir=args.confidence,
+        final_dir=args.final,
+        fixture=args.fixture,
+    )
+    print(f"PASS: figures and source values written to {out}")
+    return 0
+
+
+def archive_study(args):
+    from orchestra.archive import create_archive
+
+    paths = json.loads(Path(args.files).read_text(encoding="utf-8"))
+    if not isinstance(paths, list) or not all(isinstance(p, str) for p in paths):
+        raise ValueError("archive files must be a JSON list of relative file paths")
+    print(json.dumps(create_archive(args.root, paths, args.out), indent=2))
+    return 0
+
+
+def restore_archive(args):
+    from orchestra.archive import verify_archive
+
+    print(json.dumps(verify_archive(args.archive, args.out), indent=2))
+    return 0
+
+
+def prepare_study(args):
+    from orchestra.study import prepare
+
+    out = prepare(args.config, args.review, args.collection_brief, args.out)
+    print(f"PASS: ready data split using prepared config {out}")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="orchestra")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -299,6 +386,91 @@ def main(argv=None):
     report_parser.add_argument("--train", required=True)
     report_parser.add_argument("--validation", required=True)
     report_parser.set_defaults(run=guarded(report))
+    status_parser = commands.add_parser(
+        "status", help="show M1 data blockers and next action"
+    )
+    status_parser.add_argument("--dataset", default="data/raw/pilot-v0.jsonl")
+    status_parser.add_argument("--sources", default="data/manifests/sources.json")
+    status_parser.add_argument("--review", default="data/raw/reviews-v1.jsonl")
+    status_parser.set_defaults(run=guarded(study_status))
+    review_parser = commands.add_parser(
+        "prepare-review", help="prepare a blind human review worksheet"
+    )
+    review_parser.add_argument("--dataset", required=True)
+    review_parser.add_argument("--sources", default="data/manifests/sources.json")
+    review_parser.add_argument("--out", required=True)
+    review_parser.add_argument("--seed", type=int, default=42)
+    review_parser.add_argument("--extra-id", action="append", default=[])
+    review_parser.set_defaults(run=guarded(prepare_review))
+    confidence_parser = commands.add_parser(
+        "confidence", help="analyze training-only calibration on validation"
+    )
+    confidence_parser.add_argument("--run", dest="run_dir", required=True)
+    confidence_parser.add_argument("--selection", required=True)
+    confidence_parser.add_argument("--out", required=True)
+    confidence_parser.add_argument(
+        "--fixture",
+        action="store_true",
+        help="explicit artificial tooling verification",
+    )
+    confidence_parser.set_defaults(run=guarded(analyze_confidence))
+    freeze_parser = commands.add_parser(
+        "freeze", help="freeze decisions before opening the test set"
+    )
+    freeze_parser.add_argument("--confidence", required=True)
+    freeze_parser.add_argument("--out", required=True)
+    freeze_parser.add_argument(
+        "--error-review", help="completed validation interpretation ledger for research"
+    )
+    freeze_parser.set_defaults(run=guarded(freeze_study))
+    final_parser = commands.add_parser(
+        "final-test", help="evaluate frozen systems once per split"
+    )
+    final_parser.add_argument("--freeze", required=True)
+    final_parser.add_argument("--out", required=True)
+    final_parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="retry the identical failed frozen request",
+    )
+    final_parser.set_defaults(run=guarded(final_test))
+    figures_parser = commands.add_parser(
+        "figures", help="render figures from saved evidence"
+    )
+    figures_parser.add_argument("--run", dest="run_dir", required=True)
+    figures_parser.add_argument("--selection", required=True)
+    figures_parser.add_argument("--train", required=True)
+    figures_parser.add_argument("--validation", required=True)
+    figures_parser.add_argument("--out", required=True)
+    figures_parser.add_argument("--confidence")
+    figures_parser.add_argument("--final")
+    figures_parser.add_argument("--fixture", action="store_true")
+    figures_parser.set_defaults(run=guarded(render_figures))
+    archive_parser = commands.add_parser(
+        "archive", help="create an explicit local-only backup"
+    )
+    archive_parser.add_argument("--root", default=".")
+    archive_parser.add_argument(
+        "--files", required=True, help="JSON array of relative file paths"
+    )
+    archive_parser.add_argument("--out", required=True)
+    archive_parser.set_defaults(run=guarded(archive_study))
+    restore_parser = commands.add_parser(
+        "restore", help="verify a backup before restoring into a new directory"
+    )
+    restore_parser.add_argument("--archive", required=True)
+    restore_parser.add_argument("--out", required=True)
+    restore_parser.set_defaults(run=guarded(restore_archive))
+    prepare_parser = commands.add_parser(
+        "prepare-study", help="check readiness and freeze inputs before splitting"
+    )
+    prepare_parser.add_argument("--config", required=True)
+    prepare_parser.add_argument("--review", required=True)
+    prepare_parser.add_argument("--collection-brief", required=True)
+    prepare_parser.add_argument(
+        "--out", required=True, help="new local prepared config"
+    )
+    prepare_parser.set_defaults(run=guarded(prepare_study))
     args = parser.parse_args(argv)
     return args.run(args)
 
