@@ -31,7 +31,7 @@ The worksheet is ignored and now preserves forty actual queries with Altan's ori
 Before accepting data, supply these decisions:
 
 - The permission for q0001–q0040 is already recorded. Preserve it and record separate source-specific licenses before adopting any public supplement.
-- Choose an independent second human or delayed blind self-review. Supply a reviewer pseudonym and availability, or the self-review interval. The existing plan proposes one week.
+- The selected method is single-human annotation with disclosed AI checks. Preserve original human labels and separately record AI evidence; collect actual human decisions for flagged cases.
 - Resolve ambiguous pilot boundaries before freezing guide v1. Keep the current rule that stable facts without a requested source use `direct_answer`, unless you explicitly revise the protocol.
 
 Keep full queries and review records local. No publication decision is needed to start.
@@ -40,7 +40,7 @@ To request agent-generated candidates, explicitly change the human-authored coll
 ## Validate draft rows and collect review evidence
 
 Store pilot JSONL in `data/raw/pilot-v0.jsonl` using the nine fields in the [annotation guide](annotation-guide.md#row-format).
-The local setup creates this file empty. An empty file is not accepted data.
+The local draft now contains the forty actual pilot rows, all `needs_review` until guide and group decisions are complete. Their original human labels and rationales are preserved. Draft validity is not release readiness.
 
 ```sh
 uv run --locked python scripts/validate_dataset.py data/raw/pilot-v0.jsonl
@@ -49,12 +49,12 @@ uv run --locked python scripts/validate_dataset.py data/raw/pilot-v0.jsonl
 Structural validation can pass an empty draft or a draft without a license.
 It does not establish M1 readiness or correct labels.
 
-Have the reviewer label at least 20% of each class without seeing your labels or rationales.
+Have the AI reviewer check at least 20% of each class without seeing your original labels or rationales.
 Review all ambiguous cases and every accepted row in a mixed-label group.
 At the balanced 40-row pilot, the minimum sample is two rows per class, plus those additional cases.
 Record the original and review labels before discussing disagreements.
-Store the seven ledger fields from the [review protocol](data-and-evaluation.md#review-ledger-and-readiness) in `data/raw/reviews-v1.jsonl`.
-This local file also starts empty. Do not prefill reviewer identities, dates, or agreement.
+Store the common ledger fields plus required `ai_evidence` and `human_adjudication` fields from the [review protocol](data-and-evaluation.md#review-ledger-and-readiness) in `data/raw/reviews-v1.jsonl`.
+The ledger records actual AI output and genuine human adjudications only. Do not invent identities, dates, or decisions. An unresolved AI disagreement or flag blocks readiness; clear matches can retain original human labels.
 Preserve the original review decisions when you later resolve labels.
 Freeze guide v1 after reviewing the pilot and relabel affected rows.
 

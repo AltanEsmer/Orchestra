@@ -6,7 +6,7 @@ On October 24, 2026, Altan requested an AI reviewer with a persona while keeping
 
 All forty AI labels matched Altan's original labels: ten matches in each class. The reviewer marked all forty clear and found no exact duplicate text. This establishes consistency under the shared guide. It does not measure router accuracy, prove the labels correct, or demonstrate generalization. The original collection used agent-directed exercises and immediate feedback, which may also contribute to agreement.
 
-The original labels and rationales remain unchanged in ignored `data/raw/pilot-intake.md` and the separate steward snapshot. No AI decision was entered into `data/raw/reviews-v1.jsonl`; that human ledger remains empty. No candidate became an accepted research row. The existing second-human or delayed-self-review requirement remains in force unless the study method is explicitly revised and the validator is updated consistently.
+The original labels and rationales remain unchanged in ignored `data/raw/pilot-intake.md` and the separate steward snapshot. At the initial check, the research ledger was empty. After the method choice, forty explicitly typed AI entries were recorded alongside the forty draft pilot rows; zero human-review entries or accepted research rows were invented. See the [method implementation](ai-assisted-review.md). Altan selected single-human annotation with disclosed AI checks later on October 24. The protocol and validator now support the dedicated `ai_assisted` kind, separate AI evidence, and actual human adjudications. The earlier forty matches remain AI consistency, never independent human agreement.
 
 ## Open adjudication and grouping work
 
@@ -14,7 +14,7 @@ The earlier q0033 flag remains open despite AI agreement: "holds 60 litres" can 
 
 The blind reviewer independently flagged possible shared templates or sources: explanation pairs, per-unit multiplication requests, the Willow Hotel records, Northstar catalog requests, and pairs of document comparisons. These are grouping questions, not proven duplicates. Current provisional groups stay unchanged until their collection history and near-duplicate relationships are reviewed. Grouping limits leakage when related examples would otherwise enter both training and evaluation.
 
-The manual-review packet samples two original labels per class using seed 42, then adds q0014 and q0033. One flagged row was already sampled, leaving nine queries. Its ordering is shuffled and its query file contains no original label or rationale. It is prepared for either human method; no reviewer, date, decision, or review method has been invented. If Altan chooses delayed self-review, allow a full week after his last exposure to the selected labels and record the actual dates. Displaying the original answers again can invalidate that delay.
+The manual-review packet samples two original labels per class using seed 42, then adds q0014 and q0033. One flagged row was already sampled, leaving nine queries. Its ordering is shuffled and its query file contains no original label or rationale. It was prepared for either legacy human method; no reviewer, date, or decision was invented. The later selected method uses the completed AI check and human adjudication of flagged cases. If Altan chooses delayed self-review, allow a full week after his last exposure to the selected labels and record the actual dates. Displaying the original answers again can invalidate that delay.
 
 ## Local evidence
 
@@ -30,4 +30,4 @@ All full queries and decisions remain under ignored `work/poteto/complementary/p
 | `steward.json` | Original labels, rationales, provisional groups, worksheet hash, and sampling details. Keep hidden from a blind reviewer. |
 | `notes.md` | AI grouping observations and boundary interpretations. |
 
-Verification checked exact coverage of q0001 through q0040, byte-preserved query strings, ten original labels per class, blind packet fields, all forty comparisons, and unchanged empty research/review files. No training, guide freeze, or research result follows from this pass.
+Verification checked exact coverage of q0001 through q0040, byte-preserved query strings, ten original labels per class, blind packet fields, all forty comparisons, and empty research/review files at that initial checkpoint. The later ingestion state is recorded in the method implementation evidence. No training, guide freeze, or research result follows from this pass.

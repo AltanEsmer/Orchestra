@@ -291,3 +291,46 @@ class StudyTests(unittest.TestCase):
             self.assertRaisesRegex(ValueError, "immutable"),
         ):
             prepare(path, self.review, brief, out)
+
+    def test_status_and_cli_accept_disclosed_ai_route(self):
+        import contextlib
+        import io
+
+        from scripts.validate_dataset import main
+
+        self.ready_fixture()
+        ledger = [json.loads(line) for line in self.review.read_text().splitlines()]
+        for item in ledger:
+            item.update(
+                review_kind="ai_assisted",
+                reviewer_id="ai:fixture",
+                human_adjudication=None,
+                ai_evidence={
+                    "model": "fixture",
+                    "prompt_sha256": "a" * 64,
+                    "input_sha256": "b" * 64,
+                    "output_sha256": "c" * 64,
+                    "judgment": "clear",
+                    "flags": [],
+                },
+            )
+        self.review.write_text("".join(json.dumps(r) + "\n" for r in ledger))
+        self.assertTrue(status(self.dataset, self.sources, self.review)["ready"])
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            code = main(
+                [
+                    str(self.dataset),
+                    "--sources",
+                    str(self.sources),
+                    "--review",
+                    str(self.review),
+                    "--ready",
+                ]
+            )
+        self.assertEqual(code, 0, output.getvalue())
+        self.assertIn('"ai_consistency"', output.getvalue())
+        self.assertIn('"reviewed": 0', output.getvalue())
+        out = prepare_review(self.dataset, self.sources, self.root / "ai-sheet")
+        self.assertIn(
+            "original annotator adjudicates", (out / "steward.json").read_text()
+        )

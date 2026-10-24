@@ -2,7 +2,7 @@
 
 Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The study will compare classifiers and text representations for choosing a query's first action, then analyze confidence and errors.
 
-Current research milestone is M1, the annotation pilot. Forty human-authored candidates and permission are recorded. A blind AI check matched the original labels, and free public supplements have been screened; human-method, boundary, and grouping decisions remain open. The repository provides readiness and blind-review tools, M2/M3 experiments, M4 confidence and frozen final-test commands, scientific figures, verified local archives, and an IEEE report template. The tooling has run only on artificial fixtures. There is no research dataset, trained research router, or experiment result yet. Tool integration is optional and deferred.
+Current research milestone is M1, the annotation pilot. Forty human-authored candidates and permission are recorded. A blind AI check matched the original labels, and free public supplements have been screened; Altan has chosen single-human annotation with disclosed AI checks. Boundary and grouping decisions remain open. The repository provides readiness and blind-review tools, M2/M3 experiments, M4 confidence and frozen final-test commands, scientific figures, verified local archives, and an IEEE report template. The tooling has run only on artificial fixtures. There is no research dataset, trained research router, or experiment result yet. Tool integration is optional and deferred.
 
 The [M1 to M3 implementation plan](docs/m1-m3-plan.md) defines the proposed data, baseline, and comparison work. Its [methods preview](docs/study-guides/m1-m3-methods-preview.md) supports the exam, presentation, and report. Altan approved implementation on October 16. The five units are built and tested on fixtures. Their research runs wait for accepted, reviewed, and licensed M1 data.
 
@@ -26,7 +26,7 @@ Check annotated rows with `uv run --locked python scripts/validate_dataset.py <f
 
 The [experiment runbook](docs/run-experiments.md) gives the complete preparation-to-archive command sequence. Research runs wait for accepted, reviewed data and a permission record.
 
-Continue the [manual sequence](docs/manual-steps.md) with the review-method decision; the forty-query authorship step and permission are complete. The agent can operate the commands. `uv run --locked python -m orchestra status` reports the current data blocker. `prepare-study` enforces readiness, records collection/review hashes, and calculates the parent hash before splitting. Later commands cover `confidence`, `freeze`, `final-test`, `figures`, `archive`, and `restore`.
+Continue the [manual sequence](docs/manual-steps.md) with one flagged pilot case; authorship, permission, and the AI-assisted method choice are complete. The agent can operate the commands. `uv run --locked python -m orchestra status` reports the current data blocker. `prepare-study` enforces readiness, records collection/review hashes, and calculates the parent hash before splitting. Later commands cover `confidence`, `freeze`, `final-test`, `figures`, `archive`, and `restore`.
 
 Run `sh scripts/check.sh` for the complete software checks. Run `uv run --locked python scripts/verify_workflow.py --out work/fixture-proof` with a new output path for the artificial CLI workflow and clean restored reproduction. The workflow creates no research evidence. GitHub Actions runs both checks on pull requests and main.
 

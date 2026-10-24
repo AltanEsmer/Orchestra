@@ -1,4 +1,4 @@
-"""Prepare evidence for real human annotation without supplying human decisions."""
+"""Prepare disclosed review evidence without supplying human decisions."""
 
 import json
 import math
@@ -57,7 +57,7 @@ def status(dataset, sources, review):
         ),
         "human_followup": [
             "Confirm semantic labels, ambiguous-case review and near-duplicate grouping.",
-            "Record real permission, reviewer decisions and guide-freeze evidence.",
+            "Record real permission, disclosed AI checks, human adjudications and guide-freeze evidence.",
         ],
     }
 
@@ -109,8 +109,9 @@ def prepare_review(dataset, sources, out, seed=42, extra_ids=()):
         "sampling": "ceil(20% of accepted rows per class), mixed-label groups, unresolved rows and explicit ambiguous IDs",
         "original_labels": {qid: by_id[qid]["label"] for qid in ids},
         "human_followup": [
-            "Keep steward.json hidden until independent labels have been recorded.",
-            "A human supplies review labels, identity, actual date and review method, then adjudicates disagreements.",
+            "Keep steward.json hidden until blind human labels or disclosed AI checks have been recorded.",
+            "For ai_assisted checks, preserve model and prompt/input/output hashes; the original annotator adjudicates every flag, abstention or disagreement.",
+            "Retain original human labels as fallback; never invent human adjudication or treat AI consistency as human agreement.",
             "Unresolved rows need an original human label before a valid review ledger can be completed.",
             "Confirm that all ambiguous and related scenarios were identified; automatic sampling cannot establish that.",
         ],
