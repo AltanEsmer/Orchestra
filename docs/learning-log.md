@@ -279,3 +279,291 @@ For a concrete teaching trace, consider “Calculate the increase using the figu
 The end-to-end fixture run restored the executable launcher and a clean locked environment, then reproduced M3 predictions and metrics. This is software evidence, not research performance or proof of learning. PR #16 is merged; final automation review and checks are listed in the completion evidence. The real pilot and review ledgers are empty, and dataset permission remains unset.
 
 First manual action: write one original query and explain what must happen first. Two later teach-back prompts remain unanswered: why must related paraphrases stay in one partition, and why must model/confidence choices be fixed before opening the test set? Let Altan answer before providing worked explanations. No understanding status changed.
+
+## First original pilot response, October 22, 2026
+
+Altan supplied candidate q0001 and independently chose calculation because the required numbers were already supplied. The exact query and rationale are preserved locally in ignored `data/raw/pilot-intake.md`, assigned scenario g001. No row has been released, no permission inferred, and no independent review recorded.
+
+This response correctly applies the calculation boundary to an original example. The broader data-contract topic remains **needs practice** until multi-action dependencies and other boundaries have been attempted; grouping and split understanding remain unverified. Feedback: the router outputs the action label, while executing that action would produce the numeric answer. Next exercise: author one original request requiring a named document, with its first action and rationale.
+
+This update records an actual learning response and candidate intake only; it changes no code, schema, model, or experiment. Smoke, Ruff lint, Ruff formatting (47 files), and whitespace checks passed.
+
+## Second original pilot response, October 22, 2026
+
+Altan supplied candidate q0002 and chose reading the named handbook because the answer depends on its contents. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned independent scenario g002. This correctly applies document retrieval before summarization. The collection prompt specified a document-based request, so this demonstrates the rationale within that category rather than an unaided choice across all four categories.
+
+The broader data-contract topic remains **needs practice** pending other boundaries and multi-action dependencies. No permission, independent review, or release acceptance is inferred. Next exercise: author one request involving a specific record in a named fictional catalog or database, with its first action and rationale. This update changes only candidate intake and learning evidence.
+
+## Third original pilot response, October 22, 2026
+
+Altan supplied candidate q0003 and chose looking up the product record because the warranty information is in its catalog entry. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned scenario g003. Although it shares the fictional shop name with q0002, it concerns a separate product-record scenario rather than a paraphrase of the handbook request.
+
+This correctly applies knowledge lookup to an identified record and structured source. The collection prompt specified that category, so unaided discrimination across categories remains unverified. The broader data-contract topic remains **needs practice** pending other boundaries and multi-action dependencies. No permission, independent review, or release acceptance is inferred. Next exercise: author one request for an explanation or rewrite needing no document retrieval, record lookup, or numeric computation, with its first action and rationale. This update changes only candidate intake and learning evidence.
+
+## Fourth original pilot response, October 22, 2026
+
+Altan supplied candidate q0004 and chose direct answering because the request is a general explanation requiring no document, database lookup, or calculation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned scenario g004. This correctly applies direct answering; the collection prompt supplied the category, so unaided category discrimination remains unverified. Four pilot candidates now cover the four labels, with no independent review or release acceptance inferred.
+
+Altan asked why he was answering these prompts. The agent clarified that they collect human-authored labeled examples for the router and provide limited learning evidence; they are not questions whose underlying answers must be supplied. Human authoring follows the current study protocol, rather than a technical inability to generate examples. Any later generated candidates require disclosed provenance and human review. This question is a request for purpose, not evidence of a conceptual misconception. Broader learning statuses remain unchanged.
+
+## Fifth original pilot response, October 22, 2026
+
+Altan explicitly chose to retain the human-written collection approach. He then supplied candidate q0005, choosing calculation because the ticket price and number of tickets are provided. Unlike the preceding category-directed collection prompts, this prompt allowed any of the four actions. His explanation correctly applies the calculation boundary without a category hint. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned scenario g005, separate from the notebook-discount scenario.
+
+Calculation with supplied inputs is **explained independently** for this example. The broader data-contract topic remains **needs practice** pending multi-action dependencies and other unaided boundary decisions. Five candidates are recorded; no independent review, permission, or release acceptance is inferred. Next exercise: author a request involving two dependent actions and identify which must happen first, with a rationale.
+
+## Sixth original pilot response, October 22, 2026
+
+Altan supplied candidate q0006 and chose looking up the product record because its price is needed before calculating the total. The collection prompt requested two dependent actions but did not supply the category or scenario. This correctly explains the earliest necessary dependency in an original lookup-then-calculation request. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned scenario g006. It shares a fictional catalog with q0003 but concerns price-to-total computation rather than a warranty fact; it is treated as a separate scenario, subject to later manual near-duplicate review.
+
+First-action dependency ordering is **explained independently** for this example. Broader action-boundary coverage, ambiguity handling, and grouping/split understanding remain pending; this does not certify the whole data-contract topic. Six candidates are recorded, with no independent review, permission, or release acceptance inferred. Next collection exercise: supply another original document-based request, with its first action and rationale.
+
+## Seventh original pilot response, October 22, 2026
+
+Altan supplied candidate q0007 and chose reading the handbook because its contents are required to summarize the rules. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It is assigned g002 alongside q0002: both follow the same named-handbook policy/rules summarization template, despite different fictional organizations. Keeping these close variants together conservatively prevents this template crossing partitions.
+
+The rationale correctly applies document retrieval, but the collection prompt specified a document-based request. No new independent learning status is inferred. Seven candidates across six groups are recorded; independent review, permission, and release acceptance remain pending. Next exercise asks Altan why these two handbook queries should stay in the same split before revealing a worked explanation. This exercise is learning evidence only and is not an additional dataset candidate.
+
+## Grouping explanation, October 22, 2026
+
+Asked why training on the shop-handbook query and testing on the similar school-handbook query could overstate performance, Altan answered: “Because the two requests have almost the same wording and structure, the model might recognize the pattern instead of showing that it can handle genuinely different requests.” This correctly explains the near-duplicate evaluation risk. The preceding feedback had already identified the shared template and stated that grouping prevents near-duplicates crossing partitions, so this is a correct supported explanation, not evidence of fully independent transfer.
+
+The leakage/grouping topic remains **needs practice** until Altan applies grouping to a fresh example without that hint and explains training-only feature fitting. Feedback confirms that related queries stay in one partition so evaluation better tests transfer to different requests. This learning response adds no dataset row; the intake remains seven candidates across six groups. Next collection step: another original direct-answer request in a different everyday setting, with a first-action rationale.
+
+## Eighth original pilot response, October 22, 2026
+
+Altan supplied candidate q0008 and chose direct answering because the request is a general explanation requiring no document, database lookup, or calculation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It shares g004 with q0004 because both use the same “explain the difference between … in simple terms” template. The topic change alone does not establish an independent query family.
+
+The category-directed prompt supports a correct rationale but does not establish unaided category selection. Learning statuses remain unchanged. Eight candidates across six groups are recorded, two per label; no independent review, permission, or release acceptance is inferred. Next collection step: one original request with wording and structure different from the preceding examples, choosing any first-action category and supplying a rationale.
+
+## Ninth original pilot response, October 22, 2026
+
+Altan supplied candidate q0009 and chose direct answering because the provided text only needs rewriting. The prompt allowed any category and requested a different sentence structure. This correctly applies direct answering to a new rewriting scenario without a category hint. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned new group g007.
+
+Direct answering for supplied-text rewriting is **explained independently** for this example. Broader ambiguity handling and grouping/feature-fitting understanding remain pending; other topic statuses are unchanged. Nine candidates across seven groups are recorded: three direct-answer queries and two in each other class. No independent review, permission, or release acceptance is inferred. Next collection step: an original request involving a named fictional document, using a task other than summarizing a handbook, with its first action and rationale.
+
+## Tenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0010 and chose reading the named welcome letter because it contains the required equipment. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, assigned new scenario g008. This requests specific information from a letter rather than summarizing a handbook, adding a distinct document-retrieval scenario.
+
+The rationale is correct, but the prompt specified a document-based request, so no new independent learning status is inferred. Ten candidates across eight groups are recorded: three document-retrieval, two knowledge-lookup, two calculation, and three direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection step: an original request involving a specific record in a named fictional structured source outside shopping, with its first action and rationale.
+
+## Eleventh original pilot response, October 22, 2026
+
+Altan supplied candidate q0011 and chose looking up the book record because its author is listed in the catalog entry. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned scenario g009 for library authorship lookup. Scenario grouping remains subject to the pilot's manual near-duplicate review, including comparison with other catalog-record requests.
+
+The rationale correctly applies knowledge lookup to a named structured source and identified record. The collection prompt specified this category, so no new independent learning status is inferred. Eleven candidates across nine provisional groups are recorded: three document-retrieval, three knowledge-lookup, two calculation, and three direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection step: an original calculation request outside prices and purchases, with its first action and rationale.
+
+## Twelfth original pilot response, October 22, 2026
+
+Altan supplied candidate q0012 and chose calculation because the lap length and lap count are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It is conservatively grouped with q0005 in g005: both use the short supplied-unit-quantity times count template, with a changed setting and numbers. This grouping is a template judgment, not a rule that all multiplication queries belong together, and remains subject to pilot review.
+
+The rationale is correct, but the collection prompt specified calculation, so no new independent learning status is inferred. Twelve candidates across nine provisional groups are recorded, three per category. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request containing numbers but requiring no numerical calculation, with a freely chosen first action and rationale.
+
+## Thirteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0013 and chose direct answering because he requests an explanation of the percentage, not a calculation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g010. This is a numerical-concept explanation rather than the weather-versus-climate comparison in g004; sharing the weather topic alone does not establish a paraphrase family.
+
+The response correctly distinguishes numerical content from a request to compute. The prompt explicitly requested numbers without calculation, so this is supported boundary practice rather than independent transfer evidence. Existing learning statuses remain unchanged. Thirteen candidates across ten provisional groups are recorded: three document-retrieval, three knowledge-lookup, three calculation, and four direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request requiring information from a named fictional document before a numerical calculation, with its first action and rationale.
+
+## Fourteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0014 and chose reading the report because its figures are needed before calculating the attendance increase. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g011. Sharing the fictional camp with q0010 does not make it the same scenario: this request requires report figures followed by a calculation, rather than equipment information from a welcome letter.
+
+The dependency explanation is correct. The collection prompt specified document access before calculation, so this is supported practice and does not add independent transfer evidence. The request also resembles the protocol's report-before-calculation teaching example; pilot review must assess this similarity before release and avoid claiming it as an independently novel template. Existing learning statuses remain unchanged. Fourteen candidates across eleven provisional groups are recorded: four document-retrieval, three knowledge-lookup, three calculation, and four direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original calculation request involving a difference or duration, with all required inputs and its first-action rationale.
+
+## Fifteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0015 and chose calculation because both start and end times are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g012 for a supplied-time duration scenario. The rationale is correct; the collection prompt specified calculation involving a difference or duration, so no new independent learning status is inferred.
+
+Fifteen candidates across twelve provisional groups are recorded: four document-retrieval, three knowledge-lookup, four calculation, and four direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request about a specific record in a named fictional database outside product and book catalogs, with its first action and rationale.
+
+## Sixteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0016 and chose looking up the booking record because its entry contains the assigned room. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g013 for a reservation-room lookup. Shared fictional organization names alone do not determine grouping; the pilot review must still compare the structure of this request with other record-attribute lookups before freezing groups.
+
+The rationale correctly identifies knowledge lookup. The collection prompt specified a database-record request, so no new independent learning status is inferred. Sixteen candidates across thirteen provisional groups are recorded, four per category. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request in any category, avoiding previously used sentence templates and fictional organizations, with its first action and rationale.
+
+## Seventeenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0017 and chose calculation because the total seedlings and pot count are provided. The prompt allowed any category and asked for a new situation and wording. This correctly applies the supplied-input calculation boundary without a category hint and reinforces the earlier independent explanation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g014 for equal distribution.
+
+Seventeen candidates across fourteen provisional groups are recorded: four document-retrieval, four knowledge-lookup, five calculation, and four direct-answer queries. Broader learning statuses are unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to transform supplied text, using a different task from making a sentence more polite, with its first action and rationale.
+
+## Eighteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0018 and chose direct answering because the supplied sentence only requires rewriting. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It is conservatively assigned g007 with q0009: both are short imperative requests to rewrite a quoted sentence, with a changed transformation instruction and source text. This provisional template grouping remains subject to pilot review; it does not imply every rewriting task must share a group.
+
+The rationale is correct, but the collection prompt specified supplied-text transformation, so no new independent learning status is inferred. Eighteen candidates across fourteen provisional groups are recorded: four document-retrieval, four knowledge-lookup, five calculation, and five direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request comparing information in two named fictional documents, with its first action and rationale.
+
+## Nineteenth original pilot response, October 22, 2026
+
+Altan supplied candidate q0019 and chose reading both welcome letters because their contents are needed to compare meal options. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g015 for a two-document comparison. Either document may be read first, but both reads have the same action label, document_retrieval; no competing first-action class is required by that ordering flexibility.
+
+The rationale is correct. The collection prompt specified comparison of named documents, so no new independent learning status is inferred. Nineteen candidates across fifteen provisional groups are recorded: five document-retrieval, four knowledge-lookup, five calculation, and five direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request finding records that satisfy a condition in a named fictional database, with its first action and rationale.
+
+## Twentieth original pilot response, October 23, 2026
+
+Altan supplied candidate q0020 and chose looking up the room records because the database stores their capacities. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g016 for filtering room records by a capacity condition. The number 20 supplies the selection threshold; the missing room capacities must first come from the structured source.
+
+The rationale correctly identifies knowledge lookup. The collection prompt specified finding records that satisfy a database condition, so no new independent learning status is inferred. Twenty candidates across sixteen provisional groups are recorded, five per category. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request in any category, with different wording and a new situation, plus its first action and rationale.
+
+## Twenty-first original pilot response, October 23, 2026
+
+Altan supplied candidate q0021 and chose calculation because all three scores and the number of rounds are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g017 for averaging supplied scores. The collection prompt allowed any category and requested a new situation and wording. This correctly applies the supplied-input calculation boundary without a category hint and reinforces the earlier independent explanation; it does not establish understanding of model evaluation or other pending topics.
+
+Twenty-one candidates across seventeen provisional groups are recorded: five document-retrieval, five knowledge-lookup, six calculation, and five direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request that can be answered directly, using a task other than comparing concepts or rewriting a sentence, with its first action and rationale.
+
+## Twenty-second original pilot response, October 23, 2026
+
+Altan supplied candidate q0022 and chose direct answering because the request asks for general suggestions without requiring a document, database lookup, or calculation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g018 for generating activity ideas. The requested count of three controls the number of suggestions; it does not require numerical calculation. Sharing rainy-weather context with earlier queries alone does not establish a common template group.
+
+The rationale correctly identifies direct answering. The collection prompt specified a direct-answer request outside concept comparison and sentence rewriting, so no new independent learning status is inferred. Twenty-two candidates across eighteen provisional groups are recorded: five document-retrieval, five knowledge-lookup, six calculation, and six direct-answer queries. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request using a named fictional document for a task other than summarizing, finding a listed item, comparing documents, or obtaining calculation inputs, with its first action and rationale.
+
+## Twenty-third original pilot response, October 23, 2026
+
+Altan supplied candidate q0023 and chose reading the welcome letter because its original text is needed before translation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g019 for retrieving document text before translating it. Unlike the supplied-text rewriting examples, the text to transform is not included in the request.
+
+The rationale correctly identifies document retrieval as the first necessary action. The preceding user-facing prompt explicitly requested translation of a named fictional document whose text was not provided, so this is supported dependency practice and does not add independent transfer evidence. Twenty-three candidates across nineteen provisional groups are recorded: six document-retrieval, five knowledge-lookup, six calculation, and six direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request involving a named fictional structured source, using a task other than retrieving one attribute or filtering records by a threshold, with its first action and rationale.
+
+## Twenty-fourth original pilot response, October 23, 2026
+
+Altan supplied candidate q0024 and chose looking up the catalog records because their book titles are needed before sorting. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g020 for ordering records from a structured source. Sharing a library setting with q0011 alone does not establish a common template: this request orders a collection rather than retrieving a single book attribute.
+
+The rationale correctly identifies knowledge lookup as the first necessary action. The collection prompt specified a named fictional structured source, so this is supported practice and does not add independent transfer evidence. Twenty-four candidates across twenty provisional groups are recorded, six per category. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request in any category, using a new situation and different wording, with its first action and rationale.
+
+## Twenty-fifth original pilot response, October 23, 2026
+
+Altan supplied candidate q0025 and chose calculation because both garden dimensions are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g021 for rectangular area from supplied dimensions. Although it involves multiplication like g005, its geometry task and wording differ from the unit-quantity times count template; grouping remains subject to pilot review.
+
+The collection prompt allowed any category and requested a new situation and wording. The response correctly applies the supplied-input calculation boundary without a category hint and reinforces the earlier independent explanation. It does not establish understanding of other pending topics. Twenty-five candidates across twenty-one provisional groups are recorded: six document-retrieval, six knowledge-lookup, seven calculation, and six direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original direct-answer request with the full text to translate included in the request, with its first action and rationale, contrasting with q0023 where the source paragraph was absent.
+
+## Twenty-sixth original pilot response, October 23, 2026
+
+Altan supplied candidate q0026 and chose direct answering because the complete text is provided and only requires translation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g022 for translating supplied text. Pilot review must compare this group with the other short supplied-text transformation requests before freezing groups. In contrast to q0023, no document access is required to obtain the source text.
+
+The rationale correctly applies the supplied-text boundary. The collection prompt specified translation with the complete text included, so this is supported boundary practice rather than a freely chosen transfer example. Twenty-six candidates across twenty-two provisional groups are recorded: six document-retrieval, six knowledge-lookup, seven calculation, and seven direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request using a named fictional document to check whether a proposed action follows its rules, with its first action and rationale.
+
+## Twenty-seventh original pilot response, October 23, 2026
+
+Altan supplied candidate q0027 and chose reading the visitor rules because their pet policy is needed to determine whether bringing a dog is allowed. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g023 for checking a proposed action against a document's rules. Pilot review must compare this with other document-information requests before freezing groups; a shared camp setting alone does not determine grouping.
+
+The rationale correctly identifies document retrieval as the first necessary action. The collection prompt specified checking an action against rules in a named fictional document, so this is supported practice rather than new independent transfer evidence. Twenty-seven candidates across twenty-three provisional groups are recorded: seven document-retrieval, six knowledge-lookup, seven calculation, and seven direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request comparing two entries in a named fictional structured source, with its first action and rationale.
+
+## Twenty-eighth original pilot response, October 23, 2026
+
+Altan supplied candidate q0028 and chose looking up both tent records because their listed weights are needed before comparison. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g024 for comparing two catalog records. Either record can be retrieved first; both retrievals have the knowledge_lookup label. The request does not supply the weights itself.
+
+The rationale correctly identifies the earliest necessary action. The collection prompt specified comparison of entries in a named fictional structured source, so this is supported practice rather than new independent transfer evidence. Twenty-eight candidates across twenty-four provisional groups are recorded, seven per category. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request in any category, using a new situation and different wording, with its first action and rationale.
+
+## Twenty-ninth original pilot response, October 23, 2026
+
+Altan supplied candidate q0029 and chose calculation because the flour amount per batch and number of batches are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It is conservatively assigned to g005 with q0005 and q0012: all three use a supplied amount per unit times count template. The cooking setting alone does not establish an independent template. This provisional group contains three queries, within the four-query limit, and remains subject to pilot review.
+
+The collection prompt allowed any category and requested a new situation and wording. The rationale correctly applies the supplied-input calculation boundary without a category hint, reinforcing earlier independent explanation. Twenty-nine candidates across twenty-four provisional groups are recorded: seven document-retrieval, seven knowledge-lookup, eight calculation, and seven direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request asking for a short piece of creative writing, with its first action and rationale.
+
+## Thirtieth original pilot response, October 23, 2026
+
+Altan supplied candidate q0030 and chose direct answering because the request asks for original creative writing without requiring a document, database lookup, or calculation. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g025 for creating a short story from a supplied premise.
+
+The rationale correctly identifies direct answering. The collection prompt specified creative writing, so this is supported practice rather than new independent transfer evidence. Thirty candidates across twenty-five provisional groups are recorded: seven document-retrieval, seven knowledge-lookup, eight calculation, and eight direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to identify a discrepancy between two named fictional documents, with its first action and rationale.
+
+## Thirty-first original pilot response, October 23, 2026
+
+Altan supplied candidate q0031 and chose reading both documents because their stated times are needed to check for a discrepancy. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`. It is conservatively assigned g015 with q0019: both compare information obtained from two named documents. Their wording and comparison purpose differ, so this grouping remains a provisional leakage-control judgment for pilot review. It does not imply all two-document requests must share one group.
+
+The rationale correctly identifies document retrieval. The collection prompt specified identifying a discrepancy between two named fictional documents, so this is supported practice rather than new independent transfer evidence. Thirty-one candidates across twenty-five provisional groups are recorded: eight document-retrieval, seven knowledge-lookup, eight calculation, and eight direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to count matching records in a named fictional database, with its first action and rationale.
+
+## Thirty-second original pilot response, October 23, 2026
+
+Altan supplied candidate q0032 and chose looking up the booking records because the bookings that include breakfast must be identified before counting them. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g026 for counting matching records from a structured source. Pilot review must compare this with g016's record-filtering request and g006's lookup-before-calculation request before freezing groups. A database query may perform selection and counting together; the routing label remains knowledge_lookup because the required records are external to the request.
+
+The rationale correctly identifies the first necessary action. The collection prompt specified counting matching database records, so this is supported dependency practice rather than new independent transfer evidence. Thirty-two candidates across twenty-six provisional groups are recorded, eight per category. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request in any category, using a new situation and different wording, with its first action and rationale.
+
+## Thirty-third original pilot response, October 23, 2026
+
+Altan supplied candidate q0033 and chose calculation because the starting water amount and amount used are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g027 for a remaining-quantity subtraction scenario. Pilot review should check whether “holds 60 litres” clearly states current contents rather than tank capacity; the supplied rationale indicates Altan's intended starting amount, but that rationale will not be available as model input. No wording change has been made to the human-authored query.
+
+The collection prompt allowed any category and requested a new situation and wording. The rationale correctly applies the supplied-input calculation boundary under the intended reading, reinforcing earlier independent explanation. Thirty-three candidates across twenty-seven provisional groups are recorded: eight document-retrieval, eight knowledge-lookup, nine calculation, and eight direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to organize or classify information supplied entirely within the request, with its first action and rationale.
+
+## Thirty-fourth original pilot response, October 23, 2026
+
+Altan supplied candidate q0034 and chose direct answering because all words are provided and only require organizing. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g028 for alphabetizing supplied words. Unlike q0024, which requires titles from a catalog, this request includes the complete material to sort. Pilot review must consider their shared sorting task when checking template similarity and leakage before freezing groups.
+
+The rationale correctly applies the supplied-information boundary. The collection prompt specified organizing or classifying information provided entirely in the request, so this is supported boundary practice rather than new independent transfer evidence. Thirty-four candidates across twenty-eight provisional groups are recorded: eight document-retrieval, eight knowledge-lookup, nine calculation, and nine direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to extract a short quotation from a named fictional document whose text is not supplied, with its first action and rationale.
+
+## Thirty-fifth original pilot response, October 23, 2026
+
+Altan supplied candidate q0035 and chose reading the handbook because its exact wording is needed before quoting. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g029 for retrieving an exact quotation. Pilot review must compare this with q0023's request for an opening paragraph before translation and other document-extraction requests before freezing groups.
+
+The rationale correctly identifies document retrieval. The collection prompt specified a quotation from a named fictional document whose text was absent, so this is supported practice rather than new independent transfer evidence. Thirty-five candidates across twenty-nine provisional groups are recorded: nine document-retrieval, eight knowledge-lookup, nine calculation, and nine direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request checking whether a specific record exists in a named fictional database, with its first action and rationale.
+
+## Thirty-sixth original pilot response, October 23, 2026
+
+Altan supplied candidate q0036 and chose looking up the booking because the database must be checked to determine whether it is listed. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g030 for record-existence checking. The label does not assume a matching record will be found. Sharing the hotel database with q0032 alone does not establish a common template; pilot review must still compare this request with the other identified-record lookups before freezing groups.
+
+The rationale correctly identifies knowledge lookup. The collection prompt specified checking record existence in a named fictional database, so this is supported practice rather than new independent transfer evidence. Thirty-six candidates across thirty provisional groups are recorded, nine per category. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original calculation request involving conversion between units, with all required values and the conversion factor supplied, plus its first action and rationale.
+
+## Thirty-seventh original pilot response, October 23, 2026
+
+Altan supplied candidate q0037 and chose calculation because the length and conversion factor are provided. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g031 for unit conversion with an explicit factor. This differs in task and wording from g005's amount-per-unit times count examples despite also using multiplication; pilot review must confirm grouping before release.
+
+The rationale correctly identifies calculation. The collection prompt specified a unit conversion with all required inputs supplied, so this is supported practice rather than new independent transfer evidence. Thirty-seven candidates across thirty-one provisional groups are recorded: nine document-retrieval, nine knowledge-lookup, ten calculation, and nine direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to draft a short everyday message using details supplied entirely in the request, with its first action and rationale.
+
+## Thirty-eighth original pilot response, October 23, 2026
+
+Altan supplied candidate q0038 and chose direct answering because the request provides the details needed to draft a thank-you message. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g032 for drafting an everyday message from supplied context. Pilot review must compare it with other text-generation requests before freezing groups; generating a story and drafting a thank-you message are provisionally distinct tasks.
+
+The rationale correctly identifies direct answering. The collection prompt specified drafting an everyday message with all necessary details supplied, so this is supported practice rather than new independent transfer evidence. Thirty-eight candidates across thirty-two provisional groups are recorded: nine document-retrieval, nine knowledge-lookup, ten calculation, and ten direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to turn instructions from a named fictional document into a checklist, with its first action and rationale.
+
+## Thirty-ninth original pilot response, October 23, 2026
+
+Altan supplied candidate q0039 and chose reading the handbook because its setup instructions are needed before organizing them into a checklist. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g033 for transforming document instructions into a checklist. Pilot review must compare it with other document-summary and document-transformation requests before freezing groups.
+
+The rationale correctly identifies document retrieval as the first necessary action. The collection prompt specified turning instructions from a named fictional document into a checklist, so this is supported practice rather than new independent transfer evidence. Thirty-nine candidates across thirty-three provisional groups are recorded: ten document-retrieval, nine knowledge-lookup, ten calculation, and ten direct-answer queries. Broader learning statuses remain unchanged. No independent review, permission, or release acceptance is inferred. Next collection exercise: an original request to find the record with the earliest or latest date in a named fictional database, with its first action and rationale.
+
+## Fortieth original pilot response, October 23, 2026
+
+Altan supplied candidate q0040 and chose looking up the booking records because their stored arrival dates are needed to find the earliest one. The exact query and rationale are preserved in ignored `data/raw/pilot-intake.md`, provisionally assigned g034 for selecting the earliest dated record. Pilot review must compare it with g020's record-ordering task and other structured-source comparisons before freezing groups.
+
+The rationale correctly identifies knowledge lookup as the first necessary action. The collection prompt specified selecting the earliest or latest dated record, so this is supported practice rather than new independent transfer evidence. Forty candidates across thirty-four provisional groups are recorded, ten per category. An intake integrity check confirmed exactly q0001 through q0040 with no duplicate IDs and ten candidates in each bucket. These are candidate counts, not accepted or independently reviewed rows. Broader learning statuses remain unchanged. Dataset permission, review decisions, ambiguity resolution, and final grouping remain outstanding. In particular, q0033's current-contents versus tank-capacity wording remains flagged. No research results or release acceptance are inferred. The next manual step in `docs/manual-steps.md` is Altan's actual study-use permission statement, including redistribution limits; no license is inferred from authorship or the code's MIT license.
+
+## Pilot permission recorded, October 23, 2026
+
+Altan supplied this permission after collecting candidates q0001 through q0040:
+
+> I give permission to use these queries in the study, include them in my course submission, and share them publicly without restrictions.
+
+The agent copied the statement verbatim into the existing source manifest's `license` field and the ignored intake worksheet, with the date and explicit scope of these forty candidates. No named license or permission for future material was inferred. The walkthrough now describes the actual provenance record. Queries remain in ignored local storage. This permission record does not publish them or establish annotation acceptance, independent review, or M1 readiness. Collection used agent-directed exercises and immediate feedback while Altan supplied the query text and rationales; the human-authored provenance must not be described as unaided collection.
+
+For q0040, looking up the stored dates remains the first required action before selecting the earliest arrival. Permission changes whether that candidate may be used and shared, not its routing label. Existing learning statuses remain unchanged. The next manual step is choosing a second human reviewer or delayed blind self-review, with reviewer availability or a delay. The guide proposes one week for self-review. The pilot review needs at least two rows per proposed class plus all ambiguous rows, including q0033. Reviewer identities, dates, decisions, and agreement remain unfilled.
+
+Verification for the permission update: exact-string readback passed for the source manifest and intake worksheet. The pilot JSONL and review ledger remain empty, confirmed directly. Draft validation reported `PASS: 0 rows valid`, which establishes no accepted research rows. The environment smoke check passed with Python 3.12.13 and scikit-learn 1.9.1. All 201 unit tests passed in 20.059 seconds. Ruff lint, format checks for 47 files, and `git diff --check` passed. No new tests were added for this metadata-only change. No commit, PR, or merge was performed during this permission-recording step. The accumulated learning-log changes remain local.
+
+## Berkeley compatibility inspection, October 24, 2026
+
+Altan asked whether public data could replace further manual query writing and authorized a small Berkeley sample inspection. The agent downloaded a pinned BFCL V3 revision and inspected 40 records across five categories. The [assessment](evidence/bfcl-compatibility.md) records exact sampling, citations, local artifact hashes, and a traceable screening ledger. Eighteen sampled rows provisionally fit the current contract. Four are duplicate calculation requests, leaving fourteen distinct candidates: eleven calculations, two lookups, and one direct answer. Four records need clarification and eighteen request unsupported actions. These counts describe this bounded, adaptive sample and are not full-corpus proportions or model results.
+
+A separate agent checked primary-source provenance and schema. A reviewer checked mappings and count evidence. Agent judgments do not establish independent human labels. The source's empty-tool chatable category contains exact repeats of calculation requests, so mapping its category directly to direct_answer would contradict the project's fixed-tool contract. For the concrete area request `simple_0`, supplied dimensions imply calculation regardless of whether BFCL supplies a function in that category. This is an explanation provided by the agent, not a teach-back answer from Altan.
+
+The recommendation is to retain the existing pilot, consider a filtered BFCL supplement for calculations and read-only structured lookups, and assess other sources for remaining coverage before requesting more authored rows. No dataset source was adopted, no sample entered research JSONL, and no review decision was fabricated. Prior exposure of these inspected examples must be disclosed in any later evaluation design. Existing learning statuses remain unchanged. The user has not yet answered the review-method decision.
+
+Verification for the inspection: all nine downloaded artifacts matched their recorded byte counts and SHA-256 hashes. The seeded supplement and screening scripts reproduced forty sampled records and fourteen distinct candidate texts. A separate AI reviewer confirmed source-line matching, expected-call joins, duplicate detection, and counts. One rationale was corrected to avoid claiming that a function identified a named player database; the routing judgments did not change. The screening hash recorded in the assessment reflects that correction. The environment smoke check, Ruff lint, formatting check for 48 files, and `git diff --check` passed. The full unit suite was not rerun for this documentation-only investigation. All pilot and review JSONL files remain empty. No commit, PR, merge, model fitting, or tool execution from BFCL was performed.
+
+## Complementary sources and blind AI review, October 24, 2026
+
+Altan requested free datasets for the missing classes, an updated roadmap, completion of independent preparation, and one human step at a time. Two source investigations used pinned primary documentation and original records. The [No Robots assessment](evidence/public-direct-answer.md) found thirteen provisional direct-answer texts in twenty inspected records. The [Dolly assessment](evidence/public-document-retrieval.md) found three conditional document-reading texts, two held, and fifteen unsuitable for that supplement in twenty inspected records. Its three candidates require retaining the original separate context as a linked passage; the classifier sees the original instruction only. Initially the attachment assumption was too restrictive, then the original schema and the protocol's identified-passage rule established that preserving an existing association is different from inventing a source cue. The reports retain that condition and the distinct CC BY-NC 4.0 and CC BY-SA 3.0 source requirements. QMSum was triaged but not imported or counted.
+
+The ignored inspection shortlist combines thirty public candidates with exact source IDs, revisions, screening reasons, and licenses. The three original Dolly contexts are stored separately with their original UTF-8 hashes. Across those candidates and the forty authored queries, exact normalized-text checking found seventy distinct texts: 21 calculation, 12 lookup, 24 direct answer, and 13 document retrieval. These are candidate counts, not accepted rows or independent groups. Bulk expansion waits for the pilot guide decisions. No query was rewritten, generated, or put into an accepted research split.
+
+When asked about the human reviewer, Altan requested an AI persona and preservation of his own labels as fallback. A fresh reviewer received only shuffled query texts and guide rules. Its forty labels matched the forty originals, ten per class. The [AI review evidence](evidence/pilot-ai-review.md) records model, input/output hashes, grouping notes, and the limits of that match. The original labels are preserved, and the human ledger is empty. AI agreement cannot establish independent human annotation, true label correctness, or student understanding. The original q0033 wording ambiguity and q0014 teaching-example similarity remain visible. A nine-query blind human packet is ready if the existing method is retained. Altan has been asked whether to formally adopt the single-human, AI-assisted alternative; that method decision remains pending at this entry.
+
+For a concrete routing trace, a Dolly instruction explicitly asks about a given paragraph. Keeping the paragraph as its original linked attachment makes reading it the first dependency. Removing both the paragraph association and its reference would change the task. A generic fact question with no requested source does not become document retrieval merely because the dataset supplies a hidden answer passage. This is an agent explanation, not a student response.
+
+The roadmap now records actual pilot progress, source options, the uncompleted review requirement, and an approximate overall completion of 30%. The weighted estimate is 25% design/tooling at 100%, 25% data at 20%, 20% experiments at 0%, 10% interpretation at 0%, 15% report at 10%, and 5% research reproduction/rehearsal/submission at 0%. The sum is 31.5%, rounded to the nearest five points. These are planning judgments, not measured effort or course marks. The report has a compiled template and outline, with no finished manuscript or measured results. The missed M1 date and at-risk M2 date are explicit; no unsupported new completion dates were assigned.
+
+Preparation verification checked all eleven No Robots evidence hashes and byte counts; the Dolly original download hash, twenty source-line/query/context matches, and context hashes; exact forty-ID pilot coverage; original query preservation; blinded packet fields; and forty AI/original comparisons. The pilot and human-review JSONL files remain empty. Source investigators and reviewers use the same GPT model family; this is not cross-family validation. Required software checks and integration evidence are recorded below after execution.
+
+Next practice after the method choice: resolve one real boundary or group at a time. Ask Altan why an AI label match does not prove independent human agreement, then let him attempt the answer. Later ask how using a different dataset for each label could let source style become a shortcut. Learning statuses remain unchanged until actual responses are recorded.
+
+Integrated verification: `sh scripts/check.sh` exited 0. Locked setup and environment smoke passed; all 201 unit tests passed in 21.386 seconds; Ruff lint passed, 51 files were already formatted, and `git diff --check` passed. These are software checks on fixtures, not research results. No production code or dependency changed. The full artificial archive workflow was not rerun locally for this documentation change; the existing CI job runs it for the PR.
