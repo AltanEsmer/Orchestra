@@ -45,23 +45,25 @@ The validator rejects missing fields, duplicate IDs, empty text, unknown labels,
 
 ## Pilot review
 
-Write 10 queries per label, 40 in total. Label each with a rationale. Then ask a second person to label at least 20 percent of the rows, chosen evenly across labels, plus every `needs_review` row, without seeing your labels. If nobody is available, relabel the same rows yourself after a delay (one week is proposed) without looking at the first labels, and record that the study has one annotator.
+The forty-query pilot is written and its permission recorded. Altan chose single-human annotation with disclosed AI checks on October 24. Preserve his original label/rationale, present shuffled query-only inputs to the AI reviewer, and record AI provenance separately. Check at least 20 percent per original class plus all ambiguous/mixed-label cases. The completed AI pass covers all forty rows.
 
-Record the review in a JSONL ledger, one object per reviewed row, before discussing differences:
+Clear agreement with no flags can retain the original label. Ask Altan to adjudicate every disagreement, abstention, exclusion proposal, and previously flagged case. Keeping the original label after disagreement is still an actual human decision that must be recorded. A persona is not a second human; report AI consistency and single-annotator limitations. Freeze v1 after boundary and group decisions. The previous second-human/delayed-self alternatives remain supported, but are not the selected method.
+
+The legacy human ledger example below applies only when that method is explicitly used. AI rows use the discriminator and extra evidence fields in the [current protocol](data-and-evaluation.md#review-ledger-and-readiness):
 
 ```json
 {"query_id": "q0001", "original_label": "calculation", "review_label": "direct_answer", "reviewer_id": "r1", "review_date": "2026-10-20", "review_kind": "second_human", "resolved_label": "calculation"}
 ```
 
-`review_kind` is `second_human` or `delayed_self`; all fields are required. A `second_human` reviewer must not be listed in the row's `annotator_ids`. `resolved_label` must match the released dataset label, or be null if the row was excluded after review. Every accepted row in a mixed-label group needs an entry. The ledger cannot mark ambiguity, so check by hand that every ambiguous row was reviewed. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Agreement is the share of rows whose `original_label` equals `review_label`.
+For the legacy example, `review_kind` is `second_human` or `delayed_self`; all seven fields are required. AI entries instead use `ai_assisted`, `ai_evidence`, and `human_adjudication`. A `second_human` reviewer must not be listed in the row's `annotator_ids`. `resolved_label` must match the released dataset label, or be null if the row was excluded after review. Every accepted row in a mixed-label group needs an entry. AI evidence must retain known ambiguity flags. Check by hand that every flagged row has an actual human resolution. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Human agreement excludes AI entries. AI consistency is reported separately.
 
-Record agreement before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
+Preserve each pre-adjudication label before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
 
 ## Decisions for Altan before v1
 
 | Decision | Why it matters |
 | --- | --- |
 | Does a general-knowledge fact such as a country's capital count as `direct_answer` or need `knowledge_lookup`? | The protocol limits lookup to an identified structured source, so these queries currently fall under `direct_answer`. The pilot should test whether that rule is easy to apply. |
-| Who performs the independent review, or is delayed self-review used? | The report must state the review method and any single-annotator bias. |
+| Which flagged cases and groups need resolution? | The single-human, AI-assisted method is selected. Record actual human decisions and disclose single-annotator bias. |
 | Which license applies to additional sources? | Altan's exact permission for q0001–q0040 is recorded. Public examples retain their own notices and restrictions; the pilot permission does not cover them. |
 | How are full rows retained? | Keep queries, original labels, and review evidence in ignored local storage; retain hashes and the eventual verified study archive. No raw-data publication is part of this preparation. |

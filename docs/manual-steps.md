@@ -6,9 +6,11 @@ The agent operates the commands in the [runbook](run-experiments.md). Altan supp
 
 The forty original queries and permission are complete. A blind AI check matched all original labels, which remain unchanged. The [AI review record](evidence/pilot-ai-review.md) explains the limits and prepared local packets. The [roadmap](../ROADMAP.md#current-data-path) records public-source options and the current completion estimate.
 
-Choose whether to retain the existing second-human/delayed-self-review method or explicitly revise the study to single-human annotation with AI-assisted checks. The latter needs an honest method disclosure and consistent protocol/validator changes; it cannot be recorded as independent human agreement. This decision is pending. Then address one flagged boundary or group at a time. No need to write another batch of queries now.
+Altan selected single-human annotation with disclosed AI checks. His original labels are the starting reference. A separate AI label is a consistency check. Clear agreement can retain the original label; disagreements and any existing ambiguity/group flags stay unresolved until Altan decides them. The report must state that there is one human annotator and no independent human agreement estimate.
 
-If retaining the human method, the nine-query packet is `work/poteto/complementary/pilot-review/human-blind.jsonl`. Keep `steward.json`, AI answers, and original rationales away from the blind reviewer. For self-review, record a full week after the last label exposure before starting. Do not prefill human decisions.
+Start with q0033: decide whether “holds 60 litres” describes current water or maximum capacity. The agent records the actual answer, then presents the next unresolved case. Do not infer a decision from the AI's matching label. No need to write another batch of queries now.
+
+The nine-query human packet remains available locally if a second-human or delayed-self study is wanted later, but that is no longer the selected method. Do not fill those legacy ledger kinds with AI output.
 
 ## Original collection step (completed)
 
@@ -25,7 +27,7 @@ Send the query and rationale in chat. The agent can format your actual response 
 
 1. Grow the pilot in small batches to 40 original queries, initially 10 per action. Review unclear boundaries with the agent.
 2. State the actual permission for this authored dataset, including any redistribution limits. The agent records your statement without guessing a license.
-3. Choose a second human reviewer or delayed blind self-review. The agent prepares a shuffled worksheet. Supply the actual reviewer decisions and dates before looking at the original labels.
+3. Keep the blind AI review as separate evidence. Resolve flagged cases one at a time; the agent records your actual decisions, dates, and rationale. Preserve both original and AI labels.
 4. Resolve disagreements and ambiguous rows. Freeze guide v1, then grow to 120 accepted rows with 30 rows and 15 independent groups per class. The agent validates and archives the release.
 5. Answer one introductory routing/grouping exercise. The agent runs the two baselines twice and discusses actual validation mistakes.
 6. Expand toward 400 rows following the collection brief fixed before inspecting baseline errors. Preserve existing rows and groups. The agent validates the extension and runs all 14 comparisons.
