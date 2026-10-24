@@ -494,3 +494,151 @@ class FileTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def ai_review(query_id="q0001", label="calculation"):
+    return {
+        **review(query_id, label, kind="ai_assisted"),
+        "reviewer_id": "ai:fixture",
+        "ai_evidence": {
+            "model": "fixture-model",
+            "prompt_sha256": "a" * 64,
+            "input_sha256": "b" * 64,
+            "output_sha256": "c" * 64,
+            "judgment": "clear",
+            "flags": [],
+        },
+        "human_adjudication": None,
+    }
+
+
+class AIReviewTest(unittest.TestCase):
+    def test_clear_match_retains_original(self):
+        self.assertEqual(validate_reviews([ai_review()], rows()), [])
+        changed = ai_review()
+        changed["resolved_label"] = None
+        self.assertTrue(validate_reviews([changed], rows()))
+
+    def test_pending_flags_abstention_and_mismatch_need_human(self):
+        for judgment, label, flags in (
+            ("clear", "calculation", ["boundary"]),
+            ("ambiguous", None, []),
+            ("exclude", None, []),
+            ("clear", "direct_answer", []),
+        ):
+            with self.subTest(judgment=judgment, label=label):
+                item = ai_review()
+                item["ai_evidence"].update(judgment=judgment, flags=flags)
+                item["review_label"] = label
+                self.assertTrue(validate_reviews([item], rows()))
+                item["resolved_label"] = None
+                self.assertEqual(validate_reviews([item], rows()), [])
+                errors = readiness(rows(), SOURCES, [item], SMALL)
+                self.assertTrue(any("pending AI adjudication" in e for e in errors))
+                item["human_adjudication"] = {
+                    "annotator_id": "a1",
+                    "date": "2026-10-24",
+                    "label": "calculation",
+                    "rationale": "Human retained original.",
+                }
+                item["resolved_label"] = "calculation"
+                self.assertEqual(validate_reviews([item], rows()), [])
+
+    def test_malformed_evidence_and_identity_fail_cleanly(self):
+        mutations = [
+            ("ai_evidence", None),
+            ("ai_evidence", []),
+            ("human_adjudication", []),
+            ("reviewer_id", "a1"),
+            ("review_kind", []),
+            ("review_label", []),
+        ]
+        for field, value in mutations:
+            with self.subTest(field=field, value=value):
+                self.assertTrue(
+                    validate_reviews([{**ai_review(), field: value}], rows())
+                )
+        for field, value in (
+            ("model", ""),
+            ("prompt_sha256", "xyz"),
+            ("flags", [""]),
+            ("judgment", []),
+        ):
+            item = ai_review()
+            item["ai_evidence"][field] = value
+            self.assertTrue(validate_reviews([item], rows()))
+
+    def test_adjudicated_exclusion_and_pending_excluded_row(self):
+        item = ai_review()
+        item["ai_evidence"]["judgment"] = "exclude"
+        item["review_label"] = item["resolved_label"] = None
+        data = rows()
+        data[0].update(status="excluded", label=None)
+        self.assertEqual(validate_reviews([item], data), [])
+        self.assertTrue(
+            any(
+                "pending AI adjudication" in e
+                for e in readiness(data, SOURCES, [item], SMALL)
+            )
+        )
+        item["human_adjudication"] = {
+            "annotator_id": "a1",
+            "date": "2026-10-24",
+            "label": None,
+            "rationale": "Out of scope.",
+        }
+        self.assertEqual(validate_reviews([item], data), [])
+        self.assertFalse(
+            any(
+                "pending AI adjudication" in e
+                for e in readiness(data, SOURCES, [item], SMALL)
+            )
+        )
+
+    def test_ai_consistency_is_separate_from_human_agreement(self):
+        result = agreement(
+            [ai_review(), review("q0002", "calculation", "direct_answer")]
+        )
+        self.assertEqual(result["reviewed"], 1)
+        self.assertEqual(result["rate"], 0)
+        self.assertEqual(
+            result["ai_consistency"], {"matching": 1, "reviewed": 1, "rate": 1.0}
+        )
+
+    def test_adjudication_requires_actual_row_annotator_and_complete_decision(self):
+        item = ai_review()
+        decision = {
+            "annotator_id": "a1",
+            "date": "2026-10-24",
+            "label": "calculation",
+            "rationale": "Human checked the boundary.",
+        }
+        item["human_adjudication"] = decision
+        self.assertEqual(validate_reviews([item], rows()), [])
+        for field, value in (
+            ("annotator_id", "invented"),
+            ("date", None),
+            ("label", []),
+            ("rationale", " "),
+        ):
+            with self.subTest(field=field):
+                bad = copy.deepcopy(item)
+                bad["human_adjudication"][field] = value
+                self.assertTrue(validate_reviews([bad], rows()))
+        for field in ("ai_evidence", "human_adjudication"):
+            bad = ai_review()
+            del bad[field]
+            self.assertTrue(validate_reviews([bad], rows()))
+        bad = ai_review()
+        data = rows()
+        data[0]["annotator_ids"] = [bad["reviewer_id"]]
+        self.assertTrue(validate_reviews([bad], data))
+        bad = ai_review()
+        bad["ai_evidence"]["extra"] = "unsupported"
+        self.assertTrue(validate_reviews([bad], rows()))
+        bad = ai_review()
+        bad["original_label"] = None
+        self.assertTrue(validate_reviews([bad], rows()))
+        bad = ai_review()
+        bad["review_label"] = None
+        self.assertTrue(validate_reviews([bad], rows()))
