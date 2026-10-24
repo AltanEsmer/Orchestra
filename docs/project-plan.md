@@ -1,6 +1,6 @@
 # Project plan
 
-Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation currently verifies the Python environment and validates annotated row structure and provenance.
+Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation covers the complete planned study workflow and has been verified with artificial fixtures. Accepted research data and actual experiment results remain absent.
 
 The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records the completed tooling scope and its human evidence boundary. No dataset or trained research model exists.
 
@@ -14,7 +14,7 @@ Required outcomes are a classification formulation, comparisons of classifiers a
 
 ## First vertical slice
 
-The next implementation takes a versioned, labeled JSONL file, checks its schema and annotation status, assigns related queries to the same split, fits a training-only TF-IDF pipeline, and writes validation predictions and metrics. Run a most-frequent dummy classifier before logistic regression. Store query IDs, expected labels, predictions, and available scores so errors can be traced back to the input.
+The implemented workflow takes a versioned, labeled JSONL file, checks its schema and annotation status, assigns related queries to the same split, fits a training-only TF-IDF pipeline, and writes validation predictions and metrics. Run a most-frequent dummy classifier before logistic regression. Store query IDs, expected labels, predictions, and available scores so errors can be traced back to the input.
 
 Completion means both baselines run twice from the same committed configuration and produce the same split membership and predictions. Macro-F1, class metrics, and a confusion matrix must be saved with provenance. A low score is a valid result. A target accuracy is not an acceptance condition. Test-set evaluation waits until the experiment and confidence choices are frozen.
 
@@ -47,6 +47,10 @@ After December submission, use the frozen project, saved results, and guide coll
 
 ## Risks and unresolved decisions
 
+On October 24, Altan authorized public-source investigation to reduce further manual writing. [No Robots](evidence/public-direct-answer.md) adds thirteen provisional direct-answer candidates in a twenty-record sample. [Dolly](evidence/public-document-retrieval.md) adds three conditional document-reading candidates in twenty records, provided their original linked passages are retained outside router input. These sources have distinct licenses and need mapping, attribution, and grouping review. A [blind AI pass](evidence/pilot-ai-review.md) matched the original forty labels. It does not substitute for the existing human-review requirement; a change to a single-human, AI-assisted study method is awaiting Altan's decision.
+
+The earlier Berkeley Function Calling Leaderboard inspection also aimed to reduce further manual writing. The [inspection](evidence/bfcl-compatibility.md) found 14 distinct provisional candidates in 40 records, mainly calculations, and no document-retrieval candidate in that bounded sample. It recommends a filtered supplement and further source assessment, not an unchanged replacement for all four classes. No import, source adoption, label-contract change, or model run has occurred. The existing forty human-authored pilot candidates and human review requirements remain separate.
+
 The largest scientific risks are annotation shortcuts, overlapping action meanings, paraphrase leakage, a small test set, and synthetic language that fails to resemble real users. The [data protocol](data-and-evaluation.md) addresses each and requires limitations in the report. More models cannot repair unclear labels.
 
 Altan handles oral-exam arrangements, AI-use rules, disclosure, and submission mechanics. The agent does not require administrative answers to proceed with approved work. Before any external data or embedding download, record its license and immutable revision. Dataset size is a collection target, not a guaranteed sample size. If fewer than 400 rows are feasible, keep the held-out test and report uncertainty instead of inventing data or hiding exclusions.
@@ -66,16 +70,15 @@ Target an eight-page draft within the required 5–12 pages. Use IEEE conference
 
 References and final pagination must fit the course limit. Each result or figure links to a saved run and configuration. Do not write a conclusion before its evidence exists. Keep an agent-assistance record in the learning log. Altan manages the applicable disclosure requirements.
 
-## First work session after preparation
+## Research steps after tooling preparation
 
-1. Run the [README commands](../README.md) and explain why the dummy classifier ignores query meaning.
-2. Read the action definitions. Write 10 independent queries per label for the pilot. Keep related variants under one group ID.
-3. Review ambiguous and multi-action examples using the annotation policy. Revise and version the guide before collecting more rows.
-4. Grow to 120 accepted queries, at least 30 per label and 15 independent groups per label. Keep enough groups for every split.
-5. Implement schema and duplicate checks, then a persisted group-aware split. Verify that groups do not overlap.
-6. Implement the dummy and TF-IDF logistic-regression baselines with their saved configuration and validation outputs.
-7. Rerun and compare split IDs and predictions. Inspect at least five validation errors, or all errors if fewer exist.
-8. Update the walkthrough and learning log, then answer the first-slice teach-back questions. Stop when the vertical-slice completion condition above is met.
+1. Confirm the review method, preserving Altan's forty original labels and recorded permission. The blind AI pass is available as auxiliary evidence.
+2. Resolve pilot ambiguity, teaching-example similarity, and scenario groups. Complete the selected real review procedure, then freeze guide v1.
+3. Extend with licensed public human-authored examples where compatible. Preserve original wording and linked source context; review mappings rather than copying upstream task categories.
+4. Reach 120 accepted queries, at least 30 per label and 15 independent groups per label. Freeze the expansion brief before viewing baseline errors.
+5. Use the existing commands to validate, split by group, and run the dummy and TF-IDF logistic-regression baselines twice.
+6. Check identical split membership and predictions. Inspect at least five validation errors, or all if fewer exist.
+7. Update the evidence and learning log, then attempt the first-slice teach-back exercise. Continue to the main comparison only after the M2 acceptance evidence exists.
 
 Executable commands are in the [runbook](run-experiments.md). Their research execution waits for accepted data and the recorded human evidence.
 

@@ -1,8 +1,10 @@
 {
   "altan-authored": {
     "author": "Altan Esmer",
-    "license": null,
+    "license": "I give permission to use these queries in the study, include them in my course submission, and share them publicly without restrictions.",
     "created": "2026-10-16",
-    "description": "Human-authored English queries about fictional documents, catalogs, and records for the M1 annotation pilot."
+    "description": "Human-authored English queries about fictional documents, catalogs, and records for the M1 annotation pilot.",
+    "permission_date": "2026-10-23",
+    "permission_scope": "Human-authored pilot candidates q0001 through q0040 supplied by Altan Esmer in this chat."
   }
 }

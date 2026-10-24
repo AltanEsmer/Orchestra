@@ -44,9 +44,12 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/m2-splits.md` | P2 evidence: setuptools pin, real `split` output on an artificial fixture, and the gates that remain open. |
 | `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts, including readiness rejections and ledger agreement. |
 | `docs/annotation-guide.md` | Draft v0 procedure for choosing a first action, writing and grouping queries, the pilot row conventions, the review method, and decisions Altan must make before v1. |
-| `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, license, and creation date. The license is `null` until Altan chooses one. |
+| `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, permission, and creation date. The `altan-authored` entry records Altan's exact October 23 permission for pilot candidates q0001 through q0040 in the `license` field, with its date and scope. This records explicit permission rather than selecting a named license. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |
+| `docs/evidence/public-direct-answer.md`, `docs/evidence/public-document-retrieval.md` | Pinned No Robots and Dolly sample inspections, license notices, unchanged-input mapping, counts, and source limitations. Full records remain ignored locally. |
+| `docs/evidence/pilot-ai-review.md` | Blind AI comparison with preserved human labels, outstanding grouping/boundary flags, prepared nine-query human packet, and explicit separation from human-review evidence. |
+| `docs/evidence/bfcl-compatibility.md` | Pinned 40-record Berkeley compatibility inspection, provisional mappings, duplicate counts, source citations, and limits on replacing manual collection. Full sample records remain in ignored work. |
 | `docs/evidence/m1-data.md` | Tooling evidence for P1: real CLI output on an artificial fixture, and the human gates still open. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
 | `docs/m0-plan.md` | Accepted M0 scope, ordered delivery, checks, and the separate student-response gate. |

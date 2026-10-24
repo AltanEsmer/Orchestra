@@ -26,11 +26,11 @@ Keep teaching examples out of the dataset.
 
 You can fill the local worksheet `data/raw/pilot-intake.md` or send the same information in chat.
 The agent can format your actual answers into JSONL.
-The worksheet is ignored and contains no query examples or proposed human labels.
+The worksheet is ignored and now preserves forty actual queries with Altan's original labels and rationales. Keep it hidden from a blind reviewer.
 
 Before accepting data, supply these decisions:
 
-- State the dataset license or explicit study-use permission and any redistribution limits. The source manifest's `license` remains `null` until you supply that record.
+- The permission for q0001–q0040 is already recorded. Preserve it and record separate source-specific licenses before adopting any public supplement.
 - Choose an independent second human or delayed blind self-review. Supply a reviewer pseudonym and availability, or the self-review interval. The existing plan proposes one week.
 - Resolve ambiguous pilot boundaries before freezing guide v1. Keep the current rule that stable facts without a requested source use `direct_answer`, unless you explicitly revise the protocol.
 

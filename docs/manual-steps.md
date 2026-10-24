@@ -2,9 +2,17 @@
 
 The agent operates the commands in the [runbook](run-experiments.md). Altan supplies the human evidence. Do not complete this whole checklist at once. Start with the first unfinished step and let the agent check it before moving on.
 
-## Start with one query
+## Current next step, October 24
 
-Write one original English request in a fictional situation. State what the assistant must do first and why. The first action is one of these:
+The forty original queries and permission are complete. A blind AI check matched all original labels, which remain unchanged. The [AI review record](evidence/pilot-ai-review.md) explains the limits and prepared local packets. The [roadmap](../ROADMAP.md#current-data-path) records public-source options and the current completion estimate.
+
+Choose whether to retain the existing second-human/delayed-self-review method or explicitly revise the study to single-human annotation with AI-assisted checks. The latter needs an honest method disclosure and consistent protocol/validator changes; it cannot be recorded as independent human agreement. This decision is pending. Then address one flagged boundary or group at a time. No need to write another batch of queries now.
+
+If retaining the human method, the nine-query packet is `work/poteto/complementary/pilot-review/human-blind.jsonl`. Keep `steward.json`, AI answers, and original rationales away from the blind reviewer. For self-review, record a full week after the last label exposure before starting. Do not prefill human decisions.
+
+## Original collection step (completed)
+
+For the completed pilot, the collection instruction was to write one original English request in a fictional situation. State what the assistant must do first and why. The first action is one of these:
 
 - Read a named document or passage.
 - Look up a record in a named catalog or database.

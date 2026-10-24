@@ -63,5 +63,5 @@ Record agreement before discussing differences. For each disagreement, note both
 | --- | --- |
 | Does a general-knowledge fact such as a country's capital count as `direct_answer` or need `knowledge_lookup`? | The protocol limits lookup to an identified structured source, so these queries currently fall under `direct_answer`. The pilot should test whether that rule is easy to apply. |
 | Who performs the independent review, or is delayed self-review used? | The report must state the review method and any single-annotator bias. |
-| Which license applies to the authored rows? | The manifest records `license: null` until Altan chooses. The readiness check (`--ready`) fails while a used source has no license. |
-| Are the pilot rows tracked in this private repository? | Tracking makes them reproducible. They contain only fictional content, but publishing them later requires the license decision. |
+| Which license applies to additional sources? | Altan's exact permission for q0001–q0040 is recorded. Public examples retain their own notices and restrictions; the pilot permission does not cover them. |
+| How are full rows retained? | Keep queries, original labels, and review evidence in ignored local storage; retain hashes and the eventual verified study archive. No raw-data publication is part of this preparation. |
