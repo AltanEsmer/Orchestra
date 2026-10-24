@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import json
 import math
+import re
 import statistics
 from collections import Counter
 from fractions import Fraction
@@ -30,7 +31,7 @@ REVIEW_FIELDS = (
     "review_kind",
     "resolved_label",
 )
-REVIEW_KINDS = ("second_human", "delayed_self")
+REVIEW_KINDS = ("second_human", "delayed_self", "ai_assisted")
 M1_REQUIREMENTS = {
     "accepted": 120,
     "per_class": 30,
@@ -142,8 +143,10 @@ def validate_reviews(reviews, rows):
     seen_ids = set()
     for index, review in enumerate(reviews, start=1):
         ref = review.get("query_id") or f"review {index}"
-        missing = [field for field in REVIEW_FIELDS if field not in review]
-        unknown = sorted(set(review) - set(REVIEW_FIELDS))
+        ai = review.get("review_kind") == "ai_assisted"
+        fields = REVIEW_FIELDS + (("ai_evidence", "human_adjudication") if ai else ())
+        missing = [field for field in fields if field not in review]
+        unknown = sorted(set(review) - set(fields))
         if missing:
             errors.append(f"{ref}: review missing fields {', '.join(missing)}")
         if unknown:
@@ -169,9 +172,19 @@ def validate_reviews(reviews, rows):
         if not is_filled(review["reviewer_id"]):
             errors.append(f"{ref}: review empty reviewer_id")
         for field in ("original_label", "review_label", "resolved_label"):
-            # null resolved_label records a row excluded after review
+            # null resolved_label records exclusion or pending AI adjudication
             if review[field] not in LABELS and not (
-                field == "resolved_label" and review[field] is None
+                (
+                    field == "resolved_label"
+                    or (
+                        ai
+                        and field == "review_label"
+                        and isinstance(review["ai_evidence"], dict)
+                        and review["ai_evidence"].get("judgment")
+                        in ("ambiguous", "exclude")
+                    )
+                )
+                and review[field] is None
             ):
                 errors.append(f"{ref}: review {field} {review[field]!r} is not a label")
         if review["review_kind"] not in REVIEW_KINDS:
@@ -180,15 +193,128 @@ def validate_reviews(reviews, rows):
             valid_date = datetime.date.fromisoformat(review["review_date"]).isoformat()
         except (TypeError, ValueError):
             valid_date = None
-        if valid_date != review["review_date"]:
+        if valid_date != review["review_date"] or valid_date is None:
             errors.append(f"{ref}: review_date must be YYYY-MM-DD")
+        if ai:
+            annotators = (
+                by_id.get(review["query_id"], {}).get("annotator_ids", [])
+                if is_filled(review["query_id"])
+                else []
+            )
+            if not isinstance(annotators, list):
+                annotators = []
+            if (
+                not (
+                    is_filled(review["reviewer_id"])
+                    and review["reviewer_id"].startswith("ai:")
+                    and is_filled(review["reviewer_id"][3:])
+                )
+                or review["reviewer_id"] in annotators
+            ):
+                errors.append(
+                    f"{ref}: ai_assisted reviewer_id must identify an AI, not an annotator"
+                )
+            evidence = review["ai_evidence"]
+            evidence_fields = {
+                "model",
+                "prompt_sha256",
+                "input_sha256",
+                "output_sha256",
+                "judgment",
+                "flags",
+            }
+            if not isinstance(evidence, dict) or set(evidence) != evidence_fields:
+                errors.append(
+                    f"{ref}: ai_evidence must contain exactly {', '.join(sorted(evidence_fields))}"
+                )
+            else:
+                if not is_filled(evidence["model"]):
+                    errors.append(f"{ref}: ai_evidence model must be nonempty")
+                for field in ("prompt_sha256", "input_sha256", "output_sha256"):
+                    if not isinstance(evidence[field], str) or not re.fullmatch(
+                        r"[0-9a-fA-F]{64}", evidence[field]
+                    ):
+                        errors.append(
+                            f"{ref}: ai_evidence {field} must be a SHA-256 hex digest"
+                        )
+                if evidence["judgment"] not in ("clear", "ambiguous", "exclude"):
+                    errors.append(
+                        f"{ref}: ai_evidence judgment must be clear, ambiguous or exclude"
+                    )
+                if not isinstance(evidence["flags"], list) or not all(
+                    is_filled(flag) for flag in evidence["flags"]
+                ):
+                    errors.append(
+                        f"{ref}: ai_evidence flags must be a list of nonempty strings"
+                    )
+                if review["human_adjudication"] is None:
+                    clear_match = (
+                        evidence["judgment"] == "clear"
+                        and not evidence["flags"]
+                        and review["review_label"] == review["original_label"]
+                    )
+                    if (
+                        clear_match
+                        and review["resolved_label"] != review["original_label"]
+                    ):
+                        errors.append(
+                            f"{ref}: clear matching AI check must retain original_label without human adjudication"
+                        )
+                    elif not clear_match and review["resolved_label"] is not None:
+                        errors.append(
+                            f"{ref}: AI flags or disagreement require human adjudication or null resolved_label"
+                        )
+            decision = review["human_adjudication"]
+            if decision is not None:
+                if not isinstance(decision, dict) or set(decision) != {
+                    "annotator_id",
+                    "date",
+                    "label",
+                    "rationale",
+                }:
+                    errors.append(
+                        f"{ref}: human_adjudication must contain exactly annotator_id, date, label, rationale"
+                    )
+                else:
+                    if (
+                        not is_filled(decision["annotator_id"])
+                        or decision["annotator_id"] not in annotators
+                    ):
+                        errors.append(
+                            f"{ref}: human_adjudication annotator_id must be a row annotator"
+                        )
+                    try:
+                        date = datetime.date.fromisoformat(decision["date"]).isoformat()
+                    except (TypeError, ValueError):
+                        date = None
+                    if date != decision["date"] or date is None:
+                        errors.append(
+                            f"{ref}: human_adjudication date must be YYYY-MM-DD"
+                        )
+                    if (
+                        decision["label"] is not None
+                        and decision["label"] not in LABELS
+                    ):
+                        errors.append(
+                            f"{ref}: human_adjudication label is not a label or null"
+                        )
+                    if not is_filled(decision["rationale"]):
+                        errors.append(
+                            f"{ref}: human_adjudication rationale must be nonempty"
+                        )
+                    if review["resolved_label"] != decision["label"]:
+                        errors.append(
+                            f"{ref}: resolved_label differs from human_adjudication label"
+                        )
     return errors
 
 
 def agreement(reviews):
-    reviewed = len(reviews)
-    matching = sum(r["original_label"] == r["review_label"] for r in reviews)
-    return {
+    human = [r for r in reviews if r["review_kind"] != "ai_assisted"]
+    ai = [r for r in reviews if r["review_kind"] == "ai_assisted"]
+    reviewed = len(human)
+    matching = sum(r["original_label"] == r["review_label"] for r in human)
+    result = {
         "matching": matching,
         "reviewed": reviewed,
         "rate": matching / reviewed if reviewed else None,
@@ -201,8 +327,17 @@ def agreement(reviews):
                 "reviewed": sum(r["review_kind"] == k for r in reviews),
             }
             for k in REVIEW_KINDS
+            if k != "ai_assisted"
         },
     }
+    if ai:
+        matching_ai = sum(r["original_label"] == r["review_label"] for r in ai)
+        result["ai_consistency"] = {
+            "matching": matching_ai,
+            "reviewed": len(ai),
+            "rate": matching_ai / len(ai),
+        }
+    return result
 
 
 def readiness(rows, sources, reviews, requirements):
@@ -217,11 +352,27 @@ def readiness(rows, sources, reviews, requirements):
     if unresolved:
         errors.append(f"{unresolved} rows still need review")
 
+    pending_ai = {
+        r["query_id"]
+        for r in reviews
+        if r["review_kind"] == "ai_assisted"
+        and r["human_adjudication"] is None
+        and (
+            r["ai_evidence"]["judgment"] != "clear"
+            or r["ai_evidence"]["flags"]
+            or r["review_label"] != r["original_label"]
+            or r["resolved_label"] != r["original_label"]
+        )
+    }
+    errors.extend(f"{qid}: pending AI adjudication" for qid in sorted(pending_ai))
+    qualifying_reviews = [r for r in reviews if r["query_id"] not in pending_ai]
     by_id = {row["query_id"]: row for row in accepted}
     # Exact arithmetic: float math.ceil(0.2 * 35) is 8, not 7.
     fraction = Fraction(str(requirements["review_fraction"]))
     reviewed_by_label = Counter(
-        by_id[r["query_id"]]["label"] for r in reviews if r["query_id"] in by_id
+        by_id[r["query_id"]]["label"]
+        for r in qualifying_reviews
+        if r["query_id"] in by_id
     )
     for label in LABELS:
         in_class = [row for row in accepted if row["label"] == label]
@@ -258,7 +409,7 @@ def readiness(rows, sources, reviews, requirements):
     labels_by_group = {}
     for row in accepted:
         labels_by_group.setdefault(row["group_id"], set()).add(row["label"])
-    reviewed_ids = {r["query_id"] for r in reviews}
+    reviewed_ids = {r["query_id"] for r in qualifying_reviews}
     for row in accepted:
         if (
             len(labels_by_group[row["group_id"]]) > 1
