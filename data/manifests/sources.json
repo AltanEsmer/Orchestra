@@ -47,6 +47,7 @@
     "url": "https://huggingface.co/datasets/openai/gsm8k",
     "revision": "740312add88f781978c0658806c59bc2815b9866",
     "adoption_date": "2026-10-26",
-    "adoption": "Selected by Altan Esmer on 2026-10-26 in the collection brief, which adopts it once license and pinned revision are recorded. No file downloaded yet; file_sha256 is added after an approved download."
+    "adoption": "Selected by Altan Esmer on 2026-10-26 in the collection brief, which adopts it once license and pinned revision are recorded. file_sha256 is main/test-00000-of-00001.parquet, downloaded with Altan's approval on 2026-10-26; the training file was not downloaded.",
+    "file_sha256": "ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59"
   }
 }
