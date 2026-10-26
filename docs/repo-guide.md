@@ -99,7 +99,7 @@ Some storage directories are created only when their commands run.
 | `src/orchestra/` | Validation, split, and experiment modules plus the `python -m orchestra` entry point. Calibration and final-test evaluation are implemented and fixture-tested. Track authored modules. |
 | `tests/` and `tests/fixtures/` | Focused behavioral checks and small cleared fixtures. Track both. |
 | `data/raw/`, `data/processed/` | Local acquired and derived rows. Ignored. Preserve source/license manifests separately. |
-| `data/manifests/`, `data/splits/` | Proposed tracked provenance and stable split-ID manifests after privacy review. |
+| `data/manifests/`, `data/splits/` | Tracked provenance and split manifests. `m2-split.json` holds only query IDs, group IDs, and row hashes, no text. Tracked at Altan's request on October 26. |
 | `configs/` | Tracked experiment configurations; `m2.json` and `m3.json` exist. |
 | `results/<run-id>/` | Ignored full metrics, predictions, timing, and configuration copies. Archive for reproducibility. |
 | `models/` | Ignored fitted artifacts. Load only trusted locally produced files. |
