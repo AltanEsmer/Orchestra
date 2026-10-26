@@ -18,7 +18,9 @@ Altan accepted the recommendations for all 55 flagged rows. All 128 rows are acc
 
 Altan froze the release as read-only `data/processed/m1-v1.jsonl` with the `reviews-v2.jsonl` ledger ([freeze record](evidence/public-review-v2.md#freeze)).
 
-**Your next step:** decide whether to start M2. The agent prepares the study split with `prepare-study` and runs the two baselines twice. You then inspect the validation errors. Before inspecting them, freeze the M3 collection brief.
+The [collection brief](collection-brief.md) now records Altan's M3 source mix and the 400-row target. It is final for M2.
+
+**Your next step:** decide whether to start M2. The agent prepares the study split with `prepare-study`, which records the brief's hash, and runs the two baselines twice. You then inspect the validation errors.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

@@ -835,3 +835,13 @@ Trace: q0081 ("average age of the customers … above $1000") is now fixed in g0
 Practice questions, unanswered: (1) Why freeze the data before looking at any baseline errors? (2) What would you have to do if you found a wrong label in M2? (3) Why record the hashes of the guide and source manifest, not only the data file? Learning statuses remain unchanged.
 
 Verification: see the handoff. Readiness passes on the frozen file. Only documentation changed in Git.
+
+## M3 collection brief: sources chosen, October 26, 2026
+
+The collection brief still described the pilot plan: human-authored fictional queries and no external corpora. `prepare-study` records the brief's hash at split time, so the agent drafted an update before M2. Asked whether to use web datasets, Altan said: "Go with the recommended mix without screening first and update the brief." Each class keeps its M1 public source and adds a second one. Direct answer adds Dolly's no-passage categories. Document retrieval adds No Robots' passage categories through the attachment adapter. Calculation adds GSM8K, which is not adopted until its license and revision are pinned. Lookup adds Altan-authored queries and the AI drafts. Capacity was not screened. Altan then said: "Keep 400 rows (about 100 per class) as the M3 target." The draft note is removed. `prepare-study` will record the brief's hash when it splits M2.
+
+Trace: lookup has 32 rows, 22 of them from BFCL. Reaching 100 rows with BFCL alone would make BFCL 90 percent of the class, above the 75 percent limit. A model could then learn "SQL table wording means lookup" instead of the first action. At least 25 lookup rows must come from other sources.
+
+Practice questions, unanswered: (1) Why must the brief be frozen before you look at M2 errors? (2) Why is source mix a quality check and not just a bookkeeping rule? (3) Why might a text-to-SQL question like "How many singers are there?" fail the guide's first step? Learning statuses remain unchanged.
+
+Verification: see the handoff. Only documentation changed in Git; no data was downloaded or imported.
