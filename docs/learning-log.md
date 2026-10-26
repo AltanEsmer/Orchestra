@@ -895,3 +895,11 @@ Trace: BFCL record `live_multiple_166-66-0` asks for "Adriel's detailed profile 
 Practice questions, unanswered: (1) Lookup already has 12 keyed-record rows. Why can BFCL's 33 eligible keyed-record rows add only 28? (2) Why does the screen drop a Dolly question like "When did Alia Bhatt get her first leading role?" even though its passage answers it? (3) Why does the screen count a sampled pool's eligible share with an interval instead of a single number? Learning statuses remain unchanged.
 
 Verification: see the handoff. The manifest and documentation changed in Git; screening tools and candidate text stay in ignored `work/poteto/m3-capacity/`.
+
+## GSM8K screened for calculation, October 26, 2026
+
+Altan said: "Yes, download the GSM8K test parquet at revision 740312ad and screen it for calculation." The agent downloaded the 419,088-byte test file, checked that its SHA-256 matches the upstream hash, and exported only the question text. The worked solutions and answers were never read. All 30 seeded sample questions are word problems that supply every number, so the 1,319-question test split easily covers the 16 rows calculation needs. Lookup remains the only class with a shortfall.
+
+Trace: GSM8K test question 1220 reads "Ian has a board that is 40 feet long. … The longer piece is 4 times longer than the shorter piece. How long is the longer piece?" Every number is in the text and the request is a numeric result, so the first action is calculation. It never says "calculate". That helps dilute the "calculate" cue the brief lists.
+
+Practice question, unanswered: Why must the import store GSM8K's question but never its answer field, even though the router would only see the question? Learning statuses remain unchanged.

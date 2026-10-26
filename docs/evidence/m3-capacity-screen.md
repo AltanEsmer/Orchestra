@@ -4,7 +4,7 @@ Screened October 26, 2026, after the M2 run, against the source mix and 400-row 
 
 ## Finding
 
-Three classes can reach about 100 rows within the brief's mix. Lookup cannot. After the 40 percent request-type limit, BFCL supplies 32 to 43 new lookup rows, and the AI drafts add 11. That leaves **14 to 25 lookup rows** with no screened source. Calculation's second source, GSM8K, is unscreened because no GSM8K file has been downloaded. The brief leaves both decisions to Altan.
+Three classes can reach about 100 rows within the brief's mix. Lookup cannot. After the 40 percent request-type limit, BFCL supplies 32 to 43 new lookup rows, and the AI drafts add 11. That leaves **14 to 25 lookup rows** with no screened source. The brief leaves that decision to Altan. Calculation's second source, GSM8K, was screened after Altan approved the download, and it covers the 16 rows calculation needs.
 
 ## What eligible means
 
@@ -23,7 +23,7 @@ The cumulative checks count the frozen M1 rows (`data/processed/m1-v1.jsonl`, SH
 | --- | ---: | ---: | ---: | --- | ---: | --- | ---: |
 | Direct answer | 33 (23 No Robots, 10 Altan) | 67 | 52 | No Robots: about 374 | 15 | Dolly no-passage: about 5,900 | 0 |
 | Document retrieval | 31 (22 Dolly, 9 Altan) | 69 | 53 | Dolly: about 1,900 | 16 | No Robots passage: 35 | 0 |
-| Calculation | 32 (23 BFCL, 9 Altan) | 68 | 52 | BFCL: about 156 | 16 | GSM8K: unscreened | unknown |
+| Calculation | 32 (23 BFCL, 9 Altan) | 68 | 52 | BFCL: about 156 | 16 | GSM8K test split: about 1,300 | 0 |
 | Knowledge lookup | 32 (22 BFCL, 10 Altan) | 68 | 53 | BFCL: 32–43 | 25–36 | AI drafts: 11 | **14–25** |
 
 Lookup's ranges come from 12 borderline BFCL rows. The low end excludes them and the high end includes them. The shortfall assumes every usable draft is accepted after Altan's labelling and the AI check. Any rejection widens it.
@@ -41,6 +41,7 @@ Filters in `pools.py` narrow what was judged. They do not decide labels. Small p
 | BFCL, calculation | math-like function name in the cached files | 292 | 30 | 16 | about 156 (105–203) |
 | BFCL, lookup | named structured source or record ID in the user text, or a read-only SQL `SELECT` | 193 of 214 records | 214 | 37 firm, 12 borderline | 32 firm, 43 with borderline, after caps |
 | AI drafts, lookup | proposed lookup label | 20 | 20 | 15 | 11 after the shared type cap |
+| GSM8K test split, calculation | every question | 1,319 | 30 | 30 | about 1,300 (1,169–1,319) |
 
 Notes on the judgments:
 
@@ -49,6 +50,7 @@ Notes on the judgments:
 - **BFCL calculation.** Weather, home searches, contact lookups, and formulas with missing inputs failed. The cached `chatable` file repeats `simple` records, which is why its 323 records hold only 292 distinct texts. Many finance and physics rows are small variations of each other and will share groups. With about 156 eligible rows against a need of 52, grouping does not bind.
 - **BFCL lookup.** Most of the 214 candidates are writes (server setup, orders, bookings, payments), live data (weather, flight status, Amazon prices), real external databases (IMDB, a county property registry), or chatable copies. The 37 firm rows form 20 groups. Sixteen ask about one person, Adriel, and form one group capped at four. Six near-identical API-token requests form another. 33 of the 37 are keyed-record lookups. M1 already has 12 keyed-record lookups, so at most 28 more fit under the 40-row limit, which leaves 32. Most give a record ID without naming the database, the same flag 4 accepted M1 lookups carry. That is a source-style cue risk. The 12 borderline rows are stored sensor readings, file listings, and settings checks. Each could count as live telemetry or a file system listing rather than a structured lookup. Altan decides those during labelling.
 - **SQL rows.** All four remaining read-only SQL rows query the `employees` or `customers` table, which already have M1 groups. None is eligible.
+- **GSM8K.** All 30 sampled questions supply every number and ask for one numeric result. None needs a source or live data. Few say "calculate", which dilutes the cue the brief lists. Several reuse first names (three mention a Steve) in unrelated situations, which do not join groups under guide v2. None reached 0.5 token overlap with an M1 row.
 - **AI drafts.** Five lookup drafts reuse a name from an M1 group (Willow, Cedar, Elm, Birch, Oak), so guide v2 joins them to it. Four of the remaining 15 are keyed-record lookups. If BFCL fills the keyed-record limit, those four do not fit. Drafts that share a name (Alder, Fern) share a group.
 
 ## GSM8K
@@ -59,35 +61,34 @@ GSM8K's license and pinned revision are now in `data/manifests/sources.json`:
 - Revision: `740312add88f781978c0658806c59bc2815b9866`, read from the Hugging Face API on October 26.
 - Size from the card: 7,473 training and 1,319 test questions in the `main` configuration.
 
-Calculation needs 16 GSM8K rows. The card describes grade-school word problems that supply their numbers, which suggests most questions qualify. That is a guess until the questions are read. Screening needs one download, which Altan has not yet approved:
+Altan said: "Yes, download the GSM8K test parquet at revision 740312ad and screen it for calculation." The agent downloaded `main/test-00000-of-00001.parquet` (419,088 bytes) into ignored `work/poteto/gsm8k-download/`. Its SHA-256, `ee7b8da9e381df27b9e3f7758a159ab2bdaa4dbaa910546cbbc47e0cb44e4f59`, matches the upstream LFS hash and is now the manifest's `file_sha256`. The training file (2,306,545 bytes) was not downloaded.
 
-| File | Source | Size | Upstream SHA-256 |
-| --- | --- | ---: | --- |
-| `main/test-00000-of-00001.parquet` | huggingface.co/datasets/openai/gsm8k at `740312ad` | 419,088 bytes | `ee7b8da9…4e59` |
-| `main/train-00000-of-00001.parquet` | same | 2,306,545 bytes | `ea82612e…19d` |
-
-The test file alone holds 1,319 questions, far more than 16. The files include each worked solution and final answer. The import would keep only the `question` field.
+The parquet also holds each worked solution and final answer. `export_gsm8k.py` checks the hash and writes only the `question` column, with row indexes, to ignored `gsm8k-test-questions.jsonl` (SHA-256 `490d5595…9e0b`). It ran in a throwaway `uv run --no-project --with pyarrow` environment, so no project dependency changed. The screen never read a solution or answer.
 
 ## Decisions for Altan
 
 1. **Lookup shortfall of 14–25 rows.** The brief already names Altan-authored queries as lookup's second source, so you could write them. Otherwise, choose a top-up such as screening more BFCL files (the parallel and irrelevance sets are not cached locally), more AI drafts, a lower lookup target, or another source. Avoid keyed-record lookups. That type is at its 40-row limit.
 2. **The 12 borderline BFCL lookups.** Do stored sensor readings, file listings, and settings checks count as structured lookup?
-3. **GSM8K download.** Approve downloading the 419,088-byte test parquet above to screen calculation's second source.
+
+GSM8K needs no further decision for capacity. Its rows still need Altan's labels and the AI check.
 
 ## Exposure and limits
 
-- The agent read about 400 candidate texts during this screen. Collection must disclose that exposure, as for the M1 import.
+- The agent read about 430 candidate texts during this screen. Collection must disclose that exposure, as for the M1 import.
 - No filter or judgment used the M2 validation errors. The agent read Altan's error hypotheses in the learning log only after every judgment was fixed in `judge.py`, while drafting these docs.
-- Eligibility is one agent's reading of the guide. Altan's labels and the blind AI check decide acceptance. Sampled pools carry sampling error, shown by the intervals. Only the No Robots passage, BFCL lookup, and AI draft pools were judged in full.
-- Only locally cached files at their pinned revisions were screened: BFCL `simple`, `exec_simple`, `multiple`, `live_simple`, `live_multiple`, `chatable`, `sql`; the No Robots test split (500 rows); all of Dolly. The No Robots training split was not screened, and the screen did not need it.
+- Eligibility is one agent's reading of the guide. Altan's labels and the blind AI check decide acceptance. Sampled pools carry sampling error, shown by the intervals. Only the No Robots passage, BFCL lookup, and AI draft pools were judged in full. The GSM8K sample is unanimous, so its interval mainly reflects the sample size.
+- Only locally cached files at their pinned revisions were screened: BFCL `simple`, `exec_simple`, `multiple`, `live_simple`, `live_multiple`, `chatable`, `sql`; the No Robots test split (500 rows); all of Dolly; the GSM8K test split. The No Robots training split was not screened, and the screen did not need it.
 
 ## Reproduce
 
-The ignored directory `work/poteto/m3-capacity/` holds the tools. Run both from the repository root with `python3 -I`. `pools.py` checks the SHA-256 of M1, the import provenance, and every source file, then writes the pools and seeded samples. `judge.py` holds every verdict, asserts one verdict per judged line, and writes `capacity.json`.
+The ignored directory `work/poteto/m3-capacity/` holds the tools. Run `export_gsm8k.py` once as described above, then the other two from the repository root with `python3 -I`. `pools.py` checks the SHA-256 of M1, the import provenance, and every source file, then writes the pools and seeded samples. `judge.py` holds every verdict, asserts one verdict per judged line, and writes `capacity.json`.
 
 | File | SHA-256 |
 | --- | --- |
-| `pools.py` | `f3c4f0b58a8d2cc83829c55803f486185154a9ac4bb02a93714a6e552106e663` |
-| `judge.py` | `e423353b8e0e7d8bc9fbcf13de6395bbb55f2f4d1c12bc7a66e47acab5305abd` |
-| `pools.json` | `8075c2537f80acd5e1c2896efe6798f41dbef28fc699258d4d47283e88aab234` |
-| `capacity.json` | `27afee0a70bd5345f6c83532a3afda98af50b3c38f77ece25f01ff5e525271c2` |
+| `export_gsm8k.py` | `e0d111d39b7eaeb8e71c3da8b725222933bf1cfb9aa7c78ee429f2a9c6041fb4` |
+| `pools.py` | `139bb16454b0d1592fbdd640d46c6143393735b5270176d6f5b643213a11ab53` |
+| `judge.py` | `3a2939d563b9469ebe700869981d561d8b379c079eb4264e18c365ac059498bc` |
+| `pools.json` | `e5d9835843ceaa04805ec925f93874597e46c16a760107eadebc532d2e700b27` |
+| `capacity.json` | `828d8caa9efac9f627081c585a4ddcc606753f0d87854eb36b9a97693bf9cdaf` |
+
+Adding GSM8K as the last pool left the six earlier seeded samples byte-identical; the agent compared them before and after.
