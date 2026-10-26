@@ -13,3 +13,11 @@ Apply the same permission, human rationale, and blind-review requirements to add
 The agent measures class/group counts, word lengths, source mix, agreement, and exclusions after collection. Those observations establish achieved coverage. This brief cannot guarantee natural user language or real-world routing performance.
 
 The October 26 pilot decisions keep checklist transformation separate from summarization. Inspect “handbook” as a possible word-level cue during validation error analysis without claiming an observed effect. The inspected public-source shortlist still requires source adoption and human annotation under the selected AI-assisted method. No public source becomes accepted merely through this brief.
+
+## AI candidate drafting supplement, October 26, 2026
+
+Altan explicitly requested “Draft AI-generated candidates” after being offered human authoring or disclosed AI drafting. This permits a local draft supplement to the human-authored collection. Generated text is not attributed to Altan. The existing permission, human primary labels/rationales, AI-check, and adjudication requirements still apply before research acceptance. Pilot rows and guide v1 remain unchanged. No public source has been adopted.
+
+The [template review](evidence/template-expansion-draft.md) records 40 local drafts, two per supplied template, and provisional family merges. Nine proposed families are new; chained actions alone do not establish independence. These are agent proposals pending human decisions, not an accepted family list. Preserve generation provenance, the request, guide snapshots, query-only input, and cap counts outside Git. Exact backend revision and generation parameters are unavailable and must not be invented.
+
+For these drafts, source names are fictional without requiring the literal word “fictional” in every query. Vary structured-source and document nouns while retaining enough information to choose an action. Future calculation/direct-answer authoring should also include invented settings with all needed inputs supplied; such variation must follow the same grouping/cap checks. Do not rewrite accepted pilot rows or target model errors. The word “fictional” occurs in all 19 accepted lookup/document rows and none of the 19 other pilot rows; this is a measured collection association, not measured classifier reliance.

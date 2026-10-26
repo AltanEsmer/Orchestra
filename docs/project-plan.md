@@ -82,6 +82,8 @@ References and final pagination must fit the course limit. Each result or figure
 
 Executable commands are in the [runbook](run-experiments.md). Their research execution waits for accepted data and the recorded human evidence.
 
+The October 26 [AI candidate supplement](evidence/template-expansion-draft.md) prepares forty unaccepted drafts at Altan’s explicit request. Conservative overlap review proposes nine new families and exposes three over-cap families. Human annotation, family adjudication, and cap selection precede import; the draft counts do not close the M1 release gap.
+
 ## Source authority
 
 See [course sources](course-sources.md) for file locations and page-level course mappings. The course PDFs take precedence over this project plan if a discrepancy appears. Confirm later staff announcements separately and record their date and source.
