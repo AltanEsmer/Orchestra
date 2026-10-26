@@ -46,7 +46,9 @@ Altan replied "Accept recommendations for all 55 flagged rows in the adjudicatio
 
 All 128 rows are accepted, in 108 groups (largest group four rows). `validate_dataset.py --ready` with `reviews-v2.jsonl` passes: "M1 readiness checks passed (128 accepted rows, 128 reviewed)". No two rows in different groups reach 0.5 token overlap. Every class has two sources, none above 75 percent. Merges changed no request type, so the projected request-type spread (largest 39 percent) still holds. All 128 ledger entries are AI checks, so the readiness pass reports AI consistency (128 of 128), not human agreement.
 
-After adjudication: `data/raw/m1-v2.jsonl` SHA-256 `3e02b6fa8a7c1987a44a6a9ae1c118bac768be16ad05c58d2948880b87633b2e`; `data/raw/reviews-v2.jsonl` SHA-256 `5c449ce1f234490f351e1be7b1843346f46d9c1466136a0b14d5ddb6eb6c2de8`. `apply_adjudication.py` checks the data, ledger, proposal, and worksheet hashes before writing, and `adjudication-2026-10-26.json` keeps the exact reply. ## Freeze
+After adjudication: `data/raw/m1-v2.jsonl` SHA-256 `3e02b6fa8a7c1987a44a6a9ae1c118bac768be16ad05c58d2948880b87633b2e`; `data/raw/reviews-v2.jsonl` SHA-256 `5c449ce1f234490f351e1be7b1843346f46d9c1466136a0b14d5ddb6eb6c2de8`. `apply_adjudication.py` checks the data, ledger, proposal, and worksheet hashes before writing, and `adjudication-2026-10-26.json` keeps the exact reply.
+
+## Freeze
 
 Altan replied "Freeze the M1 release as data/processed/m1-v1.jsonl with the reviews-v2 ledger." The agent copied `data/raw/m1-v2.jsonl` byte for byte to `data/processed/m1-v1.jsonl` and made it and `data/raw/reviews-v2.jsonl` read-only. Readiness on the frozen file with that ledger passes: "M1 readiness checks passed (128 accepted rows, 128 reviewed)".
 

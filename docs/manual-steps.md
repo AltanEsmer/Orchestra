@@ -22,7 +22,9 @@ The [collection brief](collection-brief.md) now records Altan's M3 source mix an
 
 M2 ran on October 26. The grouped split has 78 training, 25 validation, and 25 sealed test rows. Both baselines ran twice and reproduce exactly. On validation, B0 scores macro-F1 0.097 and L2 scores 0.730 ([M2 record](evidence/m2-research-run.md)).
 
-**Your next step:** inspect the L2 validation errors (7 of 25) together with some correct rows. The agent shows them on request. Record your explanations as hypotheses.
+Altan inspected the seven L2 errors and recorded five hypotheses ([error inspection](evidence/m2-research-run.md#error-inspection)). That exposure must be disclosed, and M3 rows must not target those errors.
+
+**Next:** M3 collection. The agent records GSM8K's license and pinned revision, then screens each source's capacity against the brief's per-class mix. You decide any shortfall. You then label new rows, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

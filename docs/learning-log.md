@@ -855,3 +855,33 @@ Trace: q0081 and q0079 share group g084, so the split put both in the same parti
 Practice questions, unanswered: (1) B0 has accuracy 0.24 but macro-F1 0.097. Why does macro-F1 punish it more? (2) One validation row moves accuracy by 0.04. What does that mean for comparing two models that differ by 0.04? (3) Why must nobody look at the sealed test predictions yet? Learning statuses remain unchanged.
 
 Verification: see the handoff. `compare` passes; `sh scripts/check.sh` passes. No code, dependency, or schema changed.
+
+## M2 error hypotheses, October 26, 2026
+
+The agent showed Altan the seven L2 validation errors and nine correct rows with their probabilities, plus four guiding questions. Altan then sent these hypotheses (verbatim):
+
+> 1. **Hypothesis: L2 may respond differently to wording that introduces reference text.** Both incorrect Dolly rows say “Based on this paragraph,” while the correct examples say “Given this paragraph” or “Given a reference text.” Retrieval probabilities differ only slightly: .26/.27 for the errors versus .34/.29 for the correct rows. That suggests a fragile boundary, rather than a reliable distinction between these phrasings.
+>
+> 2. **Hypothesis: M4 could benefit from handling small winning margins as uncertainty.** The top-two gaps for the seven errors are: q0044 .04, q0047 .09, q0069 .06, q0084 .01, q0090 .01, q0117 .01, q0130 .01. Four errors are effectively ties at the displayed precision. A margin-based fallback or second check might help, but correct rows are also close: q0045 has a .02 gap and q0048 a .02 gap. These examples suggest testing uncertainty handling, not choosing a threshold yet.
+>
+> 3. **Hypothesis: explicit task cues may help, but their presence is neither necessary nor sufficient.** “Fictional” appears in the correctly classified handbook and catalog examples, and “table” appears in the strong lookup prediction for q0064 (.57). However, “paragraph” occurs in both correct and incorrect retrieval rows. Correct calculation examples do not require the literal word “calculate,” and q0090 is misclassified despite an explicit probability question. The pattern may concern how cues combine with the requested operation.
+>
+> 4. **Hypothesis: L2 may blur external-state lookup with reasoning, and factual answering with lookup.** Complaint status and inventory levels require external records, yet q0069 and q0084 favor calculation or direct answering. Conversely, the two No Robots errors favor lookup for general factual questions. L2 may not consistently distinguish *needing a particular external record* from *asking for factual information*.
+>
+> 5. **Hypothesis: source wording or task composition may contribute to the errors.** The two Dolly errors are retrieval → direct; the three BFCL errors involve lookup/calculation → calculation/direct; and the two No Robots errors are direct → lookup. This clustering could reflect source-specific language or class composition. Without source totals and the remaining correct rows, it does not establish that any source is harder.
+>
+> These are exploratory hypotheses from 25 rows. Identical results in m2-a and m2-b show repeatability on this sample, not independent confirmation.
+
+The gap table in item 2 is condensed into one line here; the values are Altan's.
+
+Agent feedback after his attempt. His displayed-precision gaps match the saved scores; exactly, q0048's is 0.027. Checks the hypotheses suggested, recorded in the [M2 record](evidence/m2-research-run.md#error-inspection):
+
+- Hypothesis 1: "Based on this paragraph" never occurs in training, while "paragraph" occurs in 3 retrieval and 2 direct-answer training rows. An unseen opening phrase plus a word shared by two classes fits his "fragile boundary" reading.
+- Hypothesis 2: the four smallest margins of all 25 rows are errors, and the next two are correct. A threshold chosen from these rows would be fitted to them, which is why he held off.
+- Hypothesis 5: in training, No Robots rows are all direct answer and Dolly rows all retrieval. Source style and label are confounded, so a source-style cue and a class cue look the same to the model. This sharpens his "class composition" point and is what the M3 second-source rule is meant to break.
+
+Trace: q0047, "Based on this paragraph when was the last time we sent them to space?" Its true first action is document retrieval because the answer is in the attached paragraph. L2 scores direct answer 0.36 and retrieval 0.27. Its opening phrase never appears in training; "when was the last time" reads like a general question.
+
+Learning status: this is Altan's own error analysis after the agent's guiding questions. It is evidence of attempting the error-analysis exercise, not of a ledger topic. The metrics and confidence rows stay **not yet reviewed**; their ledger questions (precision/recall from a confusion matrix, reliability bins) are still unanswered. The three M2 practice questions above also remain unanswered.
+
+Disclosure: inspecting these errors is human exposure before M3 collection. The collection brief forbids targeting them.
