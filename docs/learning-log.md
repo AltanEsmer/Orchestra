@@ -845,3 +845,13 @@ Trace: lookup has 32 rows, 22 of them from BFCL. Reaching 100 rows with BFCL alo
 Practice questions, unanswered: (1) Why must the brief be frozen before you look at M2 errors? (2) Why is source mix a quality check and not just a bookkeeping rule? (3) Why might a text-to-SQL question like "How many singers are there?" fail the guide's first step? Learning statuses remain unchanged.
 
 Verification: see the handoff. Only documentation changed in Git; no data was downloaded or imported.
+
+## M2 split and baselines, October 26, 2026
+
+Altan said: "Start M2: run prepare-study with configs/m2.json and reviews-v2, run both baselines twice, and compare the runs. Stop before I inspect validation errors." `prepare-study` split the 128 rows by group into 78 training, 25 validation, and 25 sealed test rows, and recorded the hashes of the data, ledger, sources, and collection brief. Two separate runs gave byte-identical predictions. On validation, B0 (always `direct_answer`) scores accuracy 0.24 and macro-F1 0.097. L2 (TF-IDF + logistic regression, C = 1) scores 18 of 25, macro-F1 0.730. Six of its seven errors involve `direct_answer`. The [M2 record](evidence/m2-research-run.md) has the full numbers and limits.
+
+Trace: q0081 and q0079 share group g084, so the split put both in the same partition. Neither can be in training while the other is tested, so L2 cannot score well on one simply by having memorized its partner.
+
+Practice questions, unanswered: (1) B0 has accuracy 0.24 but macro-F1 0.097. Why does macro-F1 punish it more? (2) One validation row moves accuracy by 0.04. What does that mean for comparing two models that differ by 0.04? (3) Why must nobody look at the sealed test predictions yet? Learning statuses remain unchanged.
+
+Verification: see the handoff. `compare` passes; `sh scripts/check.sh` passes. No code, dependency, or schema changed.

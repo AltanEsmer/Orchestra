@@ -1,6 +1,6 @@
 # Data and evaluation protocol
 
-This is the study protocol implemented by the current tooling. The local M1 release `data/processed/m1-v1.jsonl` has 128 accepted rows, passed readiness, and was frozen on October 26; no trained research router or experimental score exists yet. The examples in `scripts/smoke.py`, tests, and `scripts/verify_workflow.py` are software fixtures and must never enter the study.
+This is the study protocol implemented by the current tooling. The local M1 release `data/processed/m1-v1.jsonl` has 128 accepted rows, passed readiness, and was frozen on October 26; the [M2 record](evidence/m2-research-run.md) has its grouped split and two baseline validation scores. No test score exists. The examples in `scripts/smoke.py`, tests, and `scripts/verify_workflow.py` are software fixtures and must never enter the study.
 
 The October 16 [M1 to M3 plan](m1-m3-plan.md) specifies the data and comparison work. Altan approved it on October 16 and approved completion automation on October 22. The [automation plan](automation-plan.md) records current artifact contracts. Implementation and fixture evidence do not establish research outcomes.
 
