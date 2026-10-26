@@ -14,7 +14,9 @@ The October 26 [expansion screen](evidence/public-expansion-screen.md) finds ple
 
 Altan approved all 90 proposed labels. The blind AI check agreed on every label; 35 clear rows are accepted and 55 rows carry an AI flag or an ambiguous judgment ([review record](evidence/public-review-v2.md)).
 
-**Your next step:** open the local `data/raw/import-v2/adjudication-worksheet.md` and reply "accept recommendations" plus any exceptions, such as `q0068: exclude, reason` or `q0118: knowledge_lookup`. Look closely at the three live or sensitive lookups and the two proposed group merges. Then the readiness check runs.
+Altan accepted the recommendations for all 55 flagged rows. All 128 rows are accepted and the readiness check passes.
+
+**Your next step:** confirm the freeze of `data/processed/m1-v1.jsonl` with the `reviews-v2.jsonl` ledger. After that, groups stay fixed and M2 baselines can run.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

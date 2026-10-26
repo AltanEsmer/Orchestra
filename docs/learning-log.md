@@ -815,3 +815,13 @@ Trace: q0118 asks "What is the fastest flying bird?" Altan approved `direct_answ
 Practice questions, unanswered: (1) The AI agreed on 90 of 90. Name two reasons that number overstates label quality. (2) Why does q0118 need Altan's decision even though both labels match? (3) If Altan excludes q0065, q0068, and q0069, which readiness check fails, and what would fix it? Learning statuses remain unchanged.
 
 Verification: see the handoff. The 128-row file passes the validator with the new ledger. Readiness fails only on pending adjudications and class counts. No code, dependency, or schema changed.
+
+## Flagged import rows adjudicated, M1 readiness passes, October 26, 2026
+
+Altan said: "Accept recommendations for all 55 flagged rows in the adjudication worksheet." Each flagged ledger entry now records his adjudication, no label changed, nothing was excluded, and two near-duplicates joined their partners' groups. All 128 rows are accepted. Calculation has 32 rows in 31 groups, document retrieval 31/30, lookup 32/25, and direct answer 33/30. The readiness check passes. The [review record](evidence/public-review-v2.md) has the hashes. The release is not frozen yet.
+
+Trace: q0098 and q0097 both ask for the cosine similarity of two five-number vectors, with different numbers and back-stories. Before, they sat in g102 and g101. If one landed in training and the other in test, the model would be tested on a near-copy. Guide v2 rule 1 puts small variations in one group, so q0098 moved to g101 and the pair now always lands in the same split.
+
+Practice questions, unanswered: (1) Readiness passed. Name one thing it checks and one thing it cannot check. (2) Lookup has 25 groups but 32 rows. Why does the split care about groups and not rows? (3) Why was moving q0098 safe for the label but important for the test score? Learning statuses remain unchanged.
+
+Verification: see the handoff. `validate_dataset.py --ready` passes on 128 rows with `reviews-v2.jsonl`. No code, dependency, or schema changed.
