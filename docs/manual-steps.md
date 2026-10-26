@@ -10,6 +10,8 @@ There are 38 accepted pilot rows across 19 templates. q0014 and q0037 remain pra
 
 No pilot group questions remain. Next, the agent prepares the licensed public-source expansion using BFCL, No Robots, and Dolly assessments. Altan then reviews proposed first-action mappings and any new ambiguous cases. Source screening alone does not adopt a source or supply human labels. Do not ask for more handwritten batches before checking these supplements.
 
+The October 26 [expansion screen](evidence/public-expansion-screen.md) finds plenty of public rows but few new request templates. Even if every proposal were accepted, document retrieval would reach about 8 groups and lookup about 6, short of 15. Altan decides the two proposed document boundaries (list extraction versus g008, passage editing versus g019), whether to adopt the Dolly attachment adapter, and how to close the group gap: another source, targeted authoring, or a changed target.
+
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
 ## Completed human evidence

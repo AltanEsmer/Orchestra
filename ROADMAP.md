@@ -47,6 +47,8 @@ The [blind AI pilot check](docs/evidence/pilot-ai-review.md) preserved all origi
 
 On October 26, Altan completed the [pilot review and guide-v1 decisions](docs/evidence/pilot-guide-v1.md). A group is a shared request template: the same user goal solved by the same procedure, whatever the scenario. Broader families reduce independent group counts. There are 38 accepted rows across 19 templates: calculation 9 rows/6 groups, document retrieval 9/5, lookup 10/4, and direct answer 10/7. Mixed-label groups overlap those counts. q0014 and q0037 remain practice-only in the audit history. All individual pilot flags and grouping questions are resolved; no 120-row M1 release exists. Altan correctly explained grouping-related score optimism; other leakage controls remain to practice. Next is licensed public-source expansion and genuine review of new labels. “Handbook” is a prospective validation error-analysis cue, not an observed effect.
 
+The October 26 [expansion screen](docs/evidence/public-expansion-screen.md) judged 80 seeded Dolly records and every read-only BFCL SQL record by request template. Most fall into existing families that are full or nearly full. If every proposal were accepted, document retrieval would reach about 24 rows/8 groups and lookup about 16 rows/6 groups, both short of 30/15. The group gap needs Altan's decision: another source, targeted authoring, or a changed target. Nothing was imported.
+
 The next sequence is licensed candidate expansion to the first 120-row target, baselines, the main comparison targeting 400 rows, confidence and final test, then report and reproduction. Keep the existing four labels and query-only prediction contract. Dataset discovery has not changed the research question.
 
 ## Milestones
