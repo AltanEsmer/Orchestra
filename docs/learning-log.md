@@ -903,3 +903,11 @@ Altan said: "Yes, download the GSM8K test parquet at revision 740312ad and scree
 Trace: GSM8K test question 1220 reads "Ian has a board that is 40 feet long. … The longer piece is 4 times longer than the shorter piece. How long is the longer piece?" Every number is in the text and the request is a numeric result, so the first action is calculation. It never says "calculate". That helps dilute the "calculate" cue the brief lists.
 
 Practice question, unanswered: Why must the import store GSM8K's question but never its answer field, even though the router would only see the question? Learning statuses remain unchanged.
+
+## BFCL parallel and irrelevance files screened for lookup, October 26, 2026
+
+Altan said: "Download all eight BFCL parallel and irrelevance files at revision 61fc0608 and screen them for lookup." The agent downloaded the eight files (3,110,208 bytes), checked each against the pinned listing, and judged all 112 records that passed the lookup filter. Six are firm lookups and four are borderline. Five of the six are keyed-record lookups, a type already at its 40-row limit, so the files add only about three usable rows. The lookup shortfall is now 11 to 24 rows.
+
+Trace: `parallel_49` asks whether "the player with id 3142 in team RocketLeague" was top scorer in three seasons. It identifies a record by ID, so its first action is a keyed-record lookup. Lookup can hold at most 40 keyed-record rows. M1 has 12, and the earlier BFCL files already supply 33 such candidates for the remaining 28 places. This row is eligible, but it does not raise capacity.
+
+Practice question, unanswered: Why can screening more of the same source fail to fix a shortfall, even when it finds eligible rows? Learning statuses remain unchanged.
