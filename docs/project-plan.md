@@ -43,6 +43,7 @@ After December submission, use the frozen project, saved results, and guide coll
 | Begin with human-authored English queries. | No external redistribution or API dependency is needed to start. Authored queries still have synthetic-data limitations. | A licensed, compatible external corpus is verified. |
 | Use Python, uv, scikit-learn, and a plain smoke script. | The project needs a reproducible numerical environment. A packaged CLI and service framework add little evidence at this stage. | Reusable training code has actual callers. |
 | Compare sparse count and TF-IDF features first. | This guarantees a representation comparison even if pretrained embeddings are infeasible. | The frozen-embedding resource check passes. |
+| Group by shared scenario or source, not request template (guide v2). | The v1 template rule let only a few public rows count, blocking M1. Scenario/source groups still stop a model from memorizing a shared source across splits; batch checks for request-type spread and source mix guard against a few request types or one source's phrasing dominating. Test scores now measure new topics and sources with familiar request types, not unseen request types. | An optional unseen-request-type analysis shows a large gap worth reporting as a limitation. |
 | Use one local CPU and no paid APIs. | The planned sparse models suit a course-sized dataset. | Measured limits justify a documented resource change. |
 
 ## Risks and unresolved decisions
@@ -73,7 +74,7 @@ References and final pagination must fit the course limit. Each result or figure
 ## Research steps after tooling preparation
 
 1. Use the selected single-human, AI-assisted method, preserving Altan's forty original labels and recorded permission. Keep AI consistency separate from human agreement.
-2. Pilot review and guide v1 are complete as of October 26. Preserve the 38 accepted rows, two practice-only exclusions, actual human decisions, and shared-request-template families. Broader families reduce independent group counts.
+2. Pilot review and guide v1 are complete as of October 26. Guide v2 then regrouped the 38 accepted rows by shared scenario or source (23 groups) at Altan's request. Preserve the rows, two practice-only exclusions, actual human decisions, and the v1 family history.
 3. Extend with licensed public human-authored examples where compatible. Preserve original wording and linked source context; review mappings rather than copying upstream task categories.
 4. Reach 120 accepted queries, at least 30 per label and 15 independent groups per label. Freeze the expansion brief before viewing baseline errors.
 5. Use the existing commands to validate, split by group, and run the dummy and TF-IDF logistic-regression baselines twice.
@@ -81,6 +82,8 @@ References and final pagination must fit the course limit. Each result or figure
 7. Update the evidence and learning log, then attempt the first-slice teach-back exercise. Continue to the main comparison only after the M2 acceptance evidence exists.
 
 Executable commands are in the [runbook](run-experiments.md). Their research execution waits for accepted data and the recorded human evidence.
+
+The October 26 [AI candidate supplement](evidence/template-expansion-draft.md) prepares forty unaccepted drafts at Altan’s explicit request. Conservative overlap review proposes nine new families and exposes three over-cap families. Human annotation, family adjudication, and cap selection precede import; the draft counts do not close the M1 release gap.
 
 ## Source authority
 

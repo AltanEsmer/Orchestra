@@ -6,5 +6,37 @@
     "description": "Human-authored English queries about fictional documents, catalogs, and records for the M1 annotation pilot.",
     "permission_date": "2026-10-23",
     "permission_scope": "Human-authored pilot candidates q0001 through q0040 supplied by Altan Esmer in this chat."
+  },
+  "dolly-15k": {
+    "author": "Databricks, Inc. employees (databricks-dolly-15k)",
+    "created": "2023-04-11",
+    "license": "CC BY-SA 3.0 Unported. Notices: Copyright (2023) Databricks, Inc.; Copyright © Wikipedia editors and contributors. Adapted rows keep CC BY-SA 3.0 and are not covered by the repository MIT license.",
+    "description": "Human-written instructions with separate reference passages. Imported instruction text only; the original passage is kept as a linked attachment outside router input.",
+    "url": "https://huggingface.co/datasets/databricks/databricks-dolly-15k",
+    "revision": "bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a",
+    "file_sha256": "2df9083338b4abd6bceb5635764dab5d833b393b55759dffb0959b6fcbf794ec",
+    "adoption_date": "2026-10-26",
+    "adoption": "Adopted by Altan Esmer on 2026-10-26 together with the attachment adapter."
+  },
+  "bfcl-v3": {
+    "author": "Fanjia Yan, Huanzhi Mao, Charlie Cheng-Jie Ji, Tianjun Zhang, Shishir G. Patil, Ion Stoica, Joseph E. Gonzalez (Berkeley Function Calling Leaderboard)",
+    "created": "2024-09-22",
+    "license": "Apache-2.0",
+    "description": "Function-calling questions. Imported user text only; function documentation, expected calls, and system messages are not router input.",
+    "url": "https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard",
+    "revision": "61fc0608cfd831fcfbbaa676ebdfef0ed963eeda",
+    "adoption_date": "2026-10-26",
+    "adoption": "Adopted by Altan Esmer on 2026-10-26. created is the card's latest version release date."
+  },
+  "no-robots": {
+    "author": "Nazneen Rajani, Lewis Tunstall, Edward Beeching, Nathan Lambert, Alexander M. Rush, Thomas Wolf (Hugging Face H4, No Robots)",
+    "created": "2023-11-10",
+    "license": "CC BY-NC 4.0 (non-commercial). Not covered by the repository MIT license; course use is non-commercial.",
+    "description": "Human-written single-turn prompts from the test split. Imported prompt text only.",
+    "url": "https://huggingface.co/datasets/HuggingFaceH4/no_robots",
+    "revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "file_sha256": "60707b2636a46e37bb0c1e9ca263a18553f430317b7a53c691676d6a492fc0f2",
+    "adoption_date": "2026-10-26",
+    "adoption": "Adopted by Altan Esmer on 2026-10-26."
   }
 }

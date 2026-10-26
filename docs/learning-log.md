@@ -757,3 +757,81 @@ Overall completion is approximately 35% using the same planning weights: design/
 Integrated verification: `sh scripts/check.sh` passed 208 tests in 17.129 seconds, smoke, Ruff lint, formatting for 52 files, and whitespace checks. Actual data validation passed 38 accepted rows; status returned the expected size/coverage blockers only. The desktop compiler successfully compiled the changed report prompt. No application code, dependencies, or schema changed; no new tests were needed for annotation metadata. The methods preview source is updated, while the full M1 PDF edition remains unexported and is not claimed complete. Independent Spec and Standards review caught stale current-state paragraphs in the runbook/roadmap; these were corrected before handoff.
 
 Independent Spec and Standards review both returned PASS. The Spec reviewer ran actual pilot validation/status and checked original-field preservation; Standards checked 134 relative Markdown link targets and whitespace. Both verified that the full M1 PDF remains an outstanding milestone deliverable. Origin could not resolve this repository, so shipping uses the authenticated GitHub CLI fallback. This review is software/document evidence from the same GPT family, not another human annotator.
+
+## Public expansion screen for lookup and document retrieval, October 26, 2026
+
+Altan asked the agent to compute the per-class gap and run larger lookup and document-retrieval screens. The agent judged 80 seeded Dolly records with an explicit passage reference, all 21 read-only BFCL SQL records, and five named-source BFCL matches, assigning each to a guide-v1 request template. The [screen record](evidence/public-expansion-screen.md) holds the counts. Nothing was imported, labeled, or accepted.
+
+The main result is a constraint, not a count. Public rows are plentiful, but most share templates that already exist in the pilot, such as answering a question from a document (g008) or filtering records by a condition (g016). Because a family holds at most four rows, those rows add little. If every proposal were accepted, document retrieval would reach about 8 of 15 groups and lookup about 6. Closing that gap is Altan's decision: another source, targeted authoring, or a changed target.
+
+Trace one query: Dolly line 659, "Given this paragraph about Pittsford, New York, what year was the town settled?" With the passage attached, the first action is reading it, so the proposed label is `document_retrieval`. It asks a specific question about an identified passage, so it joins g008 with the pilot's camp-letter and handbook questions, even though the topic differs.
+
+Teach-back questions, unanswered: (1) Why does adding 40 more "answer a question from the passage" rows barely help the 15-group target? (2) Dolly rows usually start "Given this paragraph". What could a classifier learn from that phrase that would inflate its validation score? (3) Should "extract every country named in the text" share a family with "what year was the town settled, according to the text"? Name the goal and procedure for each. No learning status changes until Altan answers.
+
+Verification: see the handoff for actual check output. No application code, dependency, schema, or data file changed.
+
+## AI-generated template drafts, October 26, 2026
+
+Altan supplied twenty template proposals. When asked whether to keep human authoring or draft disclosed AI-generated candidates, he explicitly selected “Draft AI-generated candidates.” The agent prepared forty local drafts, two per template, and updated the collection brief and protocol to record that limited drafting scope. The [review record](evidence/template-expansion-draft.md) explains the proposed boundaries and provenance limitations. Accepted pilot rows, primary labels, review ledger, and guide v1 remain unchanged. No new human understanding is inferred from this authorization.
+
+The four flagged boundaries are provisionally: keep category counts (L3), document completeness (D3), and heading structure (D6); merge document location (D1) into g008. The broader comparison also merges keyed historical/joined lookup, difference calculations, social-message drafting, descriptive headlines, and chained source resolution with their existing goal families. Nine new families remain proposed. g003, g008, and g032 would exceed four rows if all drafts were imported; at most 28 drafts fit remaining capacity under these mappings. Human grouping decisions and candidate selection remain pending, so neither this ceiling nor the twenty-per-label draft count establishes release coverage.
+
+Trace: L8-1 asks for the days between a supplied date and the arrival date of a named booking in a named database. Lookup must supply the missing arrival date first, so its proposed label is knowledge_lookup; the difference goal places it with g012, alongside calculation-first pilot rows. The local worksheet records this proposal only. No database was queried and no router predicted a label.
+
+Practice questions, unanswered: (1) Why can L8-1 share a family with a calculation-first query? (2) If g008 already has three accepted members, how many of its six new drafts can enter research without changing the cap? (3) What shortcut could a classifier learn from the pilot’s use of “fictional,” and why does observing the word counts not prove it learned that shortcut? Learning statuses remain unchanged.
+
+Draft checks passed: forty unique texts/IDs, two per template, twenty per proposed label, no normalized exact pilot overlap, all drafts pending with no human labels, query-only input alignment, saved-file hashes, and a 28-slot capacity ceiling. No fresh blind AI check was run: this agent saw its own proposed labels. Primary human annotation precedes that later check. Backend revision and generation parameters are unavailable and disclosed; the full conversation was not exported. Drafts remain ignored local files, not research-schema rows. No commit or model run was made.
+
+Software verification: `sh scripts/check.sh` passed locked synchronization, environment smoke (Python 3.12.13/scikit-learn 1.9.1), all 208 tests in 18.744 seconds, Ruff lint, formatting for 55 files, and whitespace checks. Test splits are artificial fixtures, not research splits. Final documentation whitespace checks also passed. No code, dependency, or dataset schema changed. The full M1 study-guide PDF remains an outstanding milestone deliverable; this draft preparation does not complete M1.
+
+## Guide v2: simpler scenario and source groups, October 26, 2026
+
+Altan asked: "Dont be strict and modify rules to actually make the project simple to follow and train but in high quality standarts." He had also noted that his teacher advised finding the data online. The agent replaced the v1 request-template groups with guide v2. Rows now share a group when they are small variations, share a source or named setting, describe the same situation, or come from one public record. Three batch checks keep quality: near-duplicates, no request type above 40 percent of a class, and at least two sources per class with none above 75 percent. Labels, boundaries, review method, and readiness targets are unchanged. The [guide-v2 record](evidence/guide-v2.md) has the reasoning, pilot regrouping, and hashes.
+
+The agent applied the rule to the pilot: 38 rows in 23 groups (calculation 9, document retrieval 8, lookup 7, direct answer 7). Only group IDs and the annotation version changed. Altan has not yet confirmed the individual assignments; they are listed for his objection. The AI drafts and the expansion screen carry notes that their v1 family accounting is superseded.
+
+Trace: q0036 asks whether booking B24 exists in the Willow Hotel database. Under v1 it sat with the Northstar and Riverside keyed lookups because the procedure matched. Under v2 it joins the other Willow Hotel queries and the Willow School handbook query (g038), because a model could memorize "Willow" across splits. Its `knowledge_lookup` label is unchanged.
+
+Practice questions, unanswered: (1) Under v2, what does a good test score now show, and what does it no longer show compared with v1? (2) Why are the Willow Hotel and Willow School rows in one group even though one is lookup and the other is document retrieval? (3) BFCL lookup rows mostly filter by a condition. Which v2 check stops them from filling the lookup class, and why does that matter? Learning statuses remain unchanged.
+
+Verification: see the handoff. The validator passed the 38 regrouped rows with the unchanged review ledger. No code, dependency, or schema changed.
+
+## Guide-v2 public import candidates, October 26, 2026
+
+Altan approved the pilot regrouping and the Dolly attachment adapter. He adopted Dolly for document retrieval, BFCL for lookup and calculation, and No Robots for direct answer, with the batch checks. The agent built 90 `needs_review` candidates with null labels and recorded the three sources with licenses and notices. The [import record](evidence/public-import-v2.md) has the selection, checks, flags, and hashes. If every proposal were accepted, every class would pass 30 rows, 15 groups, the 40 percent request-type limit, and the 75 percent source limit, with small margins. No row is accepted yet.
+
+Trace: q0081 is BFCL `sql_61`: "What is the average age of the customers from the 'customers' table who have made purchases above $1000?" The records must be fetched before averaging, so the proposed first action is `knowledge_lookup`. It shares the `customers` table with q0079 (`sql_51`), so both sit in one group under guide v2 rule 4.
+
+Practice questions, unanswered: (1) Why is q0081 lookup and not calculation, even though it asks for an average? (2) Why do q0079 and q0081 share a group even though one filters and the other aggregates? (3) Fifteen lookup rows use SQL words like "table" and "column". If the model learned "table means lookup", which validation result would reveal it? Learning statuses remain unchanged.
+
+Verification: see the handoff. The combined 128-row file passes the validator. No code, dependency, or schema changed.
+
+## Import labels approved and blind AI check, October 26, 2026
+
+Altan said: "Approve all proposed labels in the review worksheet." The 90 candidates took the agent's proposals as primary labels under A1, disclosed as agent-proposed and human-confirmed. A fresh `claude-opus-5-5` subagent then labeled the shuffled queries without seeing any label and agreed on all 90. It is the same model family as the proposing agent, so this is consistency, not independent validation. Thirty-five clear, unflagged rows are accepted. The other 55 carry an AI flag or an ambiguous judgment and wait for Altan's adjudication, with an agent recommendation for each. The [review record](evidence/public-review-v2.md) has the counts, categories, and hashes.
+
+Trace: q0118 asks "What is the fastest flying bird?" Altan approved `direct_answer`, and the AI chose the same label but marked it ambiguous because no source is named and a careful annotator might choose lookup. Under the guide's default rule a stable fact without a named structured source is `direct_answer`, so the agent recommends keeping it. The row stays `needs_review` until Altan decides.
+
+Practice questions, unanswered: (1) The AI agreed on 90 of 90. Name two reasons that number overstates label quality. (2) Why does q0118 need Altan's decision even though both labels match? (3) If Altan excludes q0065, q0068, and q0069, which readiness check fails, and what would fix it? Learning statuses remain unchanged.
+
+Verification: see the handoff. The 128-row file passes the validator with the new ledger. Readiness fails only on pending adjudications and class counts. No code, dependency, or schema changed.
+
+## Flagged import rows adjudicated, M1 readiness passes, October 26, 2026
+
+Altan said: "Accept recommendations for all 55 flagged rows in the adjudication worksheet." Each flagged ledger entry now records his adjudication, no label changed, nothing was excluded, and two near-duplicates joined their partners' groups. All 128 rows are accepted. Calculation has 32 rows in 31 groups, document retrieval 31/30, lookup 32/25, and direct answer 33/30. The readiness check passes. The [review record](evidence/public-review-v2.md) has the hashes. The release is not frozen yet.
+
+Trace: q0098 and q0097 both ask for the cosine similarity of two five-number vectors, with different numbers and back-stories. Before, they sat in g102 and g101. If one landed in training and the other in test, the model would be tested on a near-copy. Guide v2 rule 1 puts small variations in one group, so q0098 moved to g101 and the pair now always lands in the same split.
+
+Practice questions, unanswered: (1) Readiness passed. Name one thing it checks and one thing it cannot check. (2) Lookup has 25 groups but 32 rows. Why does the split care about groups and not rows? (3) Why was moving q0098 safe for the label but important for the test score? Learning statuses remain unchanged.
+
+Verification: see the handoff. `validate_dataset.py --ready` passes on 128 rows with `reviews-v2.jsonl`. No code, dependency, or schema changed.
+
+## M1 release frozen, October 26, 2026
+
+Altan said: "Freeze the M1 release as data/processed/m1-v1.jsonl with the reviews-v2 ledger." The agent copied the adjudicated file byte for byte, made the release and its ledger read-only, and reran readiness on the frozen copy, which passed. The runbook now names `reviews-v2.jsonl` for the M1 readiness and M2 preparation commands. The [freeze record](evidence/public-review-v2.md#freeze) lists the hashes of the release, ledger, source manifest, and guide.
+
+Trace: q0081 ("average age of the customers … above $1000") is now fixed in g084 with q0079. When M2 splits by group, both rows land in the same split, and its `knowledge_lookup` label can no longer change without a new release name.
+
+Practice questions, unanswered: (1) Why freeze the data before looking at any baseline errors? (2) What would you have to do if you found a wrong label in M2? (3) Why record the hashes of the guide and source manifest, not only the data file? Learning statuses remain unchanged.
+
+Verification: see the handoff. Readiness passes on the frozen file. Only documentation changed in Git.
