@@ -885,3 +885,13 @@ Trace: q0047, "Based on this paragraph when was the last time we sent them to sp
 Learning status: this is Altan's own error analysis after the agent's guiding questions. It is evidence of attempting the error-analysis exercise, not of a ledger topic. The metrics and confidence rows stay **not yet reviewed**; their ledger questions (precision/recall from a confusion matrix, reliability bins) are still unanswered. The three M2 practice questions above also remain unanswered.
 
 Disclosure: inspecting these errors is human exposure before M3 collection. The collection brief forbids targeting them.
+
+## M3 capacity screen, October 26, 2026
+
+The agent recorded GSM8K in the source manifest: MIT license, confirmed from the dataset card at revision `740312ad` and OpenAI's repository LICENSE. No GSM8K file was downloaded. The agent then estimated how many new rows each source in the brief's mix can supply under guide v2, counting only rows that join no M1 group and fit the 40 percent request-type and 75 percent source limits. Small pools were judged in full, large ones on seeded samples of 30. Direct answer and document retrieval have far more than they need. BFCL can fill calculation's main share, and GSM8K is unscreened. Lookup is the bottleneck: after the limits, BFCL supplies 32 to 43 new rows and the AI drafts 11, leaving 14 to 25 rows without a source. The [capacity screen](evidence/m3-capacity-screen.md) has the table and the three decisions.
+
+Trace: BFCL record `live_multiple_166-66-0` asks for "Adriel's detailed profile information … his id is 12445". It names a person and a record ID, so it is a keyed-record lookup. Fifteen other BFCL records also ask about Adriel. Under guide v2 they describe the same situation, so they share one group, and a group holds at most four rows. Those 16 candidates are therefore worth 4 rows, not 16. That is one reason lookup's large-looking pool shrinks.
+
+Practice questions, unanswered: (1) Lookup already has 12 keyed-record rows. Why can BFCL's 33 eligible keyed-record rows add only 28? (2) Why does the screen drop a Dolly question like "When did Alia Bhatt get her first leading role?" even though its passage answers it? (3) Why does the screen count a sampled pool's eligible share with an interval instead of a single number? Learning statuses remain unchanged.
+
+Verification: see the handoff. The manifest and documentation changed in Git; screening tools and candidate text stay in ignored `work/poteto/m3-capacity/`.

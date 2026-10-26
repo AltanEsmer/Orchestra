@@ -24,7 +24,9 @@ M2 ran on October 26. The grouped split has 78 training, 25 validation, and 25 s
 
 Altan inspected the seven L2 errors and recorded five hypotheses ([error inspection](evidence/m2-research-run.md#error-inspection)). That exposure must be disclosed, and M3 rows must not target those errors.
 
-**Next:** M3 collection. The agent records GSM8K's license and pinned revision, then screens each source's capacity against the brief's per-class mix. You decide any shortfall. You then label new rows, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
+The agent recorded GSM8K's license (MIT) and pinned revision and screened each source's capacity ([capacity screen](evidence/m3-capacity-screen.md)). Direct answer and document retrieval can reach about 100 rows within the mix. Calculation's BFCL share fills, but GSM8K is unscreened until a file is downloaded. Lookup is 14 to 25 rows short even if all 11 usable AI drafts are accepted.
+
+**Next:** your three decisions from the screen. Choose how to fill the lookup shortfall (for example, writing your own lookup queries, which the brief already allows). Decide whether the 12 borderline BFCL rows count as lookup. Approve or decline downloading the GSM8K test file (419,088 bytes). Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
