@@ -52,7 +52,33 @@ L2 confusion counts (rows are true labels, columns are predictions, both in the 
 | Calculation | 0 | 0 | 5 | 1 |
 | Direct answer | 0 | 2 | 0 | 4 |
 
-Six of the seven errors involve `direct_answer`, either as the prediction or as the true label. These are counts, not explanations. Altan inspects the individual errors next.
+Six of the seven errors involve `direct_answer`, either as the prediction or as the true label. These are counts, not explanations. Altan's reading of the individual errors follows.
+
+## Error inspection
+
+On October 26, 2026, the agent showed Altan the seven L2 errors and nine correct validation rows with their predicted probabilities. Altan wrote five exploratory hypotheses. His full text is in the [learning log](../learning-log.md#m2-error-hypotheses-october-26-2026).
+
+1. L2 may react to how reference text is introduced. Both wrong Dolly rows say "Based on this paragraph". The correct ones say "Given this paragraph" or "Given a reference text".
+2. Small winning margins could be treated as uncertainty in M4. Close correct rows mean this is a reason to test uncertainty handling, not to pick a threshold.
+3. Explicit cues such as "table" or "fictional" may help, but they are neither necessary nor sufficient.
+4. L2 may blur needing a particular external record with asking for factual information.
+5. Source wording or class composition may contribute. That would need source totals to check.
+
+He noted that the identical m2-a and m2-b results show repeatability, not independent confirmation.
+
+The agent then checked the hypotheses against saved outputs and training text. These are measurements on this split, not explanations:
+
+| Check | Result |
+| --- | --- |
+| Exact top-two margins of the errors | q0044 0.038, q0047 0.085, q0069 0.067, q0084 0.011, q0090 0.010, q0117 0.014, q0130 0.009 |
+| Margin ranking, all 25 rows | The four smallest margins (0.009–0.014) are all errors. The next two (q0045 0.020, q0048 0.027) are correct. The remaining errors rank 8th, 11th, and 13th. |
+| "Based on this paragraph" in training | 0 rows. "Given this paragraph" appears in 2 retrieval rows. "paragraph" appears in 3 retrieval and 2 direct-answer rows. |
+| Errors by source, validation | Altan-authored 0 of 5; Dolly 2 of 5; BFCL 3 of 10; No Robots 2 of 5 |
+| Source and label in training | No Robots rows are all direct answer (14), Dolly rows all retrieval (13). BFCL covers calculation (12) and lookup (11). Altan-authored rows cover all four classes. |
+
+Because each public source except BFCL maps to one class in training, source style and label cannot be separated in this data. The collection brief's second-source rule addresses that confound for M3. The margin pattern is a validation observation. Any threshold chosen by looking at these 25 rows would be fitted to them, so M4 must choose confidence handling by its own protocol.
+
+Seeing these errors is human exposure. Under the [collection brief](../collection-brief.md#what-not-to-do), M3 rows must not be collected, selected, or relabeled to target them, and the report must disclose that the inspection happened before collection.
 
 ## Resources, this host
 
@@ -68,6 +94,6 @@ Process peak memory was 122,863,616 bytes, about 117 MiB, including imports. Thi
 - **Small sample.** With 25 validation rows, one row moves accuracy by 0.04, and per-class F1 rests on six or seven rows. These numbers describe this split only. They are not the M3 comparison.
 - **Dirty tree in provenance.** Provenance records commit `d541de9` with `git_dirty: true`. The only change was the new, then-untracked `data/splits/m2-split.json` written by `prepare-study`. Its hash is recorded above. Altan then asked to track it, and the committed file has the same hash.
 - **Sealed test.** The runner did not open the sealed test file. Nobody has looked at the test predictions, because none exist.
-- **Not done.** The M2 inputs have not been archived and restored. Error inspection is Altan's next step. `select` is not run on M2.
+- **Not done.** The M2 inputs have not been archived and restored. `select` is not run on M2.
 
 Results stay in ignored `results/m2-a/` and `results/m2-b/`, and the prepared config in ignored `data/processed/m2-prepared.json`.
