@@ -825,3 +825,13 @@ Trace: q0098 and q0097 both ask for the cosine similarity of two five-number vec
 Practice questions, unanswered: (1) Readiness passed. Name one thing it checks and one thing it cannot check. (2) Lookup has 25 groups but 32 rows. Why does the split care about groups and not rows? (3) Why was moving q0098 safe for the label but important for the test score? Learning statuses remain unchanged.
 
 Verification: see the handoff. `validate_dataset.py --ready` passes on 128 rows with `reviews-v2.jsonl`. No code, dependency, or schema changed.
+
+## M1 release frozen, October 26, 2026
+
+Altan said: "Freeze the M1 release as data/processed/m1-v1.jsonl with the reviews-v2 ledger." The agent copied the adjudicated file byte for byte, made the release and its ledger read-only, and reran readiness on the frozen copy, which passed. The runbook now names `reviews-v2.jsonl` for the M1 readiness and M2 preparation commands. The [freeze record](evidence/public-review-v2.md#freeze) lists the hashes of the release, ledger, source manifest, and guide.
+
+Trace: q0081 ("average age of the customers … above $1000") is now fixed in g084 with q0079. When M2 splits by group, both rows land in the same split, and its `knowledge_lookup` label can no longer change without a new release name.
+
+Practice questions, unanswered: (1) Why freeze the data before looking at any baseline errors? (2) What would you have to do if you found a wrong label in M2? (3) Why record the hashes of the guide and source manifest, not only the data file? Learning statuses remain unchanged.
+
+Verification: see the handoff. Readiness passes on the frozen file. Only documentation changed in Git.

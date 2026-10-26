@@ -39,7 +39,7 @@ To request agent-generated candidates, explicitly change the human-authored coll
 
 ## Validate draft rows and collect review evidence
 
-Current local state, October 26: the pilot and `data/raw/reviews-v1.jsonl` contain 38 accepted pilot rows after Altan excluded q0014 and q0037 for practice. The legacy `pilot-v0.jsonl` path is retained for callers; each row’s `annotation_version` is `guide-v2` after the October 26 regrouping. Separate ignored `data/raw/pilot-audit-2026-10-25.jsonl` and `data/raw/reviews-audit-2026-10-25.jsonl` preserve all forty IDs at that dated snapshot, with later decisions retained separately. The audit preserves the five-member semantic g005 family and is not a release input for the four-row-cap validator. Keep practice rows outside supervised splits and report both exclusions. The [pilot record](evidence/pilot-guide-v1.md) has current hashes and counts. No 120-row release exists. The guide-v2 [import](evidence/public-import-v2.md) adds 90 `needs_review` public candidates in ignored `data/raw/m1-v2.jsonl` (with the pilot) and `data/raw/import-v2/`.
+Current local state, October 26: the pilot and `data/raw/reviews-v1.jsonl` contain 38 accepted pilot rows after Altan excluded q0014 and q0037 for practice. The legacy `pilot-v0.jsonl` path is retained for callers; each row’s `annotation_version` is `guide-v2` after the October 26 regrouping. Separate ignored `data/raw/pilot-audit-2026-10-25.jsonl` and `data/raw/reviews-audit-2026-10-25.jsonl` preserve all forty IDs at that dated snapshot, with later decisions retained separately. The audit preserves the five-member semantic g005 family and is not a release input for the four-row-cap validator. Keep practice rows outside supervised splits and report both exclusions. The [pilot record](evidence/pilot-guide-v1.md) has current hashes and counts. The guide-v2 [import](evidence/public-import-v2.md) added 90 public rows in ignored `data/raw/m1-v2.jsonl` (with the pilot) and `data/raw/import-v2/`. All 128 were accepted and frozen on October 26 as read-only `data/processed/m1-v1.jsonl`, with the read-only ledger `data/raw/reviews-v2.jsonl` ([review record](evidence/public-review-v2.md)).
 
 Store pilot JSONL in `data/raw/pilot-v0.jsonl` using the nine fields in the [annotation guide](annotation-guide.md#row-format).
 The current pilot contains 38 accepted guide-v1 rows with original human labels and rationales preserved. Pilot validity is not M1 release readiness.
@@ -55,7 +55,7 @@ Have the AI reviewer check at least 20% of each class without seeing your origin
 Review all ambiguous cases and every accepted row in a mixed-label group.
 At the balanced 40-row pilot, the minimum sample is two rows per class, plus those additional cases.
 Record the original and review labels before discussing disagreements.
-Store the common ledger fields plus required `ai_evidence` and `human_adjudication` fields from the [review protocol](data-and-evaluation.md#review-ledger-and-readiness) in `data/raw/reviews-v1.jsonl`.
+Store the common ledger fields plus required `ai_evidence` and `human_adjudication` fields from the [review protocol](data-and-evaluation.md#review-ledger-and-readiness) in a review ledger. The pilot used `data/raw/reviews-v1.jsonl`; the M1 release uses `data/raw/reviews-v2.jsonl`, which keeps the 38 pilot entries and adds the 90 import entries.
 The ledger records actual AI output and genuine human adjudications only. Do not invent identities, dates, or decisions. An unresolved AI disagreement or flag blocks readiness; clear matches can retain original human labels.
 Preserve the original review decisions when you later resolve labels.
 Guide v1 is frozen after the completed pilot review. Apply it to new candidates; revise it only under a new recorded version.
@@ -72,7 +72,7 @@ Do not create that release file from empty templates.
 Run this gate before splitting:
 
 ```sh
-uv run --locked python scripts/validate_dataset.py data/processed/m1-v1.jsonl --review data/raw/reviews-v1.jsonl --ready
+uv run --locked python scripts/validate_dataset.py data/processed/m1-v1.jsonl --review data/raw/reviews-v2.jsonl --ready
 ```
 
 Proceed only after readiness passes and you have checked label correctness and review coverage of ambiguous cases by hand.
@@ -88,7 +88,7 @@ Keep the supplied paths and seed 42 in `configs/m2.json` unless a recorded proje
 After the data gate passes, run:
 
 ```sh
-uv run --locked python -m orchestra prepare-study --config configs/m2.json --review data/raw/reviews-v1.jsonl --collection-brief docs/collection-brief.md --out data/processed/m2-prepared.json
+uv run --locked python -m orchestra prepare-study --config configs/m2.json --review data/raw/reviews-v2.jsonl --collection-brief docs/collection-brief.md --out data/processed/m2-prepared.json
 scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id m2-a
 scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id m2-b
 uv run --locked python -m orchestra compare --left results/m2-a --right results/m2-b

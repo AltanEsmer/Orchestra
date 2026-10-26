@@ -16,7 +16,9 @@ Altan approved all 90 proposed labels. The blind AI check agreed on every label;
 
 Altan accepted the recommendations for all 55 flagged rows. All 128 rows are accepted and the readiness check passes.
 
-**Your next step:** confirm the freeze of `data/processed/m1-v1.jsonl` with the `reviews-v2.jsonl` ledger. After that, groups stay fixed and M2 baselines can run.
+Altan froze the release as read-only `data/processed/m1-v1.jsonl` with the `reviews-v2.jsonl` ledger ([freeze record](evidence/public-review-v2.md#freeze)).
+
+**Your next step:** decide whether to start M2. The agent prepares the study split with `prepare-study` and runs the two baselines twice. You then inspect the validation errors. Before inspecting them, freeze the M3 collection brief.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
