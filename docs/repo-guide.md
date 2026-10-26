@@ -43,7 +43,8 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/m2-baselines.md` | P3 evidence: real `run` and `compare` output on an artificial fixture (fixture-only numbers) and the gates still open. |
 | `docs/evidence/m2-splits.md` | P2 evidence: setuptools pin, real `split` output on an artificial fixture, and the gates that remain open. |
 | `tests/test_validate_dataset.py` | Unit tests that call the validator with small literal rows and check the exact errors and counts, including readiness rejections and ledger agreement. |
-| `docs/annotation-guide.md` | Frozen guide v1 for first-action labels, shared request templates, pilot row conventions, review evidence, and recorded boundaries. |
+| `docs/annotation-guide.md` | Frozen guide v2: first-action labels and boundaries from v1, scenario/source grouping, batch quality checks, pilot row conventions, and review evidence. |
+| `docs/evidence/guide-v2.md` | Why v2 replaced request-template groups, the pilot regrouping table with before/after hashes, per-class counts, and public capacity under v2. |
 | `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, permission, and creation date. The `altan-authored` entry records Altan's exact October 23 permission for pilot candidates q0001 through q0040 in the `license` field, with its date and scope. This records explicit permission rather than selecting a named license. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
 | `LICENSE` | Existing MIT license for repository material. It does not grant rights to external course content or data. |

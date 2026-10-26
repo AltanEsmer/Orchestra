@@ -1,5 +1,7 @@
 # Template expansion draft, October 26, 2026
 
+> **Grouping update.** The family and cap accounting below used guide v1. Under [guide v2](guide-v2.md), each draft is grouped by its own scenario or named source, and the 28-slot ceiling no longer applies. The drafts' provenance and review requirements are unchanged.
+
 Altan supplied twenty template proposals and then explicitly selected “Draft AI-generated candidates.” The agent wrote two drafts per template. All 40 remain `needs_review`, with proposed first-action labels and families only. They are stored in ignored `data/raw/template-expansion-ai-2026-10-26/`, not imported into the study schema or attributed to A1. The accepted pilot and label ledger are unchanged. No model, split, source adoption, or human annotation occurred.
 
 ## Proposed boundaries

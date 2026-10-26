@@ -1,5 +1,7 @@
 # Public expansion screen: lookup and document retrieval
 
+> **Superseded grouping, October 26.** This screen used the v1 request-template rule. [Guide v2](guide-v2.md) now groups by scenario or source, so the family caps below no longer limit capacity. The per-record labels, risks, and source notes still apply.
+
 Screened October 26, 2026 under annotation guide v1. Research preparation only. No record was imported, rewritten, accepted, or used for training. Every disposition below is an agent screening proposal, not a human label or adjudication.
 
 ## Finding

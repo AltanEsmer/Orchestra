@@ -1,6 +1,6 @@
 # Annotation guide v1
 
-Status: v1 frozen on October 26, 2026 after Altan’s pilot boundary and group decisions. The [data protocol](data-and-evaluation.md#prediction-contract) defines the first-action labels. The [pilot acceptance record](evidence/pilot-guide-v1.md) records 38 accepted pilot rows, two practice-only exclusions, and the unmet M1 collection requirements. This guide contains no full research query rows.
+Status: v2 frozen on October 26, 2026. v2 changes only the grouping rule: Altan asked for simpler, less strict grouping that keeps quality checks, so groups now follow shared scenarios and sources instead of request templates. First-action labels and boundaries are unchanged from v1. The [guide-v2 record](evidence/guide-v2.md) lists the pilot regrouping; the [v1 record](evidence/pilot-guide-v1.md) keeps the earlier decisions. This guide contains no full research query rows.
 
 Follow the [experiment runbook](run-experiments.md) for local paths and readiness commands. Keep historical v0 decisions in the audit history. Future substantive changes require a new guide version and review of affected rows.
 
@@ -19,11 +19,23 @@ Record the result in one sentence of the form "First action is X because Y." For
 
 Write new queries rather than copying the examples in the protocol, so those examples stay available for teaching. Use fictional documents, catalogs, people, and records. Vary wording so one trigger word does not identify a label. Include hard negatives, such as a query that mentions numbers but asks for an explanation. Keep numbers and negations as written.
 
-A group is a **shared request template: the same user goal solved by the same procedure, whatever the scenario**. A shared label, keyword, arithmetic operation, or setting alone does not establish a group. Compare the requested goal, required inputs, procedure, and output. Different first-action dependencies can occur within one family when the core template is shared, as in translation of supplied text versus document text. Preserve each first-action label.
+A group holds rows a model could memorize across splits. Put two rows in the same group when any of these is true:
 
-Use this rule for both earlier and future families. Ordering and selection form one recorded family; amount-per-unit scaling forms another. Geometry, equal allocation, averaging, and percentage discounts retain separate templates. Checklist transformation stays separate from summarization because it preserves the required steps as actions rather than selecting and shortening content. Quotation and specific guidance from an identified document share the recorded content-extraction family. Concept explanations include explanations of differences. Key-based record existence and field retrieval share a family; condition-based filtering is separate. Brainstorming, storytelling, and social messages remain separate writing goals.
+1. **Small variation.** One is a paraphrase of the other, or the same sentence with a few words or numbers swapped.
+2. **Same source or setting.** They name or attach the same document, passage, database, catalog, table, or named place or organization (for example, two Willow Hotel database queries, or a Willow Hotel and a Willow School query).
+3. **Same situation.** They describe the same specific people, objects, or numbers.
+4. **Same public record.** They come from one upstream record, share one attached passage, or query one named table.
 
-These conservative families reduce the number of independent groups. Report achieved group counts rather than treating every distinct text as independent. Keep at most four research rows per family. A related fifth query stays in the audit/practice collection with its real family relationship and exclusion reason; do not give it another research group just to evade the cap. Whole research groups move together between splits.
+Otherwise, keep rows in separate groups. A shared request type, label, keyword, or arithmetic operation alone does not join rows. Groups may mix labels. Keep at most four research rows per group; a related fifth row goes to the practice collection with its reason. Whole groups move together between splits.
+
+### Quality checks for every batch
+
+- **Duplicates.** Reject exact duplicates (the validator does this) and check near-duplicates by hand before assigning groups.
+- **Request-type spread.** Note each row's request type (for example, "answer a question from a passage" or "filter records by a condition") in the import worksheet. No single request type should exceed 40 percent of a class's accepted rows.
+- **Source mix.** Report rows by source and class. Each class should draw on at least two sources, and no single source should supply more than 75 percent of a class, so that a source's phrasing does not become the label cue.
+- **Label review.** The selected AI-assisted method applies unchanged: AI checks of every new row, and Altan's decision on every flag or disagreement.
+
+The v1 request-template families remain in the audit history. An optional analysis can report scores on request types absent from training; it is not a release gate.
 
 ## Row format
 
@@ -37,7 +49,7 @@ Store pilot rows locally in ignored `data/raw/pilot-v0.jsonl`, one JSON object p
 | `status` | `accepted`, `needs_review`, or `excluded`. |
 | `source_id` | `altan-authored`, defined in `data/manifests/sources.json`. |
 | `annotator_ids` | `["A1"]` for Altan. A second annotator becomes `A2`. Contact details never enter the data. |
-| `annotation_version` | `guide-v0` during the pilot, then `guide-v1` (current). |
+| `annotation_version` | `guide-v0` during the pilot, `guide-v1`, then `guide-v2` (current). |
 
 Check the file after each writing session:
 
@@ -51,7 +63,7 @@ The validator rejects missing fields, duplicate IDs, empty text, unknown labels,
 
 The forty-query pilot is written and its permission recorded. Altan chose single-human annotation with disclosed AI checks on October 24. Preserve his original label/rationale, present shuffled query-only inputs to the AI reviewer, and record AI provenance separately. Check at least 20 percent per original class plus all ambiguous/mixed-label cases. The completed AI pass covers all forty rows.
 
-Clear agreement with no flags can retain the original label. Ask Altan to adjudicate every disagreement, abstention, exclusion proposal, and previously flagged case. Keeping the original label after disagreement is still an actual human decision that must be recorded. A persona is not a second human; report AI consistency and single-annotator limitations. The pilot boundary and group decisions are complete under v1. The previous second-human/delayed-self alternatives remain supported, but are not the selected method.
+Clear agreement with no flags can retain the original label. Ask Altan to adjudicate every disagreement, abstention, exclusion proposal, and previously flagged case. Keeping the original label after disagreement is still an actual human decision that must be recorded. A persona is not a second human; report AI consistency and single-annotator limitations. The pilot boundary decisions are complete under v1, and its groups were reassigned under v2. The previous second-human/delayed-self alternatives remain supported, but are not the selected method.
 
 The legacy human ledger example below applies only when that method is explicitly used. AI rows use the discriminator and extra evidence fields in the [current protocol](data-and-evaluation.md#review-ledger-and-readiness):
 
