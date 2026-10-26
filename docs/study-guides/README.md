@@ -52,7 +52,7 @@ M0 edition exported on October 8, 2026. The guide is delivered; the introductory
 
 Closure snapshot: Altan closed M0 on October 16, 2026. The stable PDF was copied to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M0-preparation-2026-10-16.pdf` with SHA-256 `3c321a3b3be63f638fe9a16455926be78662b60e776cf0dccfb661a2b841ce07`, identical to the October 8 edition. The learning checkpoint was not answered before closure and carries into M1.
 
-M1 edition: not yet exported. It waits for pilot rows and the v1 guide decisions so that it can trace real annotation evidence.
+M1 edition: not yet exported. Pilot rows and guide-v1 decisions are now available in the [pilot record](../evidence/pilot-guide-v1.md), and the methods preview includes the October 26 update. The milestone edition still needs the first dataset’s full coverage evidence; M1 is not complete.
 
 Inspected course source revisions for this edition:
 

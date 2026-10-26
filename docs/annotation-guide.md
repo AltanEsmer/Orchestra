@@ -1,8 +1,8 @@
-# Annotation guide v0
+# Annotation guide v1
 
-Status: draft for the M1 pilot, prepared on October 16, 2026. Altan freezes v1 after the 40-query pilot review. The [data protocol](data-and-evaluation.md#prediction-contract) defines the labels and remains authoritative if this guide disagrees with it. This guide turns those definitions into a repeatable procedure. It contains no dataset rows.
+Status: v1 frozen on October 26, 2026 after Altan’s pilot boundary and group decisions. The [data protocol](data-and-evaluation.md#prediction-contract) defines the first-action labels. The [pilot acceptance record](evidence/pilot-guide-v1.md) records 38 accepted pilot rows, two practice-only exclusions, and the unmet M1 collection requirements. This guide contains no full research query rows.
 
-The October 16 [M1 to M3 plan](m1-m3-plan.md#resolve-the-data-decisions-without-guessing-evidence) proposes answers to the open workflow decisions without claiming pilot evidence. Implementation was approved on October 16. Keep v0 until the required review and permissions exist. Follow the [experiment runbook](run-experiments.md) for the local intake worksheet, readiness gate, and commands. Store actual rows under ignored `data/raw/`, because `data/annotation/` is not ignored.
+Follow the [experiment runbook](run-experiments.md) for local paths and readiness commands. Keep historical v0 decisions in the audit history. Future substantive changes require a new guide version and review of affected rows.
 
 ## Choose the first action
 
@@ -19,7 +19,11 @@ Record the result in one sentence of the form "First action is X because Y." For
 
 Write new queries rather than copying the examples in the protocol, so those examples stay available for teaching. Use fictional documents, catalogs, people, and records. Vary wording so one trigger word does not identify a label. Include hard negatives, such as a query that mentions numbers but asks for an explanation. Keep numbers and negations as written.
 
-A group is one scenario. Paraphrases and small variants of the same request share a `group_id`, even when they were written on different days. Keep at most four rows per group. Groups move between splits as a whole, so a group that is too large removes data from evaluation.
+A group is a **shared request template: the same user goal solved by the same procedure, whatever the scenario**. A shared label, keyword, arithmetic operation, or setting alone does not establish a group. Compare the requested goal, required inputs, procedure, and output. Different first-action dependencies can occur within one family when the core template is shared, as in translation of supplied text versus document text. Preserve each first-action label.
+
+Use this rule for both earlier and future families. Ordering and selection form one recorded family; amount-per-unit scaling forms another. Geometry, equal allocation, averaging, and percentage discounts retain separate templates. Checklist transformation stays separate from summarization because it preserves the required steps as actions rather than selecting and shortening content. Quotation and specific guidance from an identified document share the recorded content-extraction family. Concept explanations include explanations of differences. Key-based record existence and field retrieval share a family; condition-based filtering is separate. Brainstorming, storytelling, and social messages remain separate writing goals.
+
+These conservative families reduce the number of independent groups. Report achieved group counts rather than treating every distinct text as independent. Keep at most four research rows per family. A related fifth query stays in the audit/practice collection with its real family relationship and exclusion reason; do not give it another research group just to evade the cap. Whole research groups move together between splits.
 
 ## Row format
 
@@ -33,7 +37,7 @@ Store pilot rows locally in ignored `data/raw/pilot-v0.jsonl`, one JSON object p
 | `status` | `accepted`, `needs_review`, or `excluded`. |
 | `source_id` | `altan-authored`, defined in `data/manifests/sources.json`. |
 | `annotator_ids` | `["A1"]` for Altan. A second annotator becomes `A2`. Contact details never enter the data. |
-| `annotation_version` | `guide-v0` during the pilot, then `guide-v1`. |
+| `annotation_version` | `guide-v0` during the pilot, then `guide-v1` (current). |
 
 Check the file after each writing session:
 
@@ -47,7 +51,7 @@ The validator rejects missing fields, duplicate IDs, empty text, unknown labels,
 
 The forty-query pilot is written and its permission recorded. Altan chose single-human annotation with disclosed AI checks on October 24. Preserve his original label/rationale, present shuffled query-only inputs to the AI reviewer, and record AI provenance separately. Check at least 20 percent per original class plus all ambiguous/mixed-label cases. The completed AI pass covers all forty rows.
 
-Clear agreement with no flags can retain the original label. Ask Altan to adjudicate every disagreement, abstention, exclusion proposal, and previously flagged case. Keeping the original label after disagreement is still an actual human decision that must be recorded. A persona is not a second human; report AI consistency and single-annotator limitations. Freeze v1 after boundary and group decisions. The previous second-human/delayed-self alternatives remain supported, but are not the selected method.
+Clear agreement with no flags can retain the original label. Ask Altan to adjudicate every disagreement, abstention, exclusion proposal, and previously flagged case. Keeping the original label after disagreement is still an actual human decision that must be recorded. A persona is not a second human; report AI consistency and single-annotator limitations. The pilot boundary and group decisions are complete under v1. The previous second-human/delayed-self alternatives remain supported, but are not the selected method.
 
 The legacy human ledger example below applies only when that method is explicitly used. AI rows use the discriminator and extra evidence fields in the [current protocol](data-and-evaluation.md#review-ledger-and-readiness):
 
@@ -57,13 +61,10 @@ The legacy human ledger example below applies only when that method is explicitl
 
 For the legacy example, `review_kind` is `second_human` or `delayed_self`; all seven fields are required. AI entries instead use `ai_assisted`, `ai_evidence`, and `human_adjudication`. A `second_human` reviewer must not be listed in the row's `annotator_ids`. `resolved_label` must match the released dataset label, or be null if the row was excluded after review. Every accepted row in a mixed-label group needs an entry. AI evidence must retain known ambiguity flags. Check by hand that every flagged row has an actual human resolution. Check it with `uv run --locked python scripts/validate_dataset.py DATASET --review LEDGER`, and add `--ready` for the M1 acceptance checks. Human agreement excludes AI entries. AI consistency is reported separately.
 
-Preserve each pre-adjudication label before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Revise this guide, then freeze it as v1 and relabel affected rows.
+Preserve each pre-adjudication label before discussing differences. For each disagreement, note both labels, the resolved label, and whether this guide needs a clearer rule. Record future guide changes under a new version and review affected rows before another release.
 
-## Decisions for Altan before v1
+## Recorded pilot boundaries
 
-| Decision | Why it matters |
-| --- | --- |
-| Does a general-knowledge fact such as a country's capital count as `direct_answer` or need `knowledge_lookup`? | The protocol limits lookup to an identified structured source, so these queries currently fall under `direct_answer`. The pilot should test whether that rule is easy to apply. |
-| Which flagged cases and groups need resolution? | The single-human, AI-assisted method is selected. Record actual human decisions and disclose single-annotator bias. |
-| Which license applies to additional sources? | Altan's exact permission for q0001–q0040 is recorded. Public examples retain their own notices and restrictions; the pilot permission does not cover them. |
-| How are full rows retained? | Keep queries, original labels, and review evidence in ignored local storage; retain hashes and the eventual verified study archive. No raw-data publication is part of this preparation. |
+The default direct-answer rule for a stable fact without a named structured source remains unchanged. Public sources require their own permission and mapping records; Altan’s pilot permission covers q0001 through q0040 only. Preserve all original rows, labels, rationales, actual adjudications, and group changes in the local audit history. Keep practice-only rows outside supervised splits.
+
+Flag the shared word “handbook” in the summary/checklist cases for later validation error analysis. This is a prospective word-level cue to inspect, not a measured shortcut or a reason to alter text. Record any observations against actual validation predictions; do not inspect the sealed test to tune wording or groups.

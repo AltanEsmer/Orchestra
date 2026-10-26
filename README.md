@@ -2,7 +2,7 @@
 
 Orchestra is course project 13, **Learning to Route Queries in AI Systems**. The study will compare classifiers and text representations for choosing a query's first action, then analyze confidence and errors.
 
-Current research milestone is M1, the annotation pilot. Forty human-authored candidates and permission are recorded. A blind AI check matched the original labels, and free public supplements have been screened; Altan has chosen single-human annotation with disclosed AI checks. Boundary and grouping decisions remain open. The repository provides readiness and blind-review tools, M2/M3 experiments, M4 confidence and frozen final-test commands, scientific figures, verified local archives, and an IEEE report template. The tooling has run only on artificial fixtures. There is no research dataset, trained research router, or experiment result yet. Tool integration is optional and deferred.
+Current research milestone is M1. Altan completed pilot review and froze annotation guide v1 on October 26. The local pilot has 38 accepted human-authored queries across 19 shared request templates, with two practice-only exclusions preserved in the audit history. Single-human annotation with disclosed AI checks is the selected method. The [pilot acceptance record](docs/evidence/pilot-guide-v1.md) distinguishes these accepted rows from the unmet 120-row M1 release. No research split, trained router, or experimental result exists. The complete planned software workflow has passed artificial fixtures; tool integration remains optional and deferred.
 
 The [M1 to M3 implementation plan](docs/m1-m3-plan.md) defines the proposed data, baseline, and comparison work. Its [methods preview](docs/study-guides/m1-m3-methods-preview.md) supports the exam, presentation, and report. Altan approved implementation on October 16. The five units are built and tested on fixtures. Their research runs wait for accepted, reviewed, and licensed M1 data.
 
@@ -26,7 +26,7 @@ Check annotated rows with `uv run --locked python scripts/validate_dataset.py <f
 
 The [experiment runbook](docs/run-experiments.md) gives the complete preparation-to-archive command sequence. Research runs wait for accepted, reviewed data and a permission record.
 
-Continue the [manual sequence](docs/manual-steps.md) with one flagged pilot case; authorship, permission, and the AI-assisted method choice are complete. The agent can operate the commands. `uv run --locked python -m orchestra status` reports the current data blocker. `prepare-study` enforces readiness, records collection/review hashes, and calculates the parent hash before splitting. Later commands cover `confidence`, `freeze`, `final-test`, `figures`, `archive`, and `restore`.
+Continue the [manual sequence](docs/manual-steps.md) with licensed public-source expansion and review of new labels; pilot grouping, guide v1, authorship, permission, and the AI-assisted method choice are complete. The agent can operate the commands. `uv run --locked python -m orchestra status` reports the current data blocker. `prepare-study` enforces readiness, records collection/review hashes, and calculates the parent hash before splitting. Later commands cover `confidence`, `freeze`, `final-test`, `figures`, `archive`, and `restore`.
 
 Run `sh scripts/check.sh` for the complete software checks. Run `uv run --locked python scripts/verify_workflow.py --out work/fixture-proof` with a new output path for the artificial CLI workflow and clean restored reproduction. The workflow creates no research evidence. GitHub Actions runs both checks on pull requests and main.
 
@@ -46,4 +46,4 @@ Use `scripts/run_experiment.sh --config data/processed/m2-prepared.json --run-id
 
 The report and code deadline is **December 6, 2026**. The report must be 5–12 pages in IEEE conference two-column format and use Altan's own words. Altan handles course administration. At his request, course-rule confirmation is not an agent task or milestone gate. The study guides support his January 2027 oral preparation without claiming that the supplied PDFs verify an exam date.
 
-Repository preparation and student understanding are tracked separately. Routing and split terminology **needs practice** after the first question caused confusion. The other topics remain **not yet reviewed**. The learning log records the response and next exercise.
+Repository preparation and student understanding are tracked separately. Altan explained how related training/test queries can inflate scores. The broader routing and leakage topics still **need practice**. The other topics remain **not yet reviewed**. The learning log records the response and next exercise.

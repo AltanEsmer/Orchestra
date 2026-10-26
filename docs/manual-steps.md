@@ -1,39 +1,34 @@
 # Continue the study one step at a time
 
-The agent operates the commands in the [runbook](run-experiments.md). Altan supplies the human evidence. Do not complete this whole checklist at once. Start with the first unfinished step and let the agent check it before moving on.
+The agent operates the commands in the [runbook](run-experiments.md). Altan supplies genuine annotation decisions, interpretations, writing, and learning responses.
 
-## Current next step, October 24
+## Current next step, October 26
 
-The forty original queries and permission are complete. A blind AI check matched all original labels, which remain unchanged. The [AI review record](evidence/pilot-ai-review.md) explains the limits and prepared local packets. The [roadmap](../ROADMAP.md#current-data-path) records public-source options and the current completion estimate.
+Pilot grouping review is complete and annotation guide v1 is frozen. Altan’s final rule is a shared request template: the same user goal solved by the same procedure, whatever the scenario. The [pilot acceptance record](evidence/pilot-guide-v1.md) lists actual decisions, counts, hashes, exclusions, and remaining M1 requirements.
 
-Altan selected single-human annotation with disclosed AI checks. His original labels are the starting reference. A separate AI label is a consistency check. Clear agreement can retain the original label; disagreements and any existing ambiguity/group flags stay unresolved until Altan decides them. The report must state that there is one human annotator and no independent human agreement estimate.
+There are 38 accepted pilot rows across 19 templates. q0014 and q0037 remain practice-only in the local audit history. Single-human annotation with disclosed AI checks remains the selected method; AI consistency is not independent human agreement. The current pilot filename retains `pilot-v0`, but every accepted row carries `guide-v1`.
 
-Start with q0033: decide whether “holds 60 litres” describes current water or maximum capacity. The agent records the actual answer, then presents the next unresolved case. Do not infer a decision from the AI's matching label. No need to write another batch of queries now.
+No pilot group questions remain. Next, the agent prepares the licensed public-source expansion using BFCL, No Robots, and Dolly assessments. Altan then reviews proposed first-action mappings and any new ambiguous cases. Source screening alone does not adopt a source or supply human labels. Do not ask for more handwritten batches before checking these supplements.
 
-The nine-query human packet remains available locally if a second-human or delayed-self study is wanted later, but that is no longer the selected method. Do not fill those legacy ledger kinds with AI output.
+Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
-## Original collection step (completed)
+## Completed human evidence
 
-For the completed pilot, the collection instruction was to write one original English request in a fictional situation. State what the assistant must do first and why. The first action is one of these:
+- Forty human-authored requests and original labels collected through agent-directed exercises; actual sharing permission recorded.
+- Single-human annotation with disclosed AI checks selected, with forty historical AI checks and genuine human adjudications.
+- Tank-contents ambiguity clarified; teaching-derived and excess-family examples excluded for practice.
+- Existing families and cross-group boundaries reviewed; guide v1 rule and eight final decisions supplied by Altan.
+- Altan explained how close training/test variants can inflate a score. Other leakage controls still need practice.
 
-- Read a named document or passage.
-- Look up a record in a named catalog or database.
-- Calculate using numbers already supplied.
-- Answer or explain directly.
-
-Send the query and rationale in chat. The agent can format your actual response and assign a stable ID. Related rewordings share a scenario group. Teaching examples supplied by the agent stay outside the research dataset.
+Full dated responses remain in the [learning log](learning-log.md); local raw records and decision artifacts remain outside Git.
 
 ## Subsequent steps
 
-1. Grow the pilot in small batches to 40 original queries, initially 10 per action. Review unclear boundaries with the agent.
-2. State the actual permission for this authored dataset, including any redistribution limits. The agent records your statement without guessing a license.
-3. Keep the blind AI review as separate evidence. Resolve flagged cases one at a time; the agent records your actual decisions, dates, and rationale. Preserve both original and AI labels.
-4. Resolve disagreements and ambiguous rows. Freeze guide v1, then grow to 120 accepted rows with 30 rows and 15 independent groups per class. The agent validates and archives the release.
-5. Answer one introductory routing/grouping exercise. The agent runs the two baselines twice and discusses actual validation mistakes.
-6. Expand toward 400 rows following the collection brief fixed before inspecting baseline errors. Preserve existing rows and groups. The agent validates the extension and runs all 14 comparisons.
-7. Discuss actual validation errors and confidence findings. The agent records reasoned interpretations as hypotheses, freezes decisions, evaluates the test once, and produces figures.
-8. Write the report in your own words using the compiled template, measured tables, and figure evidence. The agent checks references, formatting, provenance, and reproduction.
-9. Attempt oral questions before receiving worked answers. The agent records your responses and revisits gaps.
-10. Submit the report and code through the course channels. Supply receipts so the agent can record the exact submitted files and checksums.
+1. Adopt compatible licensed sources with original wording, contexts, attribution, and guide-v1 template families. Review new labels under the selected AI-assisted method.
+2. Validate the 120-row release and freeze the expansion brief before baseline error inspection. The agent runs the two baselines twice and checks reproduced splits and predictions.
+3. Extend toward 400 rows and run all 14 comparisons without moving previously frozen groups.
+4. Discuss actual validation errors and confidence findings. Freeze model/confidence choices before the final test; generate measured figures.
+5. Write the report in your own words. The agent checks provenance, references, formatting, and research reproduction.
+6. Attempt oral questions and record actual answers. Submit through course channels and retain receipts.
 
-The number of accepted examples, the quality of their labels, and your understanding are separate checks. The agent will not infer any of them from passing software tests.
+Candidate counts, accepted rows, M1 readiness, and demonstrated understanding are different kinds of evidence.

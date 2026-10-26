@@ -19,7 +19,7 @@ Pass `--config` and `--run-id` directly, without an extra `run` argument.
 
 Write 40 original English queries about fictional scenarios, initially 10 for each action.
 Use `document_retrieval`, `knowledge_lookup`, `calculation`, and `direct_answer`.
-Give each query a first-action rationale and a scenario group.
+Give each query a first-action rationale and a shared-request-template group under guide v1.
 Keep at most four paraphrases per group.
 Aim for at least five independent scenarios per class in the pilot.
 Keep teaching examples out of the dataset.
@@ -39,8 +39,10 @@ To request agent-generated candidates, explicitly change the human-authored coll
 
 ## Validate draft rows and collect review evidence
 
+Current local state, October 26: the pilot and `data/raw/reviews-v1.jsonl` contain 38 accepted guide-v1 pilot rows after Altan excluded q0014 and q0037 for practice. The legacy `pilot-v0.jsonl` path is retained for callers; each row’s `annotation_version` is `guide-v1`. Separate ignored `data/raw/pilot-audit-2026-10-25.jsonl` and `data/raw/reviews-audit-2026-10-25.jsonl` preserve all forty IDs at that dated snapshot, with later decisions retained separately. The audit preserves the five-member semantic g005 family and is not a release input for the four-row-cap validator. Keep practice rows outside supervised splits and report both exclusions. The [pilot record](evidence/pilot-guide-v1.md) has current hashes and counts. No 120-row release exists.
+
 Store pilot JSONL in `data/raw/pilot-v0.jsonl` using the nine fields in the [annotation guide](annotation-guide.md#row-format).
-The local draft now contains the forty actual pilot rows, all `needs_review` until guide and group decisions are complete. Their original human labels and rationales are preserved. Draft validity is not release readiness.
+The current pilot contains 38 accepted guide-v1 rows with original human labels and rationales preserved. Pilot validity is not M1 release readiness.
 
 ```sh
 uv run --locked python scripts/validate_dataset.py data/raw/pilot-v0.jsonl
@@ -56,7 +58,7 @@ Record the original and review labels before discussing disagreements.
 Store the common ledger fields plus required `ai_evidence` and `human_adjudication` fields from the [review protocol](data-and-evaluation.md#review-ledger-and-readiness) in `data/raw/reviews-v1.jsonl`.
 The ledger records actual AI output and genuine human adjudications only. Do not invent identities, dates, or decisions. An unresolved AI disagreement or flag blocks readiness; clear matches can retain original human labels.
 Preserve the original review decisions when you later resolve labels.
-Freeze guide v1 after reviewing the pilot and relabel affected rows.
+Guide v1 is frozen after the completed pilot review. Apply it to new candidates; revise it only under a new recorded version.
 
 ## Release the first dataset
 

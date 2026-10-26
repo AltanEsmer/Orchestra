@@ -1,6 +1,6 @@
 # Data and evaluation protocol
 
-This is the study protocol implemented by the current tooling. No research dataset, trained research router, or experimental score exists yet. The examples in `scripts/smoke.py`, tests, and `scripts/verify_workflow.py` are software fixtures and must never enter the study.
+This is the study protocol implemented by the current tooling. The guide-v1 pilot contains 38 accepted rows; no 120-row M1 release, trained research router, or experimental score exists yet. The examples in `scripts/smoke.py`, tests, and `scripts/verify_workflow.py` are software fixtures and must never enter the study.
 
 The October 16 [M1 to M3 plan](m1-m3-plan.md) specifies the data and comparison work. Altan approved it on October 16 and approved completion automation on October 22. The [automation plan](automation-plan.md) records current artifact contracts. Implementation and fixture evidence do not establish research outcomes.
 
@@ -25,13 +25,13 @@ Start with human-authored scenarios using fictional documents, catalogs, and rec
 
 Candidate extensions include published instruction datasets, intent-classification datasets, and public tool-routing benchmarks. [BFCL](evidence/bfcl-compatibility.md), [No Robots](evidence/public-direct-answer.md), and [Dolly](evidence/public-document-retrieval.md) now have bounded compatibility inspections. None has been accepted into the study. Intent labels may not map to the first-action contract. Before use, record the exact source URL, download date, version or hash, original license, permitted redistribution, and mapping rationale. Reject a source whose license or mapping cannot be established. Do not scrape a dataset merely to reach the target size.
 
-If an LLM generates candidates later, record provider, model/revision, prompt, parameters, generation date, and human edits. Budget approval precedes paid generation; Altan owns course-rule compliance without an agent confirmation gate. Human review is mandatory. Synthetic data can encode generator vocabulary, clean label cues, and unrealistic balance. It cannot establish performance on real traffic. All variants of one generated scenario belong to one group, even when produced by different prompts.
+If an LLM generates candidates later, record provider, model/revision, prompt, parameters, generation date, and human edits. Budget approval precedes paid generation; Altan owns course-rule compliance without an agent confirmation gate. Human review is mandatory. Synthetic data can encode generator vocabulary, clean label cues, and unrealistic balance. It cannot establish performance on real traffic. Related variants sharing one request template belong to one group, even when produced by different prompts.
 
-Use a 40-query pilot, initially 10 queries per label. Aim for 120 accepted rows for the first slice and 400 for the main study, roughly 100 per class. These are targets, not observed counts. Target at least two independently written scenarios for every boundary in the table. Cap each paraphrase family at four rows so a few templates cannot dominate.
+Use a 40-query pilot, initially 10 queries per label. Aim for 120 accepted rows for the first slice and 400 for the main study, roughly 100 per class. These are targets, not observed counts. Target at least two independently written scenarios for every boundary in the table. Cap each shared request template at four research rows so a few templates cannot dominate. The [v1 guide](annotation-guide.md#write-and-group-queries) defines the template rule and recorded boundaries. A shared arithmetic operation or label alone is insufficient. Conservative families reduce independent group counts; report that cost.
 
 Altan supplies the primary human labels and rationales. On October 24 he explicitly selected **single-human annotation with disclosed AI-assisted checks**, replacing the earlier requirement for a second human or delayed blind self-review. The forty-query pilot received a fresh blind AI pass; all labels matched. This establishes consistency under the shared guide, not correctness, independent human agreement, or student understanding. Report single-annotator bias, shared-model bias, and the agent-directed collection process.
 
-Keep an AI check of at least 20 percent per proposed class plus all ambiguous and mixed-label-group cases; checking all forty pilot rows exceeds that minimum. Preserve original human labels as the reference. Clear matching AI decisions with no recorded flags can retain the original label. Every disagreement, abstention, proposed exclusion, or existing steward flag needs a genuine human adjudication, even when Altan retains his original label. The original q0014 and q0033 flags survive AI agreement. Never invent an adjudicator, decision, date, or rationale. Freeze guide v1 only after these cases and grouping decisions are resolved. Public-source screening labels remain AI proposals until the human annotation/adjudication process records their treatment.
+Keep an AI check of at least 20 percent per proposed class plus all ambiguous and mixed-label-group cases; checking all forty pilot rows exceeds that minimum. Preserve original human labels as the reference. Clear matching AI decisions with no recorded flags can retain the original label. Every disagreement, abstention, proposed exclusion, or existing steward flag needs a genuine human adjudication, even when Altan retains his original label. The original q0014 and q0033 flags survive AI agreement. Never invent an adjudicator, decision, date, or rationale. Guide v1 was frozen on October 26 after the actual pilot cases and grouping decisions were resolved. Future cases still require their actual decisions before acceptance. Public-source screening labels remain AI proposals until the human annotation/adjudication process records their treatment.
 
 Legacy `second_human` and `delayed_self` evidence remains supported for an explicitly chosen alternate method. Such entries never contain AI output. A persona does not create another independent human or model family.
 
@@ -44,7 +44,7 @@ Each JSONL row has the following fields. `scripts/validate_dataset.py` enforces 
 | Field | Meaning |
 | --- | --- |
 | `query_id` | Stable unique string, such as `q0001`. |
-| `group_id` | Shared scenario, template, or paraphrase family, assigned before splitting. |
+| `group_id` | Shared request template: the same user goal solved by the same procedure, whatever the scenario. Assigned before splitting. |
 | `text` | Nonempty query without an embedded gold-label hint. |
 | `label` | One of the four labels for accepted rows, or null while unresolved. |
 | `status` | `accepted`, `needs_review`, or `excluded`. |

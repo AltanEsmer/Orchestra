@@ -1,8 +1,8 @@
 # Project plan
 
-Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation covers the complete planned study workflow and has been verified with artificial fixtures. Accepted research data and actual experiment results remain absent.
+Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation covers the complete planned study workflow and has been verified with artificial fixtures. The reviewed guide-v1 pilot has 38 accepted rows; the 120-row release and actual experiment results remain absent.
 
-The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records the completed tooling scope and its human evidence boundary. No accepted research dataset or trained research model exists.
+The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records the completed tooling scope and its human evidence boundary. No 120-row M1 release or trained research model exists. The accepted pilot is recorded separately.
 
 ## Research question and scope
 
@@ -49,7 +49,7 @@ After December submission, use the frozen project, saved results, and guide coll
 
 On October 24, Altan authorized public-source investigation to reduce further manual writing. [No Robots](evidence/public-direct-answer.md) adds thirteen provisional direct-answer candidates in a twenty-record sample. [Dolly](evidence/public-document-retrieval.md) adds three conditional document-reading candidates in twenty records, provided their original linked passages are retained outside router input. These sources have distinct licenses and need mapping, attribution, and grouping review. A [blind AI pass](evidence/pilot-ai-review.md) matched the original forty labels. Altan subsequently chose single-human annotation with disclosed AI checks. A dedicated AI review kind preserves its provenance, keeps his original labels, and requires human adjudication of flagged cases. The report must disclose single-annotator bias and AI assistance rather than independent human agreement.
 
-The earlier Berkeley Function Calling Leaderboard inspection also aimed to reduce further manual writing. The [inspection](evidence/bfcl-compatibility.md) found 14 distinct provisional candidates in 40 records, mainly calculations, and no document-retrieval candidate in that bounded sample. It recommends a filtered supplement and further source assessment, not an unchanged replacement for all four classes. No import, source adoption, label-contract change, or model run has occurred. The existing forty human-authored pilot candidates and human review requirements remain separate.
+The earlier Berkeley Function Calling Leaderboard inspection also aimed to reduce further manual writing. The [inspection](evidence/bfcl-compatibility.md) found 14 distinct provisional candidates in 40 records, mainly calculations, and no document-retrieval candidate in that bounded sample. It recommends a filtered supplement and further source assessment, not an unchanged replacement for all four classes. No public-source import, source adoption, first-action label-contract change, or model run has occurred. The pilot history contains forty human-authored candidates; 38 now qualify under guide v1. Public source annotation remains separate.
 
 The largest scientific risks are annotation shortcuts, overlapping action meanings, paraphrase leakage, a small test set, and synthetic language that fails to resemble real users. The [data protocol](data-and-evaluation.md) addresses each and requires limitations in the report. More models cannot repair unclear labels.
 
@@ -73,7 +73,7 @@ References and final pagination must fit the course limit. Each result or figure
 ## Research steps after tooling preparation
 
 1. Use the selected single-human, AI-assisted method, preserving Altan's forty original labels and recorded permission. Keep AI consistency separate from human agreement.
-2. Resolve pilot ambiguity, teaching-example similarity, and scenario groups. Record actual human adjudications under the selected procedure, then freeze guide v1.
+2. Pilot review and guide v1 are complete as of October 26. Preserve the 38 accepted rows, two practice-only exclusions, actual human decisions, and shared-request-template families. Broader families reduce independent group counts.
 3. Extend with licensed public human-authored examples where compatible. Preserve original wording and linked source context; review mappings rather than copying upstream task categories.
 4. Reach 120 accepted queries, at least 30 per label and 15 independent groups per label. Freeze the expansion brief before viewing baseline errors.
 5. Use the existing commands to validate, split by group, and run the dummy and TF-IDF logistic-regression baselines twice.
