@@ -10,7 +10,9 @@ There are 38 accepted pilot rows in 23 groups. q0014 and q0037 remain practice-o
 
 No pilot group questions remain. Next, the agent prepares the licensed public-source expansion using BFCL, No Robots, and Dolly assessments. Altan then reviews proposed first-action mappings and any new ambiguous cases. Source screening alone does not adopt a source or supply human labels. Do not ask for more handwritten batches before checking these supplements.
 
-The October 26 [expansion screen](evidence/public-expansion-screen.md) finds plenty of public rows but few new request templates. Even if every proposal were accepted, document retrieval would reach about 8 groups and lookup about 6, short of 15. Guide v2 removes that bottleneck: each Dolly passage and each BFCL table is its own group. The template boundary questions no longer affect grouping. Altan still decides whether to adopt the Dolly attachment adapter and the source licenses, and he reviews every new label.
+The October 26 [expansion screen](evidence/public-expansion-screen.md) finds plenty of public rows but few new request templates. Even if every proposal were accepted, document retrieval would reach about 8 groups and lookup about 6, short of 15. Guide v2 removes that bottleneck. Altan approved the regrouping and the Dolly attachment adapter and adopted the three sources. The [import record](evidence/public-import-v2.md) lists 90 candidates.
+
+**Your next step:** open the local `data/raw/import-v2/review-worksheet.md` and reply with "approve all" plus any exceptions, such as `q0057: exclude, reason` or `q0083: calculation`. Look closely at the 27 flagged rows. Your answers become the primary labels. A blind AI check and adjudication of any disagreements follow, then the readiness check.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

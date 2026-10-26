@@ -51,7 +51,7 @@ Most sampled rows fall into families that are already full or nearly full. Dolly
 | New: retrieve matching records, then aggregate a field (average, total) | 3 | 3 |
 | New: check a record against a threshold | 1 | 1 |
 
-Held: `simple_92` names a real external database (IMDB), and `simple_309` asks for a player's season record without naming a source. At most 6 lookup rows and 2 new families are available, giving 16 rows and 6 groups. The aggregate family needs Altan's confirmation that its first action is lookup and that it is separate from g005's lookup-then-scale request.
+Correction, October 26: `sql_15` asks to correct a stored value, which is a write. It is not a keyed lookup and was excluded from the [import](public-import-v2.md). Held: `simple_92` names a real external database (IMDB), and `simple_309` asks for a player's season record without naming a source. At most 6 lookup rows and 2 new families are available, giving 16 rows and 6 groups. The aggregate family needs Altan's confirmation that its first action is lookup and that it is separate from g005's lookup-then-scale request.
 
 ## Risks to record before any import
 

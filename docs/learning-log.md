@@ -795,3 +795,13 @@ Trace: q0036 asks whether booking B24 exists in the Willow Hotel database. Under
 Practice questions, unanswered: (1) Under v2, what does a good test score now show, and what does it no longer show compared with v1? (2) Why are the Willow Hotel and Willow School rows in one group even though one is lookup and the other is document retrieval? (3) BFCL lookup rows mostly filter by a condition. Which v2 check stops them from filling the lookup class, and why does that matter? Learning statuses remain unchanged.
 
 Verification: see the handoff. The validator passed the 38 regrouped rows with the unchanged review ledger. No code, dependency, or schema changed.
+
+## Guide-v2 public import candidates, October 26, 2026
+
+Altan approved the pilot regrouping and the Dolly attachment adapter. He adopted Dolly for document retrieval, BFCL for lookup and calculation, and No Robots for direct answer, with the batch checks. The agent built 90 `needs_review` candidates with null labels and recorded the three sources with licenses and notices. The [import record](evidence/public-import-v2.md) has the selection, checks, flags, and hashes. If every proposal were accepted, every class would pass 30 rows, 15 groups, the 40 percent request-type limit, and the 75 percent source limit, with small margins. No row is accepted yet.
+
+Trace: q0081 is BFCL `sql_61`: "What is the average age of the customers from the 'customers' table who have made purchases above $1000?" The records must be fetched before averaging, so the proposed first action is `knowledge_lookup`. It shares the `customers` table with q0079 (`sql_51`), so both sit in one group under guide v2 rule 4.
+
+Practice questions, unanswered: (1) Why is q0081 lookup and not calculation, even though it asks for an average? (2) Why do q0079 and q0081 share a group even though one filters and the other aggregates? (3) Fifteen lookup rows use SQL words like "table" and "column". If the model learned "table means lookup", which validation result would reveal it? Learning statuses remain unchanged.
+
+Verification: see the handoff. The combined 128-row file passes the validator. No code, dependency, or schema changed.

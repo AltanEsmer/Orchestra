@@ -36,7 +36,7 @@ The agent applied the v2 rule to the 38 accepted rows. Only `group_id` and `anno
 | g045, g046 | q0015, q0033 | Separate difference situations (lesson, water tank) |
 | g047 | q0034 | Word sorting, separate from catalog ordering |
 
-The shared names follow the blind AI pilot reviewer's [original flags](pilot-ai-review.md) (Willow Hotel records, Northstar catalog). They are an agent application of Altan's requested rule, listed here so he can object to any assignment. Splitting by shared name is conservative: Riverside School and Riverside Library share only a word, but a model could still learn it.
+The shared names follow the blind AI pilot reviewer's [original flags](pilot-ai-review.md) (Willow Hotel records, Northstar catalog). They are an agent application of Altan's requested rule. Altan approved the regrouping on October 26. Splitting by shared name is conservative: Riverside School and Riverside Library share only a word, but a model could still learn it.
 
 | Label | Rows | Groups (v1) | Groups (v2) |
 | --- | ---: | ---: | ---: |
