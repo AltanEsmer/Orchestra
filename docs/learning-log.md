@@ -911,3 +911,11 @@ Altan said: "Download all eight BFCL parallel and irrelevance files at revision 
 Trace: `parallel_49` asks whether "the player with id 3142 in team RocketLeague" was top scorer in three seasons. It identifies a record by ID, so its first action is a keyed-record lookup. Lookup can hold at most 40 keyed-record rows. M1 has 12, and the earlier BFCL files already supply 33 such candidates for the remaining 28 places. This row is eligible, but it does not raise capacity.
 
 Practice question, unanswered: Why can screening more of the same source fail to fix a shortfall, even when it finds eligible rows? Learning statuses remain unchanged.
+
+## AI lookup drafts for the shortfall, October 26, 2026
+
+Altan said: "Draft more AI lookup candidates in non-keyed request types, avoiding M1 named settings, for me to label." The agent wrote 30 drafts across ten request types, such as condition filters, category counts, free slots, and duplicate checks. Each names its own invented organisation, so each is its own group. A script refuses to write the bundle if a draft shares a name with M1, the earlier drafts, or the BFCL candidates, overlaps any text at 0.5 Jaccard or more, or uses one of the brief's cue words. All 30 passed. They are unlabelled proposals. The [draft record](evidence/lookup-ai-drafts.md) lists the boundary cases to look at.
+
+Trace: draft N14 reads "Add up the overtime hours logged by the night shift in the Larkspur Depot timesheet records for the week of 3 February." The addition needs the hours first, and the hours sit in a named structured source. So the first action is lookup, even though the query opens with an arithmetic verb.
+
+Practice question, unanswered: Why must the blind AI check on these drafts be run by a different reviewer than the agent that drafted them? Learning statuses remain unchanged.

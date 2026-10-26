@@ -4,7 +4,7 @@ Screened October 26, 2026, after the M2 run, against the source mix and 400-row 
 
 ## Finding
 
-Three classes can reach about 100 rows within the brief's mix. Lookup cannot. After the 40 percent request-type limit, BFCL supplies 33 to 46 new lookup rows, and the AI drafts add 11. That leaves **11 to 24 lookup rows** with no screened source. The brief leaves that decision to Altan. Screening eight more BFCL files at Altan's request reduced the shortfall by about three rows, because most of their lookups are keyed-record lookups and that type is already at its limit. Calculation's second source, GSM8K, was screened after Altan approved the download, and it covers the 16 rows calculation needs.
+Three classes can reach about 100 rows within the brief's mix. Lookup cannot. After the 40 percent request-type limit, BFCL supplies 33 to 46 new lookup rows, and the AI drafts add 11. That leaves **11 to 24 lookup rows** with no screened source. The brief leaves that decision to Altan. Screening eight more BFCL files at Altan's request reduced the shortfall by about three rows, because most of their lookups are keyed-record lookups and that type is already at its limit. At Altan's request the agent then drafted 30 non-keyed AI lookup candidates for him to label ([draft record](lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the gap. Calculation's second source, GSM8K, was screened after Altan approved the download, and it covers the 16 rows calculation needs.
 
 ## What eligible means
 

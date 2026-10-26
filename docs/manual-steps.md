@@ -26,7 +26,9 @@ Altan inspected the seven L2 errors and recorded five hypotheses ([error inspect
 
 The agent recorded GSM8K's license (MIT) and pinned revision and screened each source's capacity ([capacity screen](evidence/m3-capacity-screen.md)). Direct answer and document retrieval can reach about 100 rows within the mix. With your approval, the agent downloaded the GSM8K test file and screened it. Calculation can now reach about 100 rows as well. At your request the agent also downloaded and screened eight BFCL parallel and irrelevance files; they added about three lookup rows. Lookup is 11 to 24 rows short even if all 11 usable AI drafts are accepted.
 
-**Next:** your two decisions from the screen. Choose how to fill the lookup shortfall (for example, writing your own lookup queries, which the brief already allows). Decide whether the 16 borderline BFCL rows count as lookup. Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
+At your request the agent drafted 30 AI lookup candidates in request types other than keyed-record lookups ([draft record](evidence/lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the lookup gap.
+
+**Next:** label the 30 drafts in the local `data/raw/lookup-drafts-ai-2026-10-26/worksheet.md`, with your own label and rationale for each, or an exclusion. Decide whether the 16 borderline BFCL rows count as lookup. Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
