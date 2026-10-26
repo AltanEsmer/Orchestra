@@ -16,7 +16,7 @@ Collect from these sources only. Each needs a `data/manifests/sources.json` entr
 | Dolly 15k | CC BY-SA 3.0 | Instruction only; any passage stays a linked attachment outside router input (the approved adapter) |
 | BFCL v3 | Apache-2.0 | User text only; no function docs, expected calls, or system messages |
 | No Robots | CC BY-NC 4.0 | Prompt text only; in passage categories, the passage is split off as a linked attachment, as for Dolly |
-| GSM8K | MIT, to be confirmed with the pinned revision | Question text only; no worked solution or answer |
+| GSM8K | MIT, confirmed October 26 at revision `740312ad` | Question text only; no worked solution or answer |
 
 On October 26, 2026, Altan chose the recommended per-class mix: "Go with the recommended mix without screening first and update the brief." Each class keeps its M1 public source as the main source and adds a second one so that no source exceeds 75 percent:
 
@@ -27,7 +27,7 @@ On October 26, 2026, Altan chose the recommended per-class mix: "Go with the rec
 | Calculation | BFCL | GSM8K word problems |
 | Knowledge lookup | BFCL, remaining read-only lookups | Altan-authored queries and the pending AI drafts |
 
-This choice also extends the attachment adapter to No Robots and selects GSM8K as a new source. GSM8K is adopted once its license and pinned revision are recorded in the source manifest; no GSM8K file has been downloaded. Capacity was not screened before this choice. If a source cannot fill its share, the agent reports the shortfall and Altan decides the top-up. The agent does not switch sources on its own. Text-to-SQL corpora were not chosen for lookup because their questions usually do not name the database, which the guide marks as missing context. This reason has not been checked by a screen.
+This choice also extends the attachment adapter to No Robots and selects GSM8K as a new source. GSM8K is adopted once its license and pinned revision are recorded in the source manifest. Both were recorded on October 26 (MIT, from the dataset card and OpenAI's repository LICENSE); no GSM8K file has been downloaded. Capacity was not screened before this choice. If a source cannot fill its share, the agent reports the shortfall and Altan decides the top-up. The agent does not switch sources on its own. Text-to-SQL corpora were not chosen for lookup because their questions usually do not name the database, which the guide marks as missing context. This reason has not been checked by a screen.
 
 Keep public text as written. Do not rewrite it to fit a label; skip it instead. Adding any other public corpus requires Altan's adoption and a recorded change to this brief before its rows are collected. Public rows are not covered by the repository's MIT license, and their attribution must travel with the data.
 

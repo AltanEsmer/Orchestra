@@ -38,5 +38,15 @@
     "file_sha256": "60707b2636a46e37bb0c1e9ca263a18553f430317b7a53c691676d6a492fc0f2",
     "adoption_date": "2026-10-26",
     "adoption": "Adopted by Altan Esmer on 2026-10-26."
+  },
+  "gsm8k": {
+    "author": "Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, Christopher Hesse, John Schulman (OpenAI, Grade School Math 8K)",
+    "created": "2021-10-27",
+    "license": "MIT. Notice: Copyright (c) 2021 OpenAI. Confirmed in the dataset card at the pinned revision and in the LICENSE of github.com/openai/grade-school-math (commit 3101c7d5072418e28b9008a6636bde82a006892c). Imported rows keep this notice.",
+    "description": "Grade-school math word problems, main configuration. Question text only; the worked solution and final answer are never router input or stored with rows.",
+    "url": "https://huggingface.co/datasets/openai/gsm8k",
+    "revision": "740312add88f781978c0658806c59bc2815b9866",
+    "adoption_date": "2026-10-26",
+    "adoption": "Selected by Altan Esmer on 2026-10-26 in the collection brief, which adopts it once license and pinned revision are recorded. No file downloaded yet; file_sha256 is added after an approved download."
   }
 }
