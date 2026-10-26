@@ -1,5 +1,7 @@
 # Guide-v2 public import candidates
 
+> **Update, October 26.** Altan approved all proposed labels. The blind AI check agreed on 90 of 90, 35 rows are accepted, and 55 flagged rows await his adjudication. See the [review record](public-review-v2.md).
+
 Prepared October 26, 2026, after Altan approved the guide-v2 pilot regrouping and the Dolly attachment adapter, and asked to import Dolly for document retrieval, BFCL for lookup and calculation, and No Robots for direct answer. This is a candidate import, not a release. All 90 new rows are `needs_review` with a null label. The agent's proposed label for each row sits in a local worksheet until Altan records his own.
 
 ## What was imported

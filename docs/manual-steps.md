@@ -12,7 +12,9 @@ No pilot group questions remain. Next, the agent prepares the licensed public-so
 
 The October 26 [expansion screen](evidence/public-expansion-screen.md) finds plenty of public rows but few new request templates. Even if every proposal were accepted, document retrieval would reach about 8 groups and lookup about 6, short of 15. Guide v2 removes that bottleneck. Altan approved the regrouping and the Dolly attachment adapter and adopted the three sources. The [import record](evidence/public-import-v2.md) lists 90 candidates.
 
-**Your next step:** open the local `data/raw/import-v2/review-worksheet.md` and reply with "approve all" plus any exceptions, such as `q0057: exclude, reason` or `q0083: calculation`. Look closely at the 27 flagged rows. Your answers become the primary labels. A blind AI check and adjudication of any disagreements follow, then the readiness check.
+Altan approved all 90 proposed labels. The blind AI check agreed on every label; 35 clear rows are accepted and 55 rows carry an AI flag or an ambiguous judgment ([review record](evidence/public-review-v2.md)).
+
+**Your next step:** open the local `data/raw/import-v2/adjudication-worksheet.md` and reply "accept recommendations" plus any exceptions, such as `q0068: exclude, reason` or `q0118: knowledge_lookup`. Look closely at the three live or sensitive lookups and the two proposed group merges. Then the readiness check runs.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

@@ -805,3 +805,13 @@ Trace: q0081 is BFCL `sql_61`: "What is the average age of the customers from th
 Practice questions, unanswered: (1) Why is q0081 lookup and not calculation, even though it asks for an average? (2) Why do q0079 and q0081 share a group even though one filters and the other aggregates? (3) Fifteen lookup rows use SQL words like "table" and "column". If the model learned "table means lookup", which validation result would reveal it? Learning statuses remain unchanged.
 
 Verification: see the handoff. The combined 128-row file passes the validator. No code, dependency, or schema changed.
+
+## Import labels approved and blind AI check, October 26, 2026
+
+Altan said: "Approve all proposed labels in the review worksheet." The 90 candidates took the agent's proposals as primary labels under A1, disclosed as agent-proposed and human-confirmed. A fresh `claude-opus-5-5` subagent then labeled the shuffled queries without seeing any label and agreed on all 90. It is the same model family as the proposing agent, so this is consistency, not independent validation. Thirty-five clear, unflagged rows are accepted. The other 55 carry an AI flag or an ambiguous judgment and wait for Altan's adjudication, with an agent recommendation for each. The [review record](evidence/public-review-v2.md) has the counts, categories, and hashes.
+
+Trace: q0118 asks "What is the fastest flying bird?" Altan approved `direct_answer`, and the AI chose the same label but marked it ambiguous because no source is named and a careful annotator might choose lookup. Under the guide's default rule a stable fact without a named structured source is `direct_answer`, so the agent recommends keeping it. The row stays `needs_review` until Altan decides.
+
+Practice questions, unanswered: (1) The AI agreed on 90 of 90. Name two reasons that number overstates label quality. (2) Why does q0118 need Altan's decision even though both labels match? (3) If Altan excludes q0065, q0068, and q0069, which readiness check fails, and what would fix it? Learning statuses remain unchanged.
+
+Verification: see the handoff. The 128-row file passes the validator with the new ledger. Readiness fails only on pending adjudications and class counts. No code, dependency, or schema changed.
