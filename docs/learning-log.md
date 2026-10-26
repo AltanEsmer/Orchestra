@@ -197,7 +197,7 @@ Next practice should start with the purpose of routing, one everyday query, and 
 
 ## Topic ledger and question bank
 
-The data-contract and leakage/grouping rows currently have status **needs practice**, limited to the introductory terminology discussed above. Every other row is **not yet reviewed**. Prioritize the first three rows for the next session.
+The data-contract row remains **needs practice**. On October 25, Altan explained in his own words how related training/test variants can inflate a score: the grouping-related optimism mechanism is **explained independently** for that question after instruction. The broader leakage/grouping topic remains **needs practice** until split-before-fitting and other leakage controls are attempted. Every other row is **not yet reviewed**. Prioritize the first three rows for the next session.
 
 | Topic and course connection | Question or manual exercise | Follow-up milestone |
 | --- | --- | --- |
@@ -579,3 +579,181 @@ All forty original queries, labels, rationales, and groups now exist in the loca
 The data-source work merged in PR #18 as `d88de371cfabd7e199aecef8ee4be2cbc7ebbb9d`, preserving commits `d1f2114` and `11d8089`. Independent Spec and Standards checks passed, and PR CI passed the full artificial reproduction workflow. The later method selection is a separate verifiable change. Overall completion remains approximately 30%; schema support and AI agreement do not supply accepted data, research metrics, final report prose, or learning evidence.
 
 Integrated method verification: `sh scripts/check.sh` passed all 208 tests in 22.025 seconds, smoke, lint, formatting for 52 files, and whitespace checks. The desktop LaTeX compiler successfully compiled the updated report template. Spec and Standards reviewers independently verified the actual forty draft/ledger rows, prompt/guide/input/output hashes, legacy behavior, pending-adjudication rules, and local links; both returned PASS and independently passed the 48-validator/9-study focused tests. The actual draft validator reports forty valid pending rows, zero accepted rows, zero human-review entries, and forty AI matches. `orchestra status` correctly remains not ready.
+
+## Tank clarification recorded, October 25, 2026
+
+Altan stated: "I meant 60 litres currently inside the tank. Record that and guide me through the next flagged query." The agent recorded an actual A1 adjudication for q0033, retaining `calculation`, and preserved the original query, label, rationale, group, AI decision, and historical flag. The other thirty-nine ledger entries are unchanged. Current contents provide the starting number; subtracting the stated usage gives 42 litres. This arithmetic trace is an agent explanation, not a student calculation or broader teach-back evidence. Learning statuses remain unchanged.
+
+The manual path, evidence, roadmap, and walkthrough now point to q0014’s teaching-example similarity. Its provenance question remains unanswered, as do final grouping decisions. All forty rows remain pending and zero are accepted. No experiment or source adoption occurred.
+
+Verification: the actual pilot/review validator passed all forty draft rows; the dataset hash is unchanged and the ledger now has exactly one human adjudication with q0014 still pending. `sh scripts/check.sh` passed: 208 tests in 18.345 seconds, environment smoke, Ruff lint, formatting for 52 files, and whitespace checks. No new tests were added for this evidence-only update. Changes are local, awaiting the next review decisions before a consolidated documentation handoff.
+
+## Teaching-example adaptation confirmed, October 25, 2026
+
+Altan stated: "I adapted it from the teaching example. Record that and guide me through what we should do with it next." The agent recorded q0014’s actual provenance without inventing a final exclusion decision. The existing annotation guide reserves teaching examples for practice, and this log already keeps their paraphrases outside the research dataset. The recommendation is to exclude q0014 from research while preserving its original record and using it for practice. The next human step is that treatment decision, then grouping review. No routing teach-back or change to learning status is inferred from the provenance answer.
+
+Both dataset and review ledger remain unchanged in this step: forty pending rows, zero accepted, q0033 adjudicated, q0014 still awaiting treatment. No experiment ran.
+
+Verification: exact reply saved locally; dataset and ledger hashes remain unchanged. Draft/review validation passed forty rows. Environment smoke, Ruff lint, formatting for 52 files, and diff whitespace checks passed. The full unit suite was not rerun for this documentation/provenance-only update; the preceding q0033 step passed all 208 tests.
+
+## Practice-only exclusion and first group, October 25, 2026
+
+Altan stated: "Yes, exclude q0014 from the research dataset and keep it for practice. Record that and guide me through the first query group." The agent recorded the actual A1 exclusion with null adjudicated/resolved label and `excluded` dataset status. The original full row remains in the local exclusion evidence for practice; text, original labels, and AI evidence are preserved. Other rows and reviews are unchanged. There are 39 pending candidates, one excluded practice row, and zero accepted rows. Both individual flags are adjudicated, but grouping and guide v1 remain unfinished.
+
+The first shared group presented is g002: q0002 summarizes a return policy from a handbook; q0007 summarizes safety rules from a handbook. The agent proposes retaining one template family to avoid close variants spanning training and evaluation. Altan has not yet answered that grouping question. This proposal is an explanation, not student understanding evidence; learning statuses remain unchanged. No experiment ran.
+
+Verification: actual dataset/review validation passed forty records, reporting 39 pending and one excluded. Before/after comparisons confirmed that only q0014 changed in each file. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. The full unit suite was not rerun for this evidence/data-state update; no validator behavior changed. Documentation remains local for the consolidated pilot-review handoff.
+
+## Handbook-summary group confirmed, October 25, 2026
+
+Altan stated: "Keep them in one group because they use the same template, just with different handbooks and topics. Record that and guide me through the next group." This confirms retaining q0002 and q0007 in g002. Existing IDs already match his decision; dataset and label-review ledger bytes remain unchanged. The exact response and hashes are retained locally in the g002 decision record, separate from label adjudication.
+
+Altan correctly identifies the shared template despite changes in subject and handbook. This is supported grouping practice after the agent’s recommendation, not an independent demonstration of split leakage or mastery of the whole topic. Existing broader learning statuses remain unchanged. Next shared group is g004, comparing two “explain the difference” requests; its human decision remains pending. Cross-group review is still required. Counts remain 39 pending, one excluded practice row, and zero accepted; no experiment ran.
+
+Verification: g002 member IDs and unchanged dataset/ledger hashes checked directly; draft/review validation passed forty records. Environment smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only change. Updates remain local for the consolidated pilot-review handoff.
+
+## Difference-explanation group confirmed, October 25, 2026
+
+Altan stated: "Keep them together because they use the same “explain the difference” template, just with different topics. Record that and guide me through the next group." This records a genuine decision to retain q0004 and q0008 in g004. Existing membership already matches; dataset and label-review ledger bytes remain unchanged. The exact reply and file hashes are retained in the local g004 decision record.
+
+Altan correctly recognizes the shared template across different topics without a recommendation in the immediately preceding question, following the supported g002 example. This is successful transfer to another close grouping example; it does not yet demonstrate the effect on evaluation or establish broader split mastery. Existing topic statuses remain unchanged pending that explanation. Next is g005’s three quantity calculations; its grouping decision remains open. Counts remain 39 pending, one excluded practice record, zero accepted. No experiment ran.
+
+Verification: g004 membership and unchanged dataset/ledger bytes checked directly. Actual draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Amount-per-unit group confirmed, October 25, 2026
+
+Altan stated: "Keep all three together because they use the same amount-per-unit times number-of-units pattern, just in different situations. Record that and guide me through the next group." This genuinely confirms retaining q0005, q0012, and q0029 in g005. The exact reply and file hashes are retained locally; dataset and label-review ledger bytes remain unchanged because existing membership already matches.
+
+Altan identified the common quantitative pattern across tickets, laps, and recipe batches without a recommendation in the preceding question. This is successful transfer beyond the repeated wording of g004. It supports grouping recognition for this example, but does not yet demonstrate split-leakage consequences or broader split mastery. Existing topic statuses remain unchanged pending that explanation. Next is g007’s politeness and shortening requests; the human decision is pending. Counts remain 39 pending, one excluded practice row, zero accepted. No experiment ran.
+
+Verification: g005 membership and unchanged dataset/ledger bytes checked directly. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Provided-sentence rewriting group confirmed, October 25, 2026
+
+Altan stated: "Keep them together because both rewrite a sentence already provided, even though one changes politeness and the other changes length. Record that and guide me through the next group." The actual decision retains q0009 and q0018 in g007. The exact reply and hashes are preserved in the local g007 decision record. Existing membership already matches, so dataset and label-review ledger bytes remain unchanged.
+
+Altan recognizes the common provided-sentence rewriting task while acknowledging different transformations. This supports his stated conservative grouping choice; it does not establish independent understanding of evaluation leakage or imply that a shared label alone defines a group. Broader learning statuses remain unchanged. Next is g015’s two-document comparisons; singleton and cross-group checks also remain open. Counts remain 39 pending, one excluded practice row, zero accepted. No experiment ran.
+
+Verification: g007 membership and unchanged dataset/ledger bytes checked directly. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Two-document comparison group confirmed, October 25, 2026
+
+Altan stated: "Keep them together because both compare information from two documents, just on different topics. Record that and guide me through the next step." This genuinely confirms retaining q0019 and q0031 in g015. The exact reply and hashes are preserved locally. Dataset and label-review ledger bytes remain unchanged because membership already matches. All five current multi-row groups now have human decisions.
+
+Altan identifies the common two-document comparison task across different topics. This is another actual grouping rationale; broader split understanding remains unverified until he explains evaluation consequences. Existing topic statuses remain unchanged. Next is a cross-group check of q0003, q0011, and q0016, currently separate but each requesting a field from an identified structured record. No merge or answer is inferred. Counts remain 39 pending, one excluded practice row, zero accepted. No experiment ran.
+
+Verification: g015 membership and unchanged dataset/ledger bytes checked directly. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Single-record lookup families merged, October 25, 2026
+
+Altan stated: "Merge them into one group because each asks for one piece of information from a specific record in a catalog or database. Record that and guide me through the next step." The agent applied the actual decision using g003 for q0003, q0011, and q0016. Only q0011 and q0016 changed group IDs; g009/g013 are retired with the previous mapping and hashes retained in local merge evidence. All text, labels, remaining fields, and label-review ledger bytes are preserved. The draft now has 32 provisional groups including the excluded practice group, not 32 accepted independent groups.
+
+Altan recognizes the shared one-field lookup pattern across different structured sources. This is supported cross-group practice after the agent identified the pattern; it does not yet demonstrate independent leakage reasoning. Broader learning statuses remain unchanged. Next is q0024’s sorted book list versus q0040’s earliest booking. Counts remain 39 pending, one excluded practice row, zero accepted. No split or experiment exists.
+
+Verification: before/after comparison confirmed exactly two group-ID changes, preserved all other row fields, and confirmed unchanged review-ledger bytes. Actual draft/review validation passed forty records, including the three-row merged family within the four-row cap. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Record-ordering families merged, October 25, 2026
+
+Altan stated: "Keep them together because both order records by a field, even though one returns a sorted list and the other selects the earliest record. Record that and guide me through the next step." The actual decision merges q0024 and q0040 into g020. Only q0040 changed group ID; g034 is retired with history and hashes retained locally. All other fields, rows, and review-ledger bytes are preserved. The draft now has 31 provisional groups including the excluded practice group.
+
+Altan identifies ordering by a field as the shared pattern despite different outputs. This supports the recorded conservative grouping decision; a common operation alone is not a universal rule to merge all queries. Broader split-understanding status remains unchanged pending evaluation reasoning. Next is q0020’s room filter versus q0032’s breakfast-booking count; no grouping decision is inferred. Counts remain 39 pending, one excluded practice row, zero accepted. No experiment ran.
+
+Verification: before/after comparison confirmed only q0040’s group ID changed, with all other fields/rows and review-ledger bytes unchanged. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Record-filtering families merged and purpose explained, October 25, 2026
+
+Altan stated: "Keep them together because both filter records by a condition, even though one lists the matches and the other counts them. Record that and guide me through the next step.
+
+And tell me what is all this about" The actual decision merges q0020 and q0032 into g016. Only q0032 changed group ID; g026 is retired with history and hashes retained locally. All other fields/rows and review-ledger bytes are preserved. There are 30 provisional groups including the excluded practice group.
+
+Altan identifies filtering by a condition as the shared pattern and asks what the overall activity is for. Explain before continuing: the router predicts the first action; groups keep related templates in one split to reduce optimistic evaluation from similar training examples. A shared operation alone does not universally require merging, and broader grouping reduces independent sample counts. This explanation is agent-supplied, not evidence that Altan can explain leakage independently. Existing topic statuses remain unchanged. Next is the translation pair q0023/q0026, with no grouping answer inferred. Counts remain 39 pending, one excluded practice row, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0032’s group ID changed, preserving all other fields/rows and review-ledger bytes. Draft/review validation passed forty records. Smoke, Ruff lint, and formatting for 52 files passed. The initial whitespace check caught trailing whitespace in the quoted reply; it was removed from the Markdown while the exact reply remains in local evidence. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Translation family merged across labels, October 25, 2026
+
+Altan stated: "Keep them together because both ask for translation, even though one needs the document first and the other already provides the text. Record that and guide me through the next step." The actual decision merges q0023 and q0026 into g019. Only q0026 changed group ID; g022 is retired with mapping and hashes retained locally. Both first-action labels and all other row fields remain intact, as does the review ledger. Both members have AI review entries. There are 29 provisional groups including the excluded practice group.
+
+Altan distinguishes the common translation task from the different first-action dependencies after those were explained by the agent. This supports grouping/label distinction in this example; evaluation-leakage reasoning is still unverified independently. Existing broader topic statuses remain unchanged. Next is q0034’s supplied-word sorting versus existing g020’s record ordering; no answer is inferred. Counts remain 39 pending, one excluded practice row, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0026’s group ID changed, with all other fields/rows and review-ledger bytes unchanged. Both mixed-family members have review entries. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Supplied-word sorting added to ordering family, October 25, 2026
+
+Altan stated: "Keep q0034 in the ordering group because it also sorts items, even though the words are already provided. Record that and guide me through the next step." The agent applied the actual decision by changing only q0034’s group ID from g028 to g020. Its direct-answer label remains unchanged, alongside the two lookup labels in the family. All three members have AI review entries; the ledger is unchanged. Mapping history and hashes are retained locally. There are 28 provisional groups including the excluded practice group.
+
+Altan recognizes the shared ordering task across different input availability after the comparison was presented. This supports the recorded family choice; broader leakage understanding remains unverified independently. Existing topic statuses remain unchanged. Next is q0010/q0027’s specific guidance from named camp documents; no decision is inferred. Counts remain 39 pending, one excluded practice row, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0034’s group ID changed; every other field/row and review-ledger byte is unchanged. All three mixed-family members have review entries. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Document-guidance families merged, October 25, 2026
+
+Altan stated: "Keep them together because both ask for specific guidance from a named document, just about different things to bring. Record that and guide me through the next step." The actual decision merges q0010 and q0027 into g008. Only q0027 changed group ID; g023 is retired with mapping and hashes preserved locally. All remaining fields/rows and review-ledger bytes are unchanged. There are 27 provisional groups including the excluded practice group.
+
+Altan gives the shared document-guidance pattern as the reason, beyond the documents’ shared camp setting. This records his grouping rationale; independent evaluation-leakage understanding remains unverified. Existing topic statuses remain unchanged. Next is q0006’s lookup-before-cost request versus g005, with its four-row cap and the conversion boundary still to check. No group decision is inferred. Counts remain 39 pending, one excluded practice row, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0027’s group ID changed; all other fields/rows and review-ledger bytes remain unchanged. Draft/review validation passed forty records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Lookup-before-cost added to amount-per-unit family, October 25, 2026
+
+Altan stated: "Put q0006 in g005 because it uses the same price-times-quantity pattern, even though it needs a lookup first. Record that and guide me through the next step." The actual decision adds q0006 to g005 while preserving its lookup-first label. Only its group ID changed; g006 is retired with history and hashes retained locally. Other fields/rows and review-ledger bytes remain unchanged. All four g005 members have review entries. There are 26 provisional groups including the excluded practice group.
+
+Altan distinguishes the common price-times-quantity pattern from its lookup dependency after the comparison was presented. Broader independent leakage reasoning remains unverified, so topic statuses remain unchanged. Next is q0037’s unit-conversion boundary. g005 is at the four-row cap; explain that semantic relatedness comes first and any excess-row decision must be explicit. No answer, exclusion, or cap change is inferred. Counts remain 39 pending, one excluded practice row, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0006’s group ID changed; all other fields/rows and review-ledger bytes remain unchanged. All four mixed-family members have review entries. Draft/review validation passed forty records, including the four-row group cap. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Fifth amount-per-unit family member confirmed, October 25, 2026
+
+Altan stated: "Put q0037 in the same family because it also multiplies an amount by a per-unit factor. Record that and guide me through how to handle the four-query limit." The agent recorded the actual semantic decision that q0037 belongs to g005’s family. This makes five related queries. Dataset and label-review ledger bytes remain unchanged pending the four-row-cap treatment; g031 is an unresolved storage mapping, not an independent family decision. No split or release may use it to separate known relatives.
+
+The agent recommends keeping the existing four research candidates and retaining the later q0037 for practice only, based on collection order before model results. The exact family decision and hashes are preserved locally; no exclusion decision has yet been made. The validator counts all stored rows, so the future study subset must have four family members while the original practice record/review remains archived. This is a sampling limitation, not a reason to invent independence or silently change the cap. Existing learning statuses remain unchanged. Counts remain 39 pending, one excluded, zero accepted; no experiment ran.
+
+Verification: exact five-member family decision saved with current hashes; dataset and ledger bytes remain unchanged. Draft/review validation passed the stored forty-row draft, which does not resolve its pending semantic mapping or establish readiness. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Unit-conversion practice exclusion recorded, October 25, 2026
+
+Altan stated: "Yes, keep q0037 for practice only and exclude it from the research collection. Record that and guide me through the next step." The agent recorded the actual A1 exclusion and g005 family relationship for q0037, retiring g031. The complete forty-ID audit and review snapshots remain in ignored data/raw with both practice-only exclusions. Current research pilot/ledger paths contain 38 pending candidates/reviews; zero accepted. Retained research records are unchanged. g005 now has four research rows while the audit honestly preserves five related queries. The exact reply, original record, audit paths, and hashes are preserved in the local exclusion evidence.
+
+This is a real sampling decision based on the recorded family cap and collection order, not model performance. No query was rewritten, deleted from history, or split into a false independent family. Broader learning statuses remain unchanged. Next is q0028’s lighter-tent comparison versus g020; no answer is inferred. No experiment ran.
+
+Verification: complete forty-ID audit and review snapshots saved with hashes; retained research rows/reviews compare unchanged against the preceding collection. Draft/review validation passed 38 rows with 38 AI matches and zero accepted. g005 has four research members; the historical fifth is retained in the separate audit. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. The runbook documents the current paths and exclusion counts. Documentation remains local for consolidated pilot-review handoff.
+
+## Lighter-tent selection added to ordering family, October 25, 2026
+
+Altan stated: "Put q0028 in g020 because choosing the lighter tent also orders items by a field and selects one. Record that and guide me through the next step." The agent applied the actual decision by changing only q0028’s group ID from g024 to g020. g020 now has four research members, with original labels preserved and review entries for each member. All other fields/rows and review-ledger bytes are unchanged. The mapping and hashes are retained locally; the earlier audit remains a dated snapshot. There are 23 provisional research groups.
+
+Altan identifies ordering by a field and selection as the common pattern, supporting this conservative family decision. Existing broader learning statuses remain unchanged pending independent evaluation reasoning. Next is q0015’s lesson duration versus q0033’s remaining-water calculation; no answer is inferred. Counts remain 38 pending, two historical practice-only exclusions, zero accepted. No experiment ran.
+
+Verification: before/after comparison confirmed only q0028’s group ID changed, preserving all remaining fields/rows and review-ledger bytes. All four mixed-family members have review entries. Draft/review validation passed 38 records and the four-row cap. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Difference-calculation families merged, October 25, 2026
+
+Altan stated: "Keep them together because both calculate a difference using values already provided, even though one involves time and the other water. Record that and guide me through the next step." The actual decision merges q0015 and q0033 into g012. Only q0033 changed group ID; g027 is retired with prior mapping and hashes retained locally. Both labels and the earlier tank-contents adjudication remain unchanged, as do other fields/rows and review-ledger bytes. There are 22 provisional research groups.
+
+Altan identifies a shared difference-calculation pattern across time and volume. This is his actual conservative grouping rationale, not evidence that he can independently explain evaluation leakage. Pause pair review for one question: what could happen to the test score if close variants from one family occur in both training and test? The answer remains pending; let him attempt it before giving the worked explanation. Existing topic statuses remain unchanged. Remaining boundary checks and guide v1 stay open. Counts remain 38 pending, two practice-only exclusions, zero accepted; no experiment ran.
+
+Verification: before/after comparison confirmed only q0033’s group ID changed, preserving all other fields/rows and review-ledger bytes, including its earlier adjudication. Draft/review validation passed 38 records. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this annotation-state update; implementation is unchanged. Documentation remains local for consolidated pilot-review handoff.
+
+## Grouping purpose explained by Altan, October 25, 2026
+
+Altan stated: "It could make the test score look higher because the model has already seen a similar pattern, so it may not show how well it handles genuinely new queries. Record that and guide me through the next step." This correctly explains why close variants across training and test can make a score optimistic without establishing performance on genuinely new requests. Record the mechanism as **explained independently** in this response after prior instruction. This is actual learning evidence, distinct from passing tests and agreeing to group memberships. The broader leakage topic remains **needs practice**: split-before-fitting, vocabulary leakage, and model-selection leakage have not been attempted. No broader mastery is inferred. The exact reply and current hashes are retained locally.
+
+Next is a remaining document-task boundary: q0039 turns handbook instructions into a checklist, compared with g002’s summaries of handbook content. Ask whether the transformation warrants a separate family or belongs with the summary family, and why. No answer or group change is inferred. Dataset/review bytes remain unchanged: 38 pending research candidates, two practice-only exclusions in history, 22 provisional research groups, zero accepted. No experiment ran.
+
+Verification: exact response and current hashes saved; dataset and review-ledger bytes remain unchanged. Draft/review validation passed 38 rows. Smoke, Ruff lint, formatting for 52 files, and whitespace checks passed. Full unit suite not rerun for this learning-evidence-only update. Documentation remains local for consolidated pilot-review handoff.
+
+## Final pilot grouping decisions and guide v1, October 26, 2026
+
+Altan supplied all eight remaining decisions and defined a group as a shared request template: the same user goal solved by the same procedure, whatever the scenario. He explicitly rejected shared arithmetic operation or label as sufficient. He distinguished summarization from preserving steps in a checklist, allocation from averaging, geometry from amount-per-unit scaling, and discounts from the existing arithmetic families. He kept three different writing goals separate. He joined named-document content extraction, concept explanations, and key-based existence checking to their stated families. These actual answers show reasoned use of goal/procedure/output boundaries across the pilot; they do not demonstrate feature fitting, test-set selection, or broad ML mastery.
+
+The agent applied only three group-ID changes (q0035 to g008, q0013 to g004, q0036 to g003), froze guide v1, and marked 38 eligible pilot rows accepted under the completed review. Original text, first-action labels, rationales, source IDs, and annotators are unchanged. The label-review ledger is unchanged. q0014 and q0037 remain practice-only with actual exclusions retained in the dated forty-ID audit and later decision records. The historical filename `pilot-v0.jsonl` remains the CLI path; row metadata now says `guide-v1`. This is the accepted pilot, not the 120-row release.
+
+There are 19 shared request templates. Calculation has 9 rows/6 groups; document retrieval 9/5; lookup 10/4; direct answer 10/7. Group counts overlap where a family has different labels. The broader grouping reduces independent evidence. The agent recorded the possible word “handbook” cue for later validation error analysis without claiming any observed effect or changing wording. The study protocol, collection brief, manual guide, roadmap, walkthrough, report prompt, and methods preview now reflect the user’s rule.
+
+The [pilot record](evidence/pilot-guide-v1.md) links actual evidence. The local final human message is retained with Markdown emphasis/code formatting removed, and that normalization is disclosed. Normalized decisions and before/after artifacts are under ignored `work/poteto/pilot-guide-v1/`. Actual `orchestra status` exits 1 with only collection coverage blockers: 38 versus 120 total, per-class rows below 30, and per-class groups below 15. It reports no pending pilot review case. No model ran. Next is licensed public-source adoption and annotation, followed by expansion; no more pilot group questions are outstanding.
+
+Overall completion is approximately 35% using the same planning weights: design/tooling 100% of 25%, data 30% of 25%, experiments 0% of 20%, interpretation 0% of 10%, report 10% of 15%, final research reproduction/submission 0% of 5%. The sum is 34%, rounded to the nearest five points. This is a planning judgment, not a measured effort or course mark. The October 25 M2 target has passed; no unsupported replacement dates are assigned.
+
+Integrated verification: `sh scripts/check.sh` passed 208 tests in 17.129 seconds, smoke, Ruff lint, formatting for 52 files, and whitespace checks. Actual data validation passed 38 accepted rows; status returned the expected size/coverage blockers only. The desktop compiler successfully compiled the changed report prompt. No application code, dependencies, or schema changed; no new tests were needed for annotation metadata. The methods preview source is updated, while the full M1 PDF edition remains unexported and is not claimed complete. Independent Spec and Standards review caught stale current-state paragraphs in the runbook/roadmap; these were corrected before handoff.
+
+Independent Spec and Standards review both returned PASS. The Spec reviewer ran actual pilot validation/status and checked original-field preservation; Standards checked 134 relative Markdown link targets and whitespace. Both verified that the full M1 PDF remains an outstanding milestone deliverable. Origin could not resolve this repository, so shipping uses the authenticated GitHub CLI fallback. This review is software/document evidence from the same GPT family, not another human annotator.

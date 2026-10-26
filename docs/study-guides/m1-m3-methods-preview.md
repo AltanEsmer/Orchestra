@@ -113,3 +113,9 @@ These prompts remain stored for later practice. Record Altan's attempt before gi
 1. A new query asks for a price in a named catalog and then a percentage discount. Explain the first action and the information needed before calculation.
 2. Two research queries describe the same fictional order using different words. Explain their group assignment, then explain what training may learn that validation must not change.
 3. A future comparison shows better accuracy but worse macro-F1. Explain what class-level evidence you need before preferring that model, and why the sealed test cannot settle a tuning decision.
+
+## Pilot update, October 26, 2026
+
+Guide v1 defines a group as a shared request template: the same user goal solved by the same procedure, whatever the scenario. Sharing an operation or label is insufficient. The reviewed pilot has 38 accepted rows across 19 templates and two practice-only exclusions. These broader template families reduce independent group counts. The [pilot record](../evidence/pilot-guide-v1.md) gives class counts, hashes, actual human decisions, and the remaining 120-row coverage gate. Earlier preparation descriptions above are historical and do not override this observed pilot state. No research split, model result, or M1 completion is claimed.
+
+For a concrete trace, a key-based existence query now shares a template with specific-record field lookups. Both use knowledge lookup first. That family has four pilot rows and remains one unit during any later split. A translation family contains two first-action labels because one request supplies its text and the other needs a document. A group is therefore not a target class. This is an agent explanation, not a new student response.
