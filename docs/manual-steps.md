@@ -28,9 +28,11 @@ The agent recorded GSM8K's license (MIT) and pinned revision and screened each s
 
 At your request the agent drafted 30 AI lookup candidates in request types other than keyed-record lookups ([draft record](evidence/lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the lookup gap.
 
-On October 28 you asked to complete M3 and chose to review an import. The agent imported 312 candidates in a fixed order, ran the batch checks, and ran a blind AI check that stays sealed until your labels exist ([import record](evidence/m3-import.md)). It replaces the separate draft worksheet.
+On October 28 you asked to complete M3 and chose to review an import. The agent imported 312 candidates in a fixed order, ran the batch checks, and ran a blind AI check that stayed sealed until your labels existed ([import record](evidence/m3-import.md)). It replaces the separate draft worksheet.
 
-**Next:** label the 312 rows in the local `data/raw/m3-import/review-worksheet.md`. "approve all" plus exceptions works. Say whether the 16 borderline BFCL rows count as lookup, and confirm or exclude the 41 AI drafts. Then the agent ingests the AI check, you adjudicate its flags, and the agent freezes the M3 release and runs the 14 configurations. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
+You adopted an AI reviewer's judgments as your A1 labels. The blind check gave the same label on 300 of 302 labelled rows, and 238 rows are accepted.
+
+**Next:** adjudicate the 71 rows in the local `data/raw/m3-import/adjudication-worksheet.md`. "accept all recommendations" plus exceptions works. Then the agent freezes the M3 release and runs the 14 configurations. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

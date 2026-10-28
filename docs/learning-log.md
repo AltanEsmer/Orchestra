@@ -948,3 +948,13 @@ Trace: q0140 comes from a No Robots closed-QA prompt. It asks whether a statemen
 Practice prompts, unanswered: (1) Why fix the judging order before judging, instead of picking the clearest rows? (2) Three classes sit exactly at 75 of 100 rows from their main source. What happens to that limit if a second-source row is rejected and no reserve replaces it? (3) Why does the blind check's output stay sealed until the labels exist? Learning statuses remain unchanged.
 
 Limitations: the agent wrote every proposed label, so approving proposals carries anchoring risk. The cue limit was chosen after seeing projected counts. The blind check is AI consistency, not human agreement.
+
+## M3 labels adopted and blind check ingested, October 28, 2026
+
+Altan pasted review judgments on the 312-row worksheet that, by its own statement, came from an AI reviewer. Asked how to treat them, he chose "Adopt as my A1 labels" and said the reviewer did not read the sealed blind-check files. The judgments approve the proposals except three exclusions, count 9 of the 16 borderline BFCL rows as lookup, and exclude the other 7. The blind check then gave the same label on 300 of the 302 labelled rows and a different label on none. 238 clear agreements are accepted, and 64 rows wait for his adjudication. The [import record](evidence/m3-import.md#labels-and-blind-check-october-28) holds the counts and hashes.
+
+Trace: q0241 asks for the latest readings of all temperature and humidity sensors on a named office network. The adopted judgment counts the whole sensor group as lookup, because it reads recorded readings. The blind reviewer would exclude q0241, because "latest" reads as live data that no tool provides. Both readings follow the guide. The difference is whether "latest" means the newest stored record or the live state now. The adjudication worksheet puts that question back to Altan.
+
+Practice prompt, unanswered: The labels and the blind check agree on 300 of 302 rows, but the labels are the agent's proposals approved through another AI's review. What does that agreement show, and what can it not show? Learning statuses remain unchanged.
+
+Limitation: the A1 labels are human-adopted AI judgments, not human-written labels. The report must say so.
