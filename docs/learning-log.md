@@ -958,3 +958,16 @@ Trace: q0241 asks for the latest readings of all temperature and humidity sensor
 Practice prompt, unanswered: The labels and the blind check agree on 300 of 302 rows, but the labels are the agent's proposals approved through another AI's review. What does that agreement show, and what can it not show? Learning statuses remain unchanged.
 
 Limitation: the A1 labels are human-adopted AI judgments, not human-written labels. The report must say so.
+
+## M3 release, split and comparison, October 28, 2026
+
+Altan said "Accept all" to the adjudication worksheet. The agent froze the 400-row `m3-v1` release with its ledger, extended the M2 split to 242 training, 79 validation and 79 sealed test rows, and ran all 14 configurations twice. The runs reproduce byte for byte, and an archive restored into a new directory reproduced them again. Validation-only selection picks L1-C10, word counts with logistic regression at C 10, with macro-F1 0.925. L3 scored 0.923, within the 0.01 tie, so the simplicity order decided. The [run record](evidence/m3-research-run.md) holds the tables and hashes.
+
+- **Small differences.** 79 validation rows means one row moves accuracy by about 0.013. Most family differences are two rows or fewer. Only bigrams helped at every C.
+- **More data versus a better model.** On the 25 rows that were M2's validation set, L2-C1 made seven errors with 78 training rows and one error with 242. The model and its settings did not change.
+
+Trace: q0005, "A train ticket costs 45 kr. How much do three tickets cost?", is a validation row labelled `calculation`. In M2, `45`, `ticket` and `tickets` had no column, and L2 gave calculation 0.353. With 242 training rows the vocabulary holds 1,655 words, and only `ticket` is missing. L1-C10 now gives calculation 0.731, and `how`, `three`, `costs`, `cost` and `kr` push hardest toward it over direct answer. A training-only refit reproduced the saved scores exactly.
+
+Practice prompts, unanswered: (1) Why does the selection prefer L1-C10 over L3-C0.1 when L3 is within 0.01? (2) What does the drop from seven errors to one on the same 25 rows show that the 0.925 headline does not? (3) Why can 79 validation rows not separate counts from TF-IDF here? The [M3 guide](study-guides/m3-comparison.md) ends with five further questions. Learning statuses remain unchanged.
+
+Limitations: no test result, no human error inspection yet, one host and seed. The 272 new labels are human-adopted AI judgments, so the release has no human agreement figure.

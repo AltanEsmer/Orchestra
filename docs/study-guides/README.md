@@ -66,6 +66,19 @@ M1 and M2 editions exported on October 28, 2026. Both guides are delivered. Alta
 - Authoring: the export used ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored local exporter `work/study-pdf/export.py`. No PDF dependency was added to `pyproject.toml`.
 - Data exposure: both guides quote only Altan-authored rows, which his permission covers for public sharing. The M1 trace row q0036 is a training row and the M2 trace row q0005 is a validation row. No sealed test text appears.
 
+M3 edition exported on October 28, 2026. It is delivered. Altan's learning attempt on its checkpoint is pending, so it is not a closed-milestone snapshot yet.
+
+| Edition | Source | PDF, 16 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M3 | [M3 comparison](m3-comparison.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M3-comparison.pdf` | `660d58f2241a966a764af6a7bf25c5f3cea99e1476405517522bdf5378056e37` | `7840a3e0e7f11b3c03215c041f3b84a43c23dbbacfb49d9dc9381f1760641451` |
+
+- The sidecar `M3-comparison.manifest.json` records the repository commit at export (`9d909a3`) and the hash of every cited course PDF.
+- Drafting: an agent subagent drafted the source from the tracked M3 evidence, the code and `comparison.md`, and verified each lecture page it cites with `pdftotext` and rendered images. The lead checked every number against the run record, the F1 fractions and trace sums by hand, the code settings and selection rule against `experiment.py`, the protocol quote, and two cited lecture pages.
+- Trace check: the q0005 numbers come from a training-only refit of L1-C10, L2-C1 and B1, whose probabilities equal the saved `m3-a` values.
+- Verification: the lead inspected all 16 rendered pages and removed two page breaks that had left near-empty pages. A scripted check found every source word in the extracted text, except tokens that the extractor splits: 64-character hashes that wrap inside table cells, filenames that break at `%20`, and the `C 1` column header. With line breaks removed, each of those appears intact. Code-fence tags are not rendered. Two consecutive exports produced identical hashes.
+- Data exposure: the guide quotes only q0005, an Altan-authored validation row the M2 guide already quotes. No other query text and no sealed test text appears.
+- The M3 edition also cites `UTF-8''Lecture1-Introduction%20to%20Big%20Data%20Analytics.pdf`, SHA-256 `9f16e0d8d8fc24ca12a4c93e4cca3fcdb26bec5f8a6c80cece83e2ed0ed8e1ee`, which no earlier edition cites.
+
 Inspected course source revisions for the M0 edition. The M1 and M2 editions also cite the two files added below, which were first inspected on October 28, 2026:
 
 | File | SHA-256 |

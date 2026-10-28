@@ -30,9 +30,9 @@ At your request the agent drafted 30 AI lookup candidates in request types other
 
 On October 28 you asked to complete M3 and chose to review an import. The agent imported 312 candidates in a fixed order, ran the batch checks, and ran a blind AI check that stayed sealed until your labels existed ([import record](evidence/m3-import.md)). It replaces the separate draft worksheet.
 
-You adopted an AI reviewer's judgments as your A1 labels. The blind check gave the same label on 300 of 302 labelled rows, and 238 rows are accepted.
+You adopted an AI reviewer's judgments as your A1 labels and accepted every adjudication recommendation. The agent froze the 400-row release, ran all 14 configurations twice, and selected L1-C10 on validation ([run record](evidence/m3-research-run.md)).
 
-**Next:** adjudicate the 71 rows in the local `data/raw/m3-import/adjudication-worksheet.md`. "accept all recommendations" plus exceptions works. Then the agent freezes the M3 release and runs the 14 configurations. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
+**Next:** attempt the M3 checkpoint questions in the M3 study PDF, then close issue #6 when you are satisfied. M4 starts with your inspection of at least 20 validation errors. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 
