@@ -80,7 +80,7 @@ The `split` command checks structural validity but does not enforce the complete
 Before inspecting M2 errors, freeze the M3 collection brief with class coverage, boundary cases, wording diversity, sources, and grouping rules.
 Archive the rows, ledger, guide revision, permission manifest, and validation output outside Git.
 Restore into a separate local directory and compare hashes before declaring the archive verified.
-The archive and restore remain pending until actual data exists.
+The October 28 [archive record](evidence/m1-m2-archive.md) did this for `m1-v1` and the M2 inputs. The ignored local script `work/m2-archive/run.sh` repeats it on this machine.
 
 ## Run and reproduce M2
 

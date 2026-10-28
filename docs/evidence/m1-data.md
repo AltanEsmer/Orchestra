@@ -139,5 +139,5 @@ None of these is established by the tooling or this record.
 - License: `data/manifests/sources.json` still has `license: null`, so real data cannot pass `--ready`.
 - 120 accepted rows, with 30 per class and 15 groups per class: not collected.
 - Collection brief for the 400-row expansion: not frozen.
-- Archive and restore: no local rows exist to archive; restoration to another directory is unverified.
+- Archive and restore: no local rows exist to archive; restoration to another directory is unverified. Update, October 28, 2026: the frozen release was archived and restored with byte-identical hashes ([record](m1-m2-archive.md)).
 - Semantic label correctness is outside what any check here can tell.
