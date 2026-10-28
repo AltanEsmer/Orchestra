@@ -2,7 +2,7 @@
 
 The agent operates the commands in the [runbook](run-experiments.md). Altan supplies genuine annotation decisions, interpretations, writing, and learning responses.
 
-## Current next step, October 26
+## Current next step, October 28
 
 Pilot review is complete. Guide v2, adopted at Altan’s request for simpler rules, groups rows by shared variation, source or named setting, situation, or public record, and adds batch checks for near-duplicates, request-type spread, and source mix ([guide-v2 record](evidence/guide-v2.md)). The [pilot acceptance record](evidence/pilot-guide-v1.md) lists actual decisions, counts, hashes, exclusions, and remaining M1 requirements.
 
@@ -24,7 +24,15 @@ M2 ran on October 26. The grouped split has 78 training, 25 validation, and 25 s
 
 Altan inspected the seven L2 errors and recorded five hypotheses ([error inspection](evidence/m2-research-run.md#error-inspection)). That exposure must be disclosed, and M3 rows must not target those errors.
 
-**Next:** M3 collection. The agent records GSM8K's license and pinned revision, then screens each source's capacity against the brief's per-class mix. You decide any shortfall. You then label new rows, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
+The agent recorded GSM8K's license (MIT) and pinned revision and screened each source's capacity ([capacity screen](evidence/m3-capacity-screen.md)). Direct answer and document retrieval can reach about 100 rows within the mix. With your approval, the agent downloaded the GSM8K test file and screened it. Calculation can now reach about 100 rows as well. At your request the agent also downloaded and screened eight BFCL parallel and irrelevance files; they added about three lookup rows. Lookup is 11 to 24 rows short even if all 11 usable AI drafts are accepted.
+
+At your request the agent drafted 30 AI lookup candidates in request types other than keyed-record lookups ([draft record](evidence/lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the lookup gap.
+
+On October 28 you asked to complete M3 and chose to review an import. The agent imported 312 candidates in a fixed order, ran the batch checks, and ran a blind AI check that stayed sealed until your labels existed ([import record](evidence/m3-import.md)). It replaces the separate draft worksheet.
+
+You adopted an AI reviewer's judgments as your A1 labels and accepted every adjudication recommendation. The agent froze the 400-row release, ran all 14 configurations twice, and selected L1-C10 on validation ([run record](evidence/m3-research-run.md)).
+
+**Next:** attempt the M3 checkpoint questions in the M3 study PDF, then close issue #6 when you are satisfied. M4 starts with your inspection of at least 20 validation errors. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

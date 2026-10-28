@@ -885,3 +885,89 @@ Trace: q0047, "Based on this paragraph when was the last time we sent them to sp
 Learning status: this is Altan's own error analysis after the agent's guiding questions. It is evidence of attempting the error-analysis exercise, not of a ledger topic. The metrics and confidence rows stay **not yet reviewed**; their ledger questions (precision/recall from a confusion matrix, reliability bins) are still unanswered. The three M2 practice questions above also remain unanswered.
 
 Disclosure: inspecting these errors is human exposure before M3 collection. The collection brief forbids targeting them.
+
+## M3 capacity screen, October 26, 2026
+
+The agent recorded GSM8K in the source manifest: MIT license, confirmed from the dataset card at revision `740312ad` and OpenAI's repository LICENSE. No GSM8K file was downloaded. The agent then estimated how many new rows each source in the brief's mix can supply under guide v2, counting only rows that join no M1 group and fit the 40 percent request-type and 75 percent source limits. Small pools were judged in full, large ones on seeded samples of 30. Direct answer and document retrieval have far more than they need. BFCL can fill calculation's main share, and GSM8K is unscreened. Lookup is the bottleneck: after the limits, BFCL supplies 32 to 43 new rows and the AI drafts 11, leaving 14 to 25 rows without a source. The [capacity screen](evidence/m3-capacity-screen.md) has the table and the three decisions.
+
+Trace: BFCL record `live_multiple_166-66-0` asks for "Adriel's detailed profile information … his id is 12445". It names a person and a record ID, so it is a keyed-record lookup. Fifteen other BFCL records also ask about Adriel. Under guide v2 they describe the same situation, so they share one group, and a group holds at most four rows. Those 16 candidates are therefore worth 4 rows, not 16. That is one reason lookup's large-looking pool shrinks.
+
+Practice questions, unanswered: (1) Lookup already has 12 keyed-record rows. Why can BFCL's 33 eligible keyed-record rows add only 28? (2) Why does the screen drop a Dolly question like "When did Alia Bhatt get her first leading role?" even though its passage answers it? (3) Why does the screen count a sampled pool's eligible share with an interval instead of a single number? Learning statuses remain unchanged.
+
+Verification: see the handoff. The manifest and documentation changed in Git; screening tools and candidate text stay in ignored `work/poteto/m3-capacity/`.
+
+## GSM8K screened for calculation, October 26, 2026
+
+Altan said: "Yes, download the GSM8K test parquet at revision 740312ad and screen it for calculation." The agent downloaded the 419,088-byte test file, checked that its SHA-256 matches the upstream hash, and exported only the question text. The worked solutions and answers were never read. All 30 seeded sample questions are word problems that supply every number, so the 1,319-question test split easily covers the 16 rows calculation needs. Lookup remains the only class with a shortfall.
+
+Trace: GSM8K test question 1220 reads "Ian has a board that is 40 feet long. … The longer piece is 4 times longer than the shorter piece. How long is the longer piece?" Every number is in the text and the request is a numeric result, so the first action is calculation. It never says "calculate". That helps dilute the "calculate" cue the brief lists.
+
+Practice question, unanswered: Why must the import store GSM8K's question but never its answer field, even though the router would only see the question? Learning statuses remain unchanged.
+
+## BFCL parallel and irrelevance files screened for lookup, October 26, 2026
+
+Altan said: "Download all eight BFCL parallel and irrelevance files at revision 61fc0608 and screen them for lookup." The agent downloaded the eight files (3,110,208 bytes), checked each against the pinned listing, and judged all 112 records that passed the lookup filter. Six are firm lookups and four are borderline. Five of the six are keyed-record lookups, a type already at its 40-row limit, so the files add only about three usable rows. The lookup shortfall is now 11 to 24 rows.
+
+Trace: `parallel_49` asks whether "the player with id 3142 in team RocketLeague" was top scorer in three seasons. It identifies a record by ID, so its first action is a keyed-record lookup. Lookup can hold at most 40 keyed-record rows. M1 has 12, and the earlier BFCL files already supply 33 such candidates for the remaining 28 places. This row is eligible, but it does not raise capacity.
+
+Practice question, unanswered: Why can screening more of the same source fail to fix a shortfall, even when it finds eligible rows? Learning statuses remain unchanged.
+
+## AI lookup drafts for the shortfall, October 26, 2026
+
+Altan said: "Draft more AI lookup candidates in non-keyed request types, avoiding M1 named settings, for me to label." The agent wrote 30 drafts across ten request types, such as condition filters, category counts, free slots, and duplicate checks. Each names its own invented organisation, so each is its own group. A script refuses to write the bundle if a draft shares a name with M1, the earlier drafts, or the BFCL candidates, overlaps any text at 0.5 Jaccard or more, or uses one of the brief's cue words. All 30 passed. They are unlabelled proposals. The [draft record](evidence/lookup-ai-drafts.md) lists the boundary cases to look at.
+
+Trace: draft N14 reads "Add up the overtime hours logged by the night shift in the Larkspur Depot timesheet records for the week of 3 February." The addition needs the hours first, and the hours sit in a named structured source. So the first action is lookup, even though the query opens with an arithmetic verb.
+
+Practice question, unanswered: Why must the blind AI check on these drafts be run by a different reviewer than the agent that drafted them? Learning statuses remain unchanged.
+
+## M1 and M2 completion work, October 28, 2026
+
+Altan said: "Lets complete m1 and m2 now." The agent finished the remaining agent-side gates for both milestones. Altan's learning attempts and the issue closures remain his.
+
+- **Archive.** The M1 release, review ledger, guide revision, permission manifest, readiness output, M2 split, inputs, code and both runs were archived as 47 files. They were restored into a new directory with byte-identical hashes, and M2 was rerun there from a fresh `uv sync --locked`. The rerun `m2-restored` passed `compare` against `m2-a` with identical prediction and metric bytes. The [archive record](evidence/m1-m2-archive.md) holds the commands and hashes. The M2-time sources manifest and collection brief came from commit `d541de9`, because both files changed when GSM8K was recorded.
+- **Study guides.** The [M1 guide](study-guides/m1-dataset.md) covers labels, provenance, grouping v1 to v2, AI-assisted review and the source-label confound. The [M2 guide](study-guides/m2-baselines.md) covers the readiness gate, the grouped split, fit versus transform, both baselines, reproduction and the error inspection. Both were exported to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/` as 13-page PDFs with provenance sidecars. Two subagents drafted the sources. The lead checked the numbers, IDs, quotes and a sample of slide pages against the files. [Edition evidence](study-guides/README.md#edition-evidence) lists the hashes.
+- **Concepts.** The concepts are reproducibility versus generalization, training-only fitting, group leakage, macro-F1 versus accuracy, and single-annotator review versus inter-annotator agreement.
+
+Trace: q0005 reads "A train ticket costs 45 kr. How much do three tickets cost?" It is a validation row labeled `calculation`. L2 never saw `45`, `ticket` or `tickets` in training, so those tokens get no column. The prediction is still `calculation`, at probability 0.353 against 0.278 for direct answer. The largest pushes come from `how` and `a`, and `train` pushes toward retrieval because of one Dolly row about train tracks. The prediction is right, but partly for shallow reasons.
+
+Practice prompts, unanswered: (1) What does the `m2-restored` rerun prove that `m2-a` and `m2-b` did not, and what does it still not prove? (2) Why can't 128 of 128 AI matches be reported as inter-annotator agreement? (3) In q0005, why does `45` contribute nothing? Each guide ends with five further questions. Learning statuses remain unchanged. Delivering the PDFs does not establish understanding.
+
+Limitations: the reproduction ran on one macOS arm64 host only. The archive is local, inside the ignored `work/` folder. Dated closure snapshots of the PDFs wait until Altan closes each milestone.
+
+## M3 candidate import, October 28, 2026
+
+Altan asked to complete M3. The 400-row target needs about 272 new rows with his labels, so the agent asked how to proceed, and he chose "Build import for review". The agent imported 312 candidates: the six public pools to their quotas plus three reserves each, and 90 lookup candidates for 68 places. Every row is `needs_review` with a null label. The [import record](evidence/m3-import.md) holds the rules, projections, and hashes.
+
+- **Fixed order.** Each pool's judging order was fixed before any judgment: the capacity screen's sample, then a seeded shuffle. The agent judged rows in that order and stopped when the quota filled. The order and the skip rules, not the agent's taste, decide which eligible rows enter.
+- **Cue limit.** The brief asks new rows to dilute M1's cue words. Without a limit, "paragraph" or "reference text" would rise from 32 to 41 percent of retrieval rows, and "calculate" from 50 to 51 percent of calculation rows. The import now holds each cue at its M1 share. This rule was added after the projection and before any label, and the record says so.
+- **Blind check first.** Three fresh subagents checked all 312 rows on shuffled, query-only text before Altan labels them. Their output stays sealed until his labels are recorded.
+- **Fill rule.** After labelling, each pool keeps accepted rows in order until its quota. Reserves and later lookup rows replace rejected ones, and every limit is checked again on the final classes.
+
+Trace: q0140 comes from a No Robots closed-QA prompt. It asks whether a statement about plant health is true, says to use the following passage, and then pastes a 301-word article. The import cuts the prompt at the second blank line. The router sees only the question and the "use the following passage" sentence. The article becomes a linked attachment with its exact characters and a hash. The proposed first action is document retrieval, because the request points at a passage that only the attachment holds.
+
+Practice prompts, unanswered: (1) Why fix the judging order before judging, instead of picking the clearest rows? (2) Three classes sit exactly at 75 of 100 rows from their main source. What happens to that limit if a second-source row is rejected and no reserve replaces it? (3) Why does the blind check's output stay sealed until the labels exist? Learning statuses remain unchanged.
+
+Limitations: the agent wrote every proposed label, so approving proposals carries anchoring risk. The cue limit was chosen after seeing projected counts. The blind check is AI consistency, not human agreement.
+
+## M3 labels adopted and blind check ingested, October 28, 2026
+
+Altan pasted review judgments on the 312-row worksheet that, by its own statement, came from an AI reviewer. Asked how to treat them, he chose "Adopt as my A1 labels" and said the reviewer did not read the sealed blind-check files. The judgments approve the proposals except three exclusions, count 9 of the 16 borderline BFCL rows as lookup, and exclude the other 7. The blind check then gave the same label on 300 of the 302 labelled rows and a different label on none. 238 clear agreements are accepted, and 64 rows wait for his adjudication. The [import record](evidence/m3-import.md#labels-and-blind-check-october-28) holds the counts and hashes.
+
+Trace: q0241 asks for the latest readings of all temperature and humidity sensors on a named office network. The adopted judgment counts the whole sensor group as lookup, because it reads recorded readings. The blind reviewer would exclude q0241, because "latest" reads as live data that no tool provides. Both readings follow the guide. The difference is whether "latest" means the newest stored record or the live state now. The adjudication worksheet puts that question back to Altan.
+
+Practice prompt, unanswered: The labels and the blind check agree on 300 of 302 rows, but the labels are the agent's proposals approved through another AI's review. What does that agreement show, and what can it not show? Learning statuses remain unchanged.
+
+Limitation: the A1 labels are human-adopted AI judgments, not human-written labels. The report must say so.
+
+## M3 release, split and comparison, October 28, 2026
+
+Altan said "Accept all" to the adjudication worksheet. The agent froze the 400-row `m3-v1` release with its ledger, extended the M2 split to 242 training, 79 validation and 79 sealed test rows, and ran all 14 configurations twice. The runs reproduce byte for byte, and an archive restored into a new directory reproduced them again. Validation-only selection picks L1-C10, word counts with logistic regression at C 10, with macro-F1 0.925. L3 scored 0.923, within the 0.01 tie, so the simplicity order decided. The [run record](evidence/m3-research-run.md) holds the tables and hashes.
+
+- **Small differences.** 79 validation rows means one row moves accuracy by about 0.013. Most family differences are two rows or fewer. Only bigrams helped at every C.
+- **More data versus a better model.** On the 25 rows that were M2's validation set, L2-C1 made seven errors with 78 training rows and one error with 242. The model and its settings did not change.
+
+Trace: q0005, "A train ticket costs 45 kr. How much do three tickets cost?", is a validation row labelled `calculation`. In M2, `45`, `ticket` and `tickets` had no column, and L2 gave calculation 0.353. With 242 training rows the vocabulary holds 1,655 words, and only `ticket` is missing. L1-C10 now gives calculation 0.731, and `how`, `three`, `costs`, `cost` and `kr` push hardest toward it over direct answer. A training-only refit reproduced the saved scores exactly.
+
+Practice prompts, unanswered: (1) Why does the selection prefer L1-C10 over L3-C0.1 when L3 is within 0.01? (2) What does the drop from seven errors to one on the same 25 rows show that the 0.925 headline does not? (3) Why can 79 validation rows not separate counts from TF-IDF here? The [M3 guide](study-guides/m3-comparison.md) ends with five further questions. Learning statuses remain unchanged.
+
+Limitations: no test result, no human error inspection yet, one host and seed. The 272 new labels are human-adopted AI judgments, so the release has no human agreement figure.

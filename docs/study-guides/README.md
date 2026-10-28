@@ -52,9 +52,34 @@ M0 edition exported on October 8, 2026. The guide is delivered; the introductory
 
 Closure snapshot: Altan closed M0 on October 16, 2026. The stable PDF was copied to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M0-preparation-2026-10-16.pdf` with SHA-256 `3c321a3b3be63f638fe9a16455926be78662b60e776cf0dccfb661a2b841ce07`, identical to the October 8 edition. The learning checkpoint was not answered before closure and carries into M1.
 
-M1 edition: not yet exported. Pilot rows and guide-v1 decisions are now available in the [pilot record](../evidence/pilot-guide-v1.md), and the methods preview includes the October 26 update. The milestone edition still needs the first dataset’s full coverage evidence; M1 is not complete.
+M1 and M2 editions exported on October 28, 2026. Both guides are delivered. Altan's learning attempts on their checkpoints are still pending, so neither is a closed-milestone snapshot yet.
 
-Inspected course source revisions for this edition:
+| Edition | Source | PDF, 13 pages each | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M1 | [M1 dataset](m1-dataset.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M1-dataset.pdf` | `82e8ed8c805e8a3d82fd585c7ec57e7868c9ea3e59aaadcd7f5b2ef5bafa0834` | `57d822a0ba45d49716c3c2313d3f0bccd4669de5be69668dd75ca7775f73f6bc` |
+| M2 | [M2 baselines](m2-baselines.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M2-baselines.pdf` | `1d1289bef6ecfc02902eb31ad0adc50c1e9d450287890ffad763d404ac6dd552` | `a07f6c921ba1f6f6c54ce9d00b2ee008bdda87253485756abebc4d1feba71016` |
+
+- Provenance sidecars sit beside each PDF as `M1-dataset.manifest.json` and `M2-baselines.manifest.json`. They record the source and PDF hashes, the page count, the repository commit at export (`07263b4`) and the hash of every cited course PDF.
+- Drafting: two agent subagents each drafted one source from the tracked evidence and the local data. The lead checked the cited numbers, group IDs, quoted learning-log phrases and a sample of slide pages against the files.
+- Trace check: the M2 guide's q0005 trace comes from a refit of the exact L2 configuration on the training file. All 25 refit predictions and all 100 probabilities equal the saved `m2-a` values.
+- Verification: the lead inspected all 26 rendered pages. A scripted check confirmed that every word and every full hash in each source appears in the extracted PDF text. Code-fence language tags are not rendered. Two consecutive exports produced identical hashes.
+- Authoring: the export used ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored local exporter `work/study-pdf/export.py`. No PDF dependency was added to `pyproject.toml`.
+- Data exposure: both guides quote only Altan-authored rows, which his permission covers for public sharing. The M1 trace row q0036 is a training row and the M2 trace row q0005 is a validation row. No sealed test text appears.
+
+M3 edition exported on October 28, 2026. It is delivered. Altan's learning attempt on its checkpoint is pending, so it is not a closed-milestone snapshot yet.
+
+| Edition | Source | PDF, 16 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M3 | [M3 comparison](m3-comparison.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M3-comparison.pdf` | `660d58f2241a966a764af6a7bf25c5f3cea99e1476405517522bdf5378056e37` | `7840a3e0e7f11b3c03215c041f3b84a43c23dbbacfb49d9dc9381f1760641451` |
+
+- The sidecar `M3-comparison.manifest.json` records the repository commit at export (`9d909a3`) and the hash of every cited course PDF.
+- Drafting: an agent subagent drafted the source from the tracked M3 evidence, the code and `comparison.md`, and verified each lecture page it cites with `pdftotext` and rendered images. The lead checked every number against the run record, the F1 fractions and trace sums by hand, the code settings and selection rule against `experiment.py`, the protocol quote, and two cited lecture pages.
+- Trace check: the q0005 numbers come from a training-only refit of L1-C10, L2-C1 and B1, whose probabilities equal the saved `m3-a` values.
+- Verification: the lead inspected all 16 rendered pages and removed two page breaks that had left near-empty pages. A scripted check found every source word in the extracted text, except tokens that the extractor splits: 64-character hashes that wrap inside table cells, filenames that break at `%20`, and the `C 1` column header. With line breaks removed, each of those appears intact. Code-fence tags are not rendered. Two consecutive exports produced identical hashes.
+- Data exposure: the guide quotes only q0005, an Altan-authored validation row the M2 guide already quotes. No other query text and no sealed test text appears.
+- The M3 edition also cites `UTF-8''Lecture1-Introduction%20to%20Big%20Data%20Analytics.pdf`, SHA-256 `9f16e0d8d8fc24ca12a4c93e4cca3fcdb26bec5f8a6c80cece83e2ed0ed8e1ee`, which no earlier edition cites.
+
+Inspected course source revisions for the M0 edition. The M1 and M2 editions also cite the two files added below, which were first inspected on October 28, 2026:
 
 | File | SHA-256 |
 | --- | --- |
@@ -63,3 +88,5 @@ Inspected course source revisions for this edition:
 | `Lecture2-Data Preprocessing and Feature Engineering.pdf` | `e7bfec9a9a52954c038e58a84f680e76648efa582ef79acafe2a3bfaa582217f` |
 | `Lecture5-FundamentalClassificationAlgorithms.pdf` | `c2995d1963da118c5b8f599a641a15b2c8ec8102aa61a66fee13a29eeb67980d` |
 | `Lecture6-ArtificialNeuralNetworks.pdf` | `4096ea75c917389ad65c0322bb1e045fcba82154ecde673f7221da3440b7d94d` |
+| `Lecture4-LinearModelsforRegression.pdf` | `8a58746abec856b9168dbca3bd64b446297425570cc78e8c3b378c358d4315cc` |
+| `UTF-8''Lecture7-Ensemble%20Methods%20and%20Model%20Evaluations.pdf` | `918f33dc045f3fbbaaae8a33b1a779e9eb7785e8625f1008aa5fc144b49813fd` |

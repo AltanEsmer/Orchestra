@@ -94,6 +94,7 @@ Process peak memory was 122,863,616 bytes, about 117 MiB, including imports. Thi
 - **Small sample.** With 25 validation rows, one row moves accuracy by 0.04, and per-class F1 rests on six or seven rows. These numbers describe this split only. They are not the M3 comparison.
 - **Dirty tree in provenance.** Provenance records commit `d541de9` with `git_dirty: true`. The only change was the new, then-untracked `data/splits/m2-split.json` written by `prepare-study`. Its hash is recorded above. Altan then asked to track it, and the committed file has the same hash.
 - **Sealed test.** The runner did not open the sealed test file. Nobody has looked at the test predictions, because none exist.
-- **Not done.** The M2 inputs have not been archived and restored. `select` is not run on M2.
+- **Archive.** On October 28 the M2 inputs and runs were archived, restored into a new directory, and rerun from a fresh locked environment. The rerun reproduced `m2-a` byte for byte ([record](m1-m2-archive.md)).
+- **Not done.** `select` is not run on M2.
 
 Results stay in ignored `results/m2-a/` and `results/m2-b/`, and the prepared config in ignored `data/processed/m2-prepared.json`.
