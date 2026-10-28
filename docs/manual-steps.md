@@ -2,7 +2,7 @@
 
 The agent operates the commands in the [runbook](run-experiments.md). Altan supplies genuine annotation decisions, interpretations, writing, and learning responses.
 
-## Current next step, October 26
+## Current next step, October 28
 
 Pilot review is complete. Guide v2, adopted at Altan’s request for simpler rules, groups rows by shared variation, source or named setting, situation, or public record, and adds batch checks for near-duplicates, request-type spread, and source mix ([guide-v2 record](evidence/guide-v2.md)). The [pilot acceptance record](evidence/pilot-guide-v1.md) lists actual decisions, counts, hashes, exclusions, and remaining M1 requirements.
 
@@ -28,7 +28,9 @@ The agent recorded GSM8K's license (MIT) and pinned revision and screened each s
 
 At your request the agent drafted 30 AI lookup candidates in request types other than keyed-record lookups ([draft record](evidence/lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the lookup gap.
 
-**Next:** label the 30 drafts in the local `data/raw/lookup-drafts-ai-2026-10-26/worksheet.md`, with your own label and rationale for each, or an exclusion. Decide whether the 16 borderline BFCL rows count as lookup. Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
+On October 28 you asked to complete M3 and chose to review an import. The agent imported 312 candidates in a fixed order, ran the batch checks, and ran a blind AI check that stays sealed until your labels exist ([import record](evidence/m3-import.md)). It replaces the separate draft worksheet.
+
+**Next:** label the 312 rows in the local `data/raw/m3-import/review-worksheet.md`. "approve all" plus exceptions works. Say whether the 16 borderline BFCL rows count as lookup, and confirm or exclude the 41 AI drafts. Then the agent ingests the AI check, you adjudicate its flags, and the agent freezes the M3 release and runs the 14 configurations. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

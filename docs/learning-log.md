@@ -933,3 +933,18 @@ Trace: q0005 reads "A train ticket costs 45 kr. How much do three tickets cost?"
 Practice prompts, unanswered: (1) What does the `m2-restored` rerun prove that `m2-a` and `m2-b` did not, and what does it still not prove? (2) Why can't 128 of 128 AI matches be reported as inter-annotator agreement? (3) In q0005, why does `45` contribute nothing? Each guide ends with five further questions. Learning statuses remain unchanged. Delivering the PDFs does not establish understanding.
 
 Limitations: the reproduction ran on one macOS arm64 host only. The archive is local, inside the ignored `work/` folder. Dated closure snapshots of the PDFs wait until Altan closes each milestone.
+
+## M3 candidate import, October 28, 2026
+
+Altan asked to complete M3. The 400-row target needs about 272 new rows with his labels, so the agent asked how to proceed, and he chose "Build import for review". The agent imported 312 candidates: the six public pools to their quotas plus three reserves each, and 90 lookup candidates for 68 places. Every row is `needs_review` with a null label. The [import record](evidence/m3-import.md) holds the rules, projections, and hashes.
+
+- **Fixed order.** Each pool's judging order was fixed before any judgment: the capacity screen's sample, then a seeded shuffle. The agent judged rows in that order and stopped when the quota filled. The order and the skip rules, not the agent's taste, decide which eligible rows enter.
+- **Cue limit.** The brief asks new rows to dilute M1's cue words. Without a limit, "paragraph" or "reference text" would rise from 32 to 41 percent of retrieval rows, and "calculate" from 50 to 51 percent of calculation rows. The import now holds each cue at its M1 share. This rule was added after the projection and before any label, and the record says so.
+- **Blind check first.** Three fresh subagents checked all 312 rows on shuffled, query-only text before Altan labels them. Their output stays sealed until his labels are recorded.
+- **Fill rule.** After labelling, each pool keeps accepted rows in order until its quota. Reserves and later lookup rows replace rejected ones, and every limit is checked again on the final classes.
+
+Trace: q0140 comes from a No Robots closed-QA prompt. It asks whether a statement about plant health is true, says to use the following passage, and then pastes a 301-word article. The import cuts the prompt at the second blank line. The router sees only the question and the "use the following passage" sentence. The article becomes a linked attachment with its exact characters and a hash. The proposed first action is document retrieval, because the request points at a passage that only the attachment holds.
+
+Practice prompts, unanswered: (1) Why fix the judging order before judging, instead of picking the clearest rows? (2) Three classes sit exactly at 75 of 100 rows from their main source. What happens to that limit if a second-source row is rejected and no reserve replaces it? (3) Why does the blind check's output stay sealed until the labels exist? Learning statuses remain unchanged.
+
+Limitations: the agent wrote every proposed label, so approving proposals carries anchoring risk. The cue limit was chosen after seeing projected counts. The blind check is AI consistency, not human agreement.
