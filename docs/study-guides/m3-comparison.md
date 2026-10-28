@@ -185,8 +185,6 @@ L1-C10's per-class F1 is 0.919 retrieval, 0.927 lookup, 0.974 calculation, and 0
 
 **Resources and reproduction.** Peak memory was 161,808,384 bytes, and the slowest fit took 0.023 s. Both runs and the restored rerun `m3-restored` produced identical predictions and metrics. That shows determinism on one host, not generalization.
 
-<!-- pagebreak -->
-
 ## M2 rows inside M3 validation
 
 The agent split the saved predictions by each validation row's origin. This analysis was not pre-registered.
@@ -242,8 +240,6 @@ First, L1-C10 works on a larger scale. Its pushes sum to +3.910 against L2-C1's 
 Second, weighting changes which words matter. Under counts, the function word `how` pushes hardest. Under TF-IDF, `how` gets 0.189 because it is common in training, and `cost` leads. `kr`, `tickets`, and `train` share the largest value, 0.366, so they are the rarest of these words in training.
 
 Third, B1 is the most extreme. 0.9902 fits the usual account of naive Bayes overconfidence, in which related words multiply as if independent. One correct row cannot show miscalibration, and it does not measure general behavior.
-
-<!-- pagebreak -->
 
 ## Course connections
 
