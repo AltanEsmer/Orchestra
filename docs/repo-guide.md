@@ -47,6 +47,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/public-import-v2.md` | The 90-row guide-v2 public candidate import: sources, selection, projected batch checks, flags, local file hashes, and remaining label-review steps. |
 | `docs/evidence/m3-capacity-screen.md` | M3 capacity screen against the brief's source mix and 400-row target: per-class supply, the lookup shortfall, GSM8K's license, revision, and approved test-file screen, and the decisions for Altan. Candidate text and verdicts stay in ignored `work/poteto/m3-capacity/`. |
 | `docs/evidence/lookup-ai-drafts.md` | The 30 non-keyed AI lookup drafts for the M3 shortfall: request types, mechanical checks, boundaries to review, provenance, and the exposure disclosure. Draft text stays in ignored `data/raw/lookup-drafts-ai-2026-10-26/`. |
+| `docs/evidence/m1-m2-archive.md` | October 28 archive of the M1 release and M2 inputs, hash-verified restore, and the `m2-restored` rerun that reproduced `m2-a` byte for byte. |
 | `docs/evidence/guide-v2.md` | Why v2 replaced request-template groups, the pilot regrouping table with before/after hashes, per-class counts, and public capacity under v2. |
 | `data/manifests/sources.json` | Provenance manifest. Each `source_id` used by a row names its author, permission, and creation date. The `altan-authored` entry records Altan's exact October 23 permission for pilot candidates q0001 through q0040 in the `license` field, with its date and scope. This records explicit permission rather than selecting a named license. |
 | `.gitignore` | Preserves the initial Python exclusions and adds local data, models, results, secrets, course PDF, and scratch exclusions. It does not protect already tracked files. |
@@ -67,6 +68,8 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/m1-m3-decisions.tsv` | Dated planning decisions with evidence pointers. Planned choices are labeled separately from verified checks. |
 | `docs/study-guides/README.md` | PDF location, edition evidence, refresh procedure, and coverage planned for each milestone. |
 | `docs/study-guides/m0-preparation.md` | Editable M0 lesson and technical appendix explaining the current script and its course connections. |
+| `docs/study-guides/m1-dataset.md` | Editable M1 lesson: labels, provenance, grouping v1 to v2, AI-assisted review, distributions and the source-label confound, traced through q0036. |
+| `docs/study-guides/m2-baselines.md` | Editable M2 lesson: readiness gate, grouped split, fit versus transform, B0 and L2 results, reproduction and error inspection, traced through q0005. |
 | `docs/data-and-evaluation.md` | Proposed first-action labels, row schema, annotation/split protocol, experiments, confidence, and reproducibility. |
 | `docs/course-sources.md` | Source locations, exact course page mapping, and requirement fingerprints. |
 | `docs/repo-guide.md` | This living explanation of authored files and data flow. |

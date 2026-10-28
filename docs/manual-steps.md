@@ -28,7 +28,7 @@ The agent recorded GSM8K's license (MIT) and pinned revision and screened each s
 
 At your request the agent drafted 30 AI lookup candidates in request types other than keyed-record lookups ([draft record](evidence/lookup-ai-drafts.md)). Accepting 11 to 24 of them would close the lookup gap.
 
-**Next:** label the 30 drafts in the local `data/raw/lookup-drafts-ai-2026-10-26/worksheet.md`, with your own label and rationale for each, or an exclusion. Decide whether the 16 borderline BFCL rows count as lookup. Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. Separately, the agent can archive and restore the M2 inputs.
+**Next:** label the 30 drafts in the local `data/raw/lookup-drafts-ai-2026-10-26/worksheet.md`, with your own label and rationale for each, or an exclusion. Decide whether the 16 borderline BFCL rows count as lookup. Then the agent imports candidates, you label them, the blind AI check runs, and you adjudicate flags. The M1 and M2 study PDFs are ready; attempt their checkpoint questions, then close issues #4 and #5 when you are satisfied.
 
 Reach at least 120 accepted rows, 30 per label, and 15 groups per label before a study release or baseline. The current pilot falls short of all those coverage targets. Its accepted status does not permit bypassing readiness.
 

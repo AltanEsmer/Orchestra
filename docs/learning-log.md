@@ -919,3 +919,17 @@ Altan said: "Draft more AI lookup candidates in non-keyed request types, avoidin
 Trace: draft N14 reads "Add up the overtime hours logged by the night shift in the Larkspur Depot timesheet records for the week of 3 February." The addition needs the hours first, and the hours sit in a named structured source. So the first action is lookup, even though the query opens with an arithmetic verb.
 
 Practice question, unanswered: Why must the blind AI check on these drafts be run by a different reviewer than the agent that drafted them? Learning statuses remain unchanged.
+
+## M1 and M2 completion work, October 28, 2026
+
+Altan said: "Lets complete m1 and m2 now." The agent finished the remaining agent-side gates for both milestones. Altan's learning attempts and the issue closures remain his.
+
+- **Archive.** The M1 release, review ledger, guide revision, permission manifest, readiness output, M2 split, inputs, code and both runs were archived as 47 files. They were restored into a new directory with byte-identical hashes, and M2 was rerun there from a fresh `uv sync --locked`. The rerun `m2-restored` passed `compare` against `m2-a` with identical prediction and metric bytes. The [archive record](evidence/m1-m2-archive.md) holds the commands and hashes. The M2-time sources manifest and collection brief came from commit `d541de9`, because both files changed when GSM8K was recorded.
+- **Study guides.** The [M1 guide](study-guides/m1-dataset.md) covers labels, provenance, grouping v1 to v2, AI-assisted review and the source-label confound. The [M2 guide](study-guides/m2-baselines.md) covers the readiness gate, the grouped split, fit versus transform, both baselines, reproduction and the error inspection. Both were exported to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/` as 13-page PDFs with provenance sidecars. Two subagents drafted the sources. The lead checked the numbers, IDs, quotes and a sample of slide pages against the files. [Edition evidence](study-guides/README.md#edition-evidence) lists the hashes.
+- **Concepts.** The concepts are reproducibility versus generalization, training-only fitting, group leakage, macro-F1 versus accuracy, and single-annotator review versus inter-annotator agreement.
+
+Trace: q0005 reads "A train ticket costs 45 kr. How much do three tickets cost?" It is a validation row labeled `calculation`. L2 never saw `45`, `ticket` or `tickets` in training, so those tokens get no column. The prediction is still `calculation`, at probability 0.353 against 0.278 for direct answer. The largest pushes come from `how` and `a`, and `train` pushes toward retrieval because of one Dolly row about train tracks. The prediction is right, but partly for shallow reasons.
+
+Practice prompts, unanswered: (1) What does the `m2-restored` rerun prove that `m2-a` and `m2-b` did not, and what does it still not prove? (2) Why can't 128 of 128 AI matches be reported as inter-annotator agreement? (3) In q0005, why does `45` contribute nothing? Each guide ends with five further questions. Learning statuses remain unchanged. Delivering the PDFs does not establish understanding.
+
+Limitations: the reproduction ran on one macOS arm64 host only. The archive is local, inside the ignored `work/` folder. Dated closure snapshots of the PDFs wait until Altan closes each milestone.
