@@ -101,6 +101,7 @@ Do not run `select` on M2. Selection requires all 14 M3 configurations.
 ## Extend the dataset and run M3
 
 Follow the frozen collection brief to target 400 accepted rows, roughly 100 per class.
+The October 28 [candidate import](evidence/m3-import.md) holds the candidates, the fill rule, and the local worksheet path.
 Preserve every original row's text, label, group, and partition.
 Add only independent new groups, at least five new groups per class.
 Collect review and permission evidence for the additions.
