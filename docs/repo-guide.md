@@ -63,6 +63,17 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/bfcl-compatibility.md` | Pinned 40-record Berkeley compatibility inspection, provisional mappings, duplicate counts, source citations, and limits on replacing manual collection. Full sample records remain in ignored work. |
 | `docs/evidence/m1-data.md` | Tooling evidence for P1: real CLI output on an artificial fixture, and the human gates still open. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
+| `docs/m3-5-plan.md` | October 31 supervisor-follow-up plan: expand to at least 2,500 accepted rows, aim for 4,000; add Decision Tree, Random Forest, XGBoost and TypeSafe AI Jev; preserve split lineage, rerun baselines, and extend M4 integration. Links the active source screen; new model work remains planned. |
+| `docs/evidence/m3-5-capacity-screen.md` | M3.5 existing-source samples, row-yield estimates and limits, source/type capacity analysis, ignored reproduction bundle and blank 12-case human timing pilot. No accepted data changes. |
+| `docs/evidence/m3-5-lookup-screen.md` | Primary-source new-corpus screens: pinned revisions/licenses, query-only judgments, access failures, generated provenance and unresolved grouping/capacity. |
+| `docs/evidence/m3-5-group-quota-audit.md` | Actual parent source/type counts; cross-bundle duplicate and group audit; conservative inventory of 99 calculation and 46 lookup proposals; remaining gaps for both targets and ignored reproduction evidence. |
+| `docs/evidence/m3-5-lookup-diversity.md` | Focused ToolACE/Glaive/ToolAlpaca screens, source and metadata holds, unchanged queries and proposed lookup groups. |
+| `docs/evidence/m3-5-source-discovery.md` | November 1 five-lane discovery over 19 further corpora plus five terms-only checks: pinned licenses, seeded samples, calculation and lookup capacity against the audit gaps, rejected and blocked leads, and the scope decisions lookup depends on. |
+| `docs/evidence/m3-5-option-b-supply.md` | November 1 record of Altan's near-balanced 2,000-row decision (option B) and its two lookup scope rules, with the judged DataBench sample, the further tool-pool screen and the resulting lookup arithmetic. |
+| `docs/evidence/m3-5-calculation-diversity.md` | Math Stack Exchange and published synthetic calculation samples, attribution/revisions, provisional groups and excluded rights-restricted leads. |
+| `docs/study-guides/m3-5-group-quota-audit.md` | Interim group/quota lesson and external PDF source; explains cumulative caps, grouping limits and the remaining diversity gaps. |
+| `docs/study-guides/m3-5-data-screening.md` | Interim screening lesson and external PDF source; distinguishes source rows, candidate judgments, accepted rows and independent groups. |
+| `docs/evidence/m3-5-research-notes.md` | Primary-source Jev/API and local-classifier references plus additional public dataset leads; records unresolved capacity, source adoption, compatibility and access. No corpus download or experiment. |
 | `docs/m0-plan.md` | Accepted M0 scope, ordered delivery, checks, and the separate student-response gate. |
 | `docs/m1-m3-plan.md` | Proposed five-unit implementation sequence for M1 through M3, acceptance checks, split extension, resources, documentation, and the explicit approval boundary. |
 | `docs/study-guides/m1-m3-methods-preview.md` | Explanation of the proposed methods for exam, presentation, and report support. Contains no results or claimed student responses. |
@@ -119,3 +130,7 @@ No runtime credential, paid API, external dataset, or pretrained model is needed
 ### Frozen materialized inputs
 
 `orchestra.splits.check_materialized` checks already separated partitions against the manifest's IDs, canonical content hashes, groups, counts, and class order. The experiment runner supplies train and validation only, so this check does not open sealed test rows. Split and extension commands reject input/output aliases before writing. `materialize` checks all existing output contents first and refuses changed files. Reproduction ignores relocated parent input paths while retaining parent hash comparisons.
+
+### Supervisor dataset export, October 30, 2026
+
+`output/pdf/orchestra-dataset-supervisor.pdf` is a local 23-page meeting artifact: M3 dataset overview, source attributions and all 242 training queries with labels, source IDs and groups. It omits validation/test query text and document attachments. Emoji above U+FFFF are transcribed as Unicode codes with an explicit note. The scratch generator lives at ignored `work/dataset-supervisor/build.py`; it reads only the training partition and source manifest, with aggregate facts from the M3 evidence. The PDF contains dataset text and must remain out of Git. It changes no model, split, schema or evaluation rule.
