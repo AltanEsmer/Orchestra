@@ -201,6 +201,18 @@ uv run --locked python -m orchestra final-test --freeze results/frozen-study.jso
 
 Freeze binds selected systems, exact inputs and code, calibration folds, validation fallback choice, and the interpretation ledger. Do not edit those inputs afterward. No qualifying threshold is a valid recorded outcome. The final command evaluates all frozen family winners and calibrated logistic probabilities. It applies only the already selected threshold to test predictions.
 
+### M3.5 decision set
+
+For M3.5, run the same chain on the 27-configuration run. Freeze also needs `--jev-test-log` when the selection includes Jev. The path must be ignored by Git and must not exist yet, because Jev's test answers may come only from `final-test`:
+
+```sh
+uv run --locked python -m orchestra confidence --run results/m3-5-full-a --selection results/m3-5-full-a-selection.json --out results/m4-5-validation
+uv run --locked python -m orchestra freeze --confidence results/m4-5-validation --error-review results/validation-interpretations-m3-5.jsonl --jev-test-log results/jev/m3-5-test.jsonl --out results/frozen-study-m3-5.json
+uv run --locked python -m orchestra final-test --freeze results/frozen-study-m3-5.json --out results/final-test-m3-5 --send-jev-test
+```
+
+`--send-jev-test` sends the sealed test queries to TypeSafe and needs `TYPESAFE_API_KEY`. Run it only after Altan approves sending the test text. Without the flag, a Jev decision set is refused before any receipt is written. The log's folder must exist. Inside the reservation the command sends each unanswered test query at most once, logs every response, and stops with a resumable receipt if any query lacks a valid answer. A rejected key (401 or 403) stops after one request. `--resume` then sends only the missing queries, and refuses if the log changed since the last attempt. `confidence` writes `systems.json`: each chosen system's score type, validation metrics and calibration. Only the chosen logistic system is recalibrated. The tree families and Jev keep their own probabilities, and S1's margins get classification metrics only.
+
 The canonical research receipt lives under `results/test-receipts/` and is keyed by split hash. Repeating an identical completed request verifies and returns its existing artifacts. A changed freeze or output location is refused. For an identical request that recorded a failure, add `--resume`. The command preserves failed attempts and partial output before retrying. Never delete a receipt to try a new model on exposed test data. An exact interrupted request can also resume after its process exits. A split-specific POSIX file lock excludes active evaluations; the operating system releases it on process exit. Receipt updates are atomic, and every resumed attempt stays in history. This recovery currently targets macOS and Linux.
 
 `--fixture` on confidence is only for artificial software verification. It bypasses research evidence gates, marks artifacts as fixtures, and uses an isolated fixture receipt store. Never use it to bypass missing real review or permission.

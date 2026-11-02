@@ -18,6 +18,9 @@ MODEL = "jev-1.14.0"
 URL = "https://api.typesafe.ai/v1/systemone"
 QUESTION = "first_action"
 KEY_VARIABLE = "TYPESAFE_API_KEY"
+# How far four probabilities may sum from 1. Confidence analysis uses the same
+# bound, so an answer accepted here cannot fail the metrics after the test opens.
+SUM_TOLERANCE = 1e-3
 # Wording follows annotation guide v2 and the M3.5 lookup rules, written before
 # any API call. The criteria carry the guide's multi-action rule because a
 # calculation over figures in a document or record is the usual confusion.
@@ -84,7 +87,7 @@ def parse(payload):
             or not 0 <= value <= 1
         ):
             raise ValueError(f"probability {value!r} is not a number in [0, 1]")
-    if abs(sum(probabilities) - 1) > 1e-3:
+    if abs(sum(probabilities) - 1) > SUM_TOLERANCE:
         raise ValueError("probabilities do not sum to 1")
     return {
         "model": payload.get("model"),
@@ -198,6 +201,8 @@ def collect(rows, log_path, max_requests, send):
                     line["error"] = str(error)
             log.write(json.dumps(line) + "\n")
             log.flush()
+            if status in (401, 403):
+                break  # A rejected key fails every row; stop sending queries.
     valid = [(line, valid_answer(line)) for line in read_log(log_path)]
     done = answered_keys(log_path)
     tokens = sum(

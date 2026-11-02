@@ -12,6 +12,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import StratifiedGroupKFold
 
 from orchestra import experiment as ex
+from orchestra import jev
 from orchestra.data import LABELS, file_sha256
 from orchestra.splits import check_materialized
 
@@ -114,7 +115,8 @@ def _probabilities(labels, probabilities):
         or not np.isfinite(values).all()
         or (values < 0).any()
         or (values > 1).any()
-        or not np.allclose(values.sum(axis=1), 1, atol=1e-10, rtol=0)
+        # XGBoost's float32 probabilities miss 1 by about 1e-7.
+        or not np.allclose(values.sum(axis=1), 1, atol=jev.SUM_TOLERANCE, rtol=0)
     ):
         raise ValueError("probabilities must be finite normalized Nx4 in LABELS order")
     return values
@@ -272,7 +274,7 @@ def _context(run_dir, selection_path):
     if not expected["valid"] or {**selection, "run": None} != {**expected, "run": None}:
         raise ValueError("selection does not match verified M3 run")
     provenance = run["provenance.json"]
-    for key, actual in (
+    environment = [
         ("sklearn", ex.sklearn.__version__),
         ("numpy", ex.numpy.__version__),
         ("scipy", ex.scipy.__version__),
@@ -280,7 +282,11 @@ def _context(run_dir, selection_path):
             "uv_lock_sha256",
             file_sha256(Path(__file__).resolve().parents[2] / "uv.lock"),
         ),
-    ):
+    ]
+    matrix = run["config.json"]["config"].get("matrix", "m3")
+    if matrix != "m3" or "xgboost" in provenance:  # M3 runs predate XGBoost
+        environment.append(("xgboost", ex.xgboost.__version__))
+    for key, actual in environment:
         if provenance.get(key) != actual:
             raise ValueError(f"M3 environment mismatch: {key}")
     config = run["config.json"]["config"]
@@ -387,7 +393,8 @@ def analyze(run_dir, selection_path, out_dir, fixture=False):
         run_dir, selection_path
     )
     evidence_hashes = {} if fixture else _research_evidence(config, manifest)
-    results = {}
+    labels = [r["label"] for r in validation]
+    results, declared = {}, {}
     for entry in systems:
         result = _fit(entry, train, validation)
         recorded = [
@@ -403,6 +410,24 @@ def analyze(run_dir, selection_path, out_dir, fixture=False):
             raise ValueError(f"raw validation reproduction mismatch: {entry['id']}")
         if entry == logistic:
             results["raw"] = {**result, "score_type": "probability"}
+        # Declared before freezing: only the chosen logistic system is recalibrated.
+        # Jev and the tree families keep their own probabilities; margins get none.
+        score_type = ex.FAMILIES[entry["family"]]["score"]
+        declared[entry["id"]] = {
+            "family": entry["family"],
+            "score_type": score_type,
+            "calibration": "sigmoid, three grouped training folds"
+            if entry == logistic
+            else "none",
+            "metrics": {
+                **ex.metrics(labels, result["predictions"]),
+                **(
+                    probability_metrics(labels, result["scores"], result["predictions"])
+                    if score_type == "probability"
+                    else {}
+                ),
+            },
+        }
     outcome = {"status": "ok", "warnings": []}
     folds, fold_records = [], []
     try:
@@ -423,7 +448,6 @@ def analyze(run_dir, selection_path, out_dir, fixture=False):
             outcome["status"] = "unresolved_warning"
     except ValueError as error:
         outcome = {"status": "shortage", "error": str(error), "warnings": []}
-    labels = [r["label"] for r in validation]
     measured = {
         key: {
             **ex.metrics(labels, r["predictions"]),
@@ -478,6 +502,7 @@ def analyze(run_dir, selection_path, out_dir, fixture=False):
         "outcomes.json": outcome,
         "metrics.json": measured,
         "reliability.json": {key: value["bins"] for key, value in measured.items()},
+        "systems.json": declared,
         "thresholds.json": thresholds,
         "calibration-folds.json": fold_records,
     }
@@ -488,7 +513,27 @@ def analyze(run_dir, selection_path, out_dir, fixture=False):
     return out
 
 
-def freeze(confidence_dir, out_path, error_review=None):
+def _jev_test_log(systems, path):
+    """The frozen path for Jev's test answers, required exactly when Jev is chosen."""
+    if not any(entry["family"] == "Jev" for entry in systems):
+        if path is not None:
+            raise ValueError("no Jev system in the decision set; omit the Jev test log")
+        return None
+    if path is None:
+        raise ValueError("the decision set includes Jev: freeze needs a Jev test log")
+    path = Path(path).resolve()
+    if jev.log_is_unsafe(path):
+        raise ValueError(f"{path} is inside the repository and not ignored by Git")
+    if not path.parent.is_dir():
+        raise ValueError(f"Jev test log {path} has no folder; create it first")
+    return path
+
+
+def _log_digest(path):
+    return file_sha256(path) if path.exists() else None
+
+
+def freeze(confidence_dir, out_path, error_review=None, jev_test_log=None):
     directory, out = Path(confidence_dir).resolve(), Path(out_path)
     artifacts = load_artifacts(directory)
     config = artifacts["config.json"]
@@ -506,6 +551,7 @@ def freeze(confidence_dir, out_path, error_review=None):
     )
     if artifacts["outcomes.json"]["status"] != "ok":
         raise ValueError("calibration shortage or unresolved warning blocks freeze")
+    jev_test_log = _jev_test_log(systems, jev_test_log)
     frozen = {
         "format_version": 1,
         "fixture": config["fixture"],
@@ -515,6 +561,7 @@ def freeze(confidence_dir, out_path, error_review=None):
         "config": config,
         "folds": artifacts["calibration-folds.json"],
         "fallback": artifacts["thresholds.json"],
+        "jev_test_log": str(jev_test_log) if jev_test_log else None,
     }
     if out.exists():
         existing = _json(out)
@@ -523,6 +570,9 @@ def freeze(confidence_dir, out_path, error_review=None):
         if existing != frozen:
             raise ValueError("refuse changed freeze")
     else:
+        # Test answers may only come from final-test, inside its reservation.
+        if jev_test_log is not None and jev_test_log.exists():
+            raise ValueError(f"Jev test log {jev_test_log} already exists")
         frozen["frozen_utc"] = ex.now()
         frozen["git_sha"] = ex.git("rev-parse", "HEAD")
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -531,7 +581,7 @@ def freeze(confidence_dir, out_path, error_review=None):
     return frozen
 
 
-def final_test(freeze_path, out_dir, resume=False):
+def final_test(freeze_path, out_dir, resume=False, jev_send=None):
     started = ex.now()
     frozen = _json(freeze_path)
     config = frozen["config"]
@@ -557,6 +607,14 @@ def final_test(freeze_path, out_dir, resume=False):
         or artifacts["outcomes.json"]["status"] != "ok"
     ):
         raise ValueError("frozen systems changed")
+    jev_log = _jev_test_log(systems, frozen.get("jev_test_log"))
+    if jev_log is None and jev_send is not None:
+        raise ValueError("no Jev system in the decision set; omit --send-jev-test")
+    if jev_log is not None and jev_send is None:
+        raise ValueError(
+            "the decision set includes Jev: final-test needs --send-jev-test "
+            "and TYPESAFE_API_KEY, which send the test queries to TypeSafe"
+        )
     split_digest = file_sha256(inputs["split_manifest"])
     store = (
         Path(config["fixture_receipt_store"]) if config["fixture"] else RECEIPT_STORE
@@ -575,6 +633,8 @@ def final_test(freeze_path, out_dir, resume=False):
             logistic,
             split_digest,
             store,
+            jev_log,
+            jev_send,
         )
 
 
@@ -613,6 +673,8 @@ def _evaluate_frozen(
     logistic,
     split_digest,
     store,
+    jev_log,
+    jev_send,
 ):
     config = frozen["config"]
     receipt_path = store / f"{split_digest}.json"
@@ -644,6 +706,15 @@ def _evaluate_frozen(
                 "split test has incomplete reservation; use identical --resume"
             )
         history = receipt.get("attempts", [])
+        # A killed process records no digest; otherwise the log must be exactly
+        # as the last attempt left it, so no answer is added between attempts.
+        if (
+            jev_log is not None
+            and history
+            and "jev_test_log_sha256" in history[-1]
+            and _log_digest(jev_log) != history[-1]["jev_test_log_sha256"]
+        ):
+            raise ValueError("Jev test log changed since the last attempt")
         if out.exists():
             partial = out.with_name(out.name + f".failed-attempt-{len(history)}")
             if partial.exists():
@@ -651,6 +722,8 @@ def _evaluate_frozen(
             out.rename(partial)
     elif out.exists():
         raise ValueError("final output already exists; choose an unused path")
+    elif jev_log is not None and jev_log.exists():
+        raise ValueError(f"Jev test log {jev_log} exists before the test was reserved")
     out.parent.mkdir(parents=True, exist_ok=True)
     if not receipt_path.exists():
         _write_receipt(receipt_path, {**request, "status": "reserved", "attempts": []})
@@ -678,13 +751,40 @@ def _evaluate_frozen(
         ]
         if actual_folds != frozen["folds"]:
             raise ValueError("frozen calibration folds changed")
-        results = {
-            entry["id"]: {
-                **_fit(entry, train, test),
+        jev_record = {"jev_test_log_sha256": None, "jev_test_requests": None}
+        if jev_log is not None:
+            # Each attempt sends every unanswered test query at most once.
+            summary = jev.collect(test, jev_log, len(test), jev_send)
+            if summary["missing"]:
+                raise ValueError(
+                    f"{len(summary['missing'])} test queries have no valid Jev "
+                    "answer; rerun the identical command with --resume"
+                )
+            jev_record = {
+                "jev_test_log_sha256": file_sha256(jev_log),
+                # Every request of every attempt is one log line.
+                "jev_test_requests": len(jev.read_log(jev_log)),
+            }
+        results = {}
+        for entry in systems:
+            if entry["family"] == "Jev":
+                # The frozen entry replays validation answers; the test replays
+                # the answers collected above, under the same pinned prompt.
+                result = ex.fit_predict(
+                    {
+                        **entry,
+                        "responses": str(jev_log),
+                        "responses_sha256": jev_record["jev_test_log_sha256"],
+                    },
+                    train,
+                    test,
+                )
+            else:
+                result = _fit(entry, train, test)
+            results[entry["id"]] = {
+                **result,
                 "score_type": ex.FAMILIES[entry["family"]]["score"],
             }
-            for entry in systems
-        }
         calibrated = _calibrate(logistic, train, test, folds)
         if any(w["category"] == "ConvergenceWarning" for w in calibrated["warnings"]):
             raise ValueError("frozen calibrated model did not converge")
@@ -716,6 +816,7 @@ def _evaluate_frozen(
                 "started_utc": started,
                 "opened_utc": attempt["opened_utc"],
                 "test_sha256": file_sha256(inputs["sealed_test"]),
+                **jev_record,
                 "completed_utc": ex.now(),
             },
             "metrics.json": measured,
@@ -733,6 +834,8 @@ def _evaluate_frozen(
             ex.write_json(out / name, value)
         _save_predictions(out, results, test)
         _seal(out, [*payloads, "predictions.jsonl", "error-review.jsonl"])
+        if jev_log is not None:
+            attempt["jev_test_log_sha256"] = _log_digest(jev_log)
         _write_receipt(
             receipt_path,
             {
@@ -744,6 +847,8 @@ def _evaluate_frozen(
         )
         return out
     except BaseException as error:
+        if jev_log is not None:
+            attempt["jev_test_log_sha256"] = _log_digest(jev_log)
         _write_receipt(
             receipt_path,
             {
