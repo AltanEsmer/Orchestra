@@ -1,7 +1,16 @@
+import hashlib
 import random
 import unittest
 
-from orchestra.collection import interleave, seeded_order
+from orchestra.collection import (
+    import_row,
+    interleave,
+    passage_attachment,
+    seeded_order,
+    split_passage,
+    table_attachment,
+)
+from orchestra.data import FIELDS
 
 
 class SeededOrderTest(unittest.TestCase):
@@ -48,6 +57,58 @@ class InterleaveTest(unittest.TestCase):
             list(interleave({"a": iter([1])}, {"a": 0}))
         with self.assertRaises(ValueError):
             list(interleave({"a": iter([1])}, {"b": 1}))
+
+
+class ImportAdapterTest(unittest.TestCase):
+    def test_row_has_the_nine_fields_and_guide_v3(self):
+        row = import_row(
+            "q0500", "g0500", "  Keep  me.", "calculation", "gsm8k", "Because.", False
+        )
+        self.assertEqual(set(row), set(FIELDS))
+        self.assertEqual(row["text"], "  Keep  me.")
+        self.assertEqual(row["status"], "accepted")
+        self.assertEqual(row["annotation_version"], "guide-v3")
+        self.assertEqual(row["annotator_ids"], ["ai-screen"])
+
+    def test_adjudicated_row_names_altan_as_annotator(self):
+        row = import_row("q1", "g1", "t", "calculation", "gsm8k", "r", True)
+        self.assertEqual(row["annotator_ids"], ["ai-screen", "A1"])
+
+    def test_unknown_label_is_refused(self):
+        with self.assertRaises(ValueError):
+            import_row("q1", "g1", "t", "lookup", "gsm8k", "r", False)
+
+    def test_passage_split_keeps_both_parts_exactly(self):
+        prompt = "Summarize this text:\n\nThe  river rose.\n"
+        query, passage = split_passage(prompt, "Summarize this text:")
+        self.assertEqual(query, "Summarize this text:")
+        self.assertEqual(passage, "\n\nThe  river rose.\n")
+
+    def test_passage_split_refuses_missing_repeated_or_empty_parts(self):
+        for prompt, instruction in [
+            ("Read the poem.", "Summarize"),
+            ("Again. Again.", "Again."),
+            ("Only an instruction.", "Only an instruction."),
+            ("text", "  "),
+        ]:
+            with self.subTest(instruction=instruction), self.assertRaises(ValueError):
+                split_passage(prompt, instruction)
+
+    def test_passage_attachment_checks_the_recorded_hash(self):
+        digest = hashlib.sha256(b"Body.").hexdigest()
+        record = passage_attachment("q1", "Body.", expected_sha256=digest)
+        self.assertEqual(record["sha256"], digest)
+        with self.assertRaises(ValueError):
+            passage_attachment("q1", "Changed.", expected_sha256=digest)
+
+    def test_table_attachment_is_a_pinned_reference_not_a_copy(self):
+        record = table_attachment(
+            "q1", "data/001_Forbes/all.parquet", "e75d53a", "b" * 64
+        )
+        self.assertEqual(record["kind"], "table")
+        self.assertNotIn("text", record)
+        with self.assertRaises(ValueError):
+            table_attachment("q1", "data/x/all.parquet", "e75d53a", "not-a-hash")
 
 
 if __name__ == "__main__":
