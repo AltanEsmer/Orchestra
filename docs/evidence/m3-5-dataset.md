@@ -154,6 +154,7 @@ Proportions 0.600 / 0.200 / 0.200. Every M3 row keeps its partition.
 - `python -m orchestra check-collection --dataset data/processed/m3-5-v1.jsonl --parent data/processed/m3-v1.jsonl --types data/raw/m3-5-import/types.json --pairs data/raw/m3-5-import/pairs.json --out data/raw/m3-5-import/collection-check.json` printed `PASS: M3.5 collection checks`.
 - `scripts/validate_dataset.py data/processed/m3-5-v1.jsonl --review data/raw/m3-5-reviews-v1.jsonl --ready` printed `PASS: M1 readiness checks passed (3145 accepted rows, 3145 reviewed)`. Its `ai_consistency` of 3,143 of 3,145 counts accepted rows only, after disagreements were adjudicated, so it is not an agreement rate; use the 96.0% above.
 - All 50 screen outputs and 45 blind outputs passed `pipeline.py verify` (cids, keys, allowed values, exact passage splits).
+- An Opus reviewer at high effort recomputed the counts and hashes in this note and found them consistent, and confirmed all 400 M3 rows, groups and partitions unchanged. Its one blocking finding, a validation query quoted in the learning log, was removed before any push.
 
 ## Disclosures and limitations
 
