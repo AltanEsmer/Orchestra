@@ -129,7 +129,7 @@ Use the following commands for confidence, freezing, final evaluation, and plots
 
 ## Run the M3.5 classifier comparison
 
-The M3.5 release and its extended split exist since November 2 ([record](evidence/m3-5-dataset.md)): `prepare-study --config configs/m3-5.json --review data/raw/m3-5-reviews-v1.jsonl --collection-brief docs/collection-brief-m3-5.md --out data/processed/m3-5-prepared.json` wrote `data/processed/m3-5-prepared.json`. Check the release with `check-collection` as that record shows.
+The M3.5 release and its extended split exist since November 2 ([record](evidence/m3-5-dataset.md)): `prepare-study --config configs/m3-5.json --review data/raw/m3-5-reviews-v1.jsonl --collection-brief docs/collection-brief-m3-5.md --out data/processed/m3-5-prepared.json` wrote `data/processed/m3-5-prepared.json`. Check the release with `check-collection` as that record shows. Runs `m3-5-a` and `m3-5-b` of the 26 local configurations, their comparison, selection, report and the restored-archive rerun are recorded in the [M3.5 run record](evidence/m3-5-research-run.md); `work/m3-5-archive/run.sh` repeats the archive check on this machine.
 [`configs/m3-5.json`](../configs/m3-5.json) names `"matrix": "m3.5"` and the 26 local configurations.
 Check the Jev request without sending anything:
 

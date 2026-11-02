@@ -16,6 +16,8 @@ On November 2 Altan asked to implement the four methods. The [classifier impleme
 
 On November 2 Altan changed the review protocol and the brief was frozen. AI screens and separate blind AI checks reviewed 7,206 candidates; 727 flagged rows went to Altan, who answered three times by adopting the agent's proposed theme defaults. When more data became the priority, Altan raised the size to up to 1,000 rows per class and kept every quality rule. The [M3.5 release](evidence/m3-5-dataset.md) `m3-5-v1` has 3,145 accepted rows: retrieval 1,000, direct answer 1,000, calculation 651 and lookup 494. Lookup is short because every listed lookup pool was walked; calculation because its other sources ran out and the 40% word-problem cap holds the remaining GSM8K rows. The M3 split was extended from its pinned hash to 1,888 training, 629 validation and 628 sealed test rows.
 
+The [first M3.5 run](evidence/m3-5-research-run.md) fitted the 26 local configurations twice with one thread; the runs and a restored-archive rerun reproduce. Per-family validation winners under the frozen rules are B1 0.878, L1-C1 0.922, L2-C1 0.924, S1-C1 0.936, L3-C10 0.952, DT-d30-leaf1 0.818, RF-dNone-leaf1 0.913 and XGB-d6-lr0.05 0.901 macro-F1. `select` marks the overall choice invalid because Jev has no outcome, the expected stop state. Each run took about 22 seconds and 320 MiB, inside the proposed 15-minute and 2 GiB limits, which Altan has not formally answered.
+
 ## Research question and starting evidence
 
 Does a broader public-data sample change the relative performance and errors of the existing text classifiers, tree methods, and a pretrained structured-output model for the same four first actions?
