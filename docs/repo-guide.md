@@ -18,6 +18,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/automation-plan.md` | Accepted automation scope, design tradeoffs, dependencies, verification units, and boundaries. |
 | `docs/manual-steps.md` | Human work in order, beginning with one original query; commands remain agent-operated. |
 | `docs/collection-brief.md` | Expansion rules fixed before baseline-error inspection. Prepared study configs bind its hash. |
+| `docs/collection-brief-m3-5.md` | Draft M3.5 brief, not yet frozen: 2,000-row near-balanced targets and caps, per-source records, the guide-v3 lookup rules and store kinds, grouping, seeded pools with interleaving and cap holds, stop rule, two-stage review, measured cue counts, Altan's November 2 decisions, the affected-row check, and the timing pilot still needed before freezing. |
 | `docs/evidence/automation-completion.md`, `docs/evidence/automation-decisions.tsv` | Observed checks, review and merge evidence, remaining limitations, and dated decision trail. |
 | `README.md` | Entry point with executable setup/check commands and links to the project documents. |
 | `architecture.md` | Current and proposed components, query flow, library responsibilities, and storage boundaries. |
@@ -63,7 +64,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/evidence/bfcl-compatibility.md` | Pinned 40-record Berkeley compatibility inspection, provisional mappings, duplicate counts, source citations, and limits on replacing manual collection. Full sample records remain in ignored work. |
 | `docs/evidence/m1-data.md` | Tooling evidence for P1: real CLI output on an artificial fixture, and the human gates still open. |
 | `docs/project-plan.md` | Scope, decision rationale, report evidence map, first-session checklist, and a link to milestone tracking. |
-| `docs/m3-5-plan.md` | October 31 supervisor-follow-up plan: expand to at least 2,500 accepted rows, aim for 4,000; add Decision Tree, Random Forest, XGBoost and TypeSafe AI Jev; preserve split lineage, rerun baselines, and extend M4 integration. Links the active source screen; new model work remains planned. |
+| `docs/m3-5-plan.md` | October 31 supervisor-follow-up plan: expand public data (originally at least 2,500 rows, aim 4,000; since November 1 a near-balanced 2,000-row minimum); add Decision Tree, Random Forest, XGBoost and TypeSafe AI Jev; preserve split lineage, rerun baselines, and extend M4 integration. Links the active source screen; new model work remains planned. |
 | `docs/evidence/m3-5-capacity-screen.md` | M3.5 existing-source samples, row-yield estimates and limits, source/type capacity analysis, ignored reproduction bundle and blank 12-case human timing pilot. No accepted data changes. |
 | `docs/evidence/m3-5-lookup-screen.md` | Primary-source new-corpus screens: pinned revisions/licenses, query-only judgments, access failures, generated provenance and unresolved grouping/capacity. |
 | `docs/evidence/m3-5-group-quota-audit.md` | Actual parent source/type counts; cross-bundle duplicate and group audit; conservative inventory of 99 calculation and 46 lookup proposals; remaining gaps for both targets and ignored reproduction evidence. |
