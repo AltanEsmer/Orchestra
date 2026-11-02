@@ -10,9 +10,10 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import numpy
 from test_splits import DIGEST, fixture_rows
 
-from orchestra import experiment
+from orchestra import experiment, jev
 from orchestra.__main__ import main
 from orchestra.data import LABELS, file_sha256
 from orchestra.splits import make_split, materialize
@@ -297,7 +298,7 @@ class ConvergenceRetryTest(RunTestCase):
         # A one-iteration first attempt cannot converge, so lbfgs warns.
         family = {
             **experiment.FAMILIES["L2"],
-            "build": lambda C, n: experiment.build_l2(C, n or 1),
+            "build": lambda entry, n: experiment.build_l2(entry, n or 1),
             "retry_max_iter": retry_max_iter,
         }
         config = {**self.config(), "configurations": [{"family": "L2", "C": 1}]}
@@ -328,7 +329,7 @@ class ConvergenceRetryTest(RunTestCase):
     def test_member_that_raised_is_retried_with_its_family(self):
         family = {
             **experiment.FAMILIES["L2"],
-            "build": lambda C, n: experiment.build_l2(C, n or 1),
+            "build": lambda entry, n: experiment.build_l2(entry, n or 1),
         }
         config = {
             **self.config(),
@@ -347,7 +348,9 @@ class ConvergenceRetryTest(RunTestCase):
     def test_whole_family_reruns_when_one_member_warns(self):
         family = {
             **experiment.FAMILIES["L2"],
-            "build": lambda C, n: experiment.build_l2(C, n or (1 if C == 10 else 100)),
+            "build": lambda entry, n: experiment.build_l2(
+                entry, n or (1 if entry["C"] == 10 else 100)
+            ),
         }
         entries = [{"family": "L2", "C": 0.1}, {"family": "L2", "C": 10}]
         self.config_path.write_text(
@@ -364,7 +367,7 @@ class ConvergenceRetryTest(RunTestCase):
     def test_retry_limits_are_1000_for_logistic_and_10000_for_svm(self):
         for family_id, expected in (("L1", 1000), ("L3", 1000), ("S1", 10000)):
             real = experiment.FAMILIES[family_id]
-            family = {**real, "build": lambda C, n, b=real["build"]: b(C, n or 1)}
+            family = {**real, "build": lambda e, n, b=real["build"]: b(e, n or 1)}
             entries = [{"family": family_id, "C": 1}]
             self.config_path.write_text(
                 json.dumps({**self.config(), "configurations": entries})
@@ -592,6 +595,27 @@ M3_IDS = [
 ]
 
 
+M3_5_LOCAL_IDS = M3_IDS + [
+    "DT-d10-leaf1",
+    "DT-d10-leaf3",
+    "DT-d30-leaf1",
+    "DT-d30-leaf3",
+    "RF-d30-leaf1",
+    "RF-d30-leaf3",
+    "RF-dNone-leaf1",
+    "RF-dNone-leaf3",
+    "XGB-d3-lr0.05",
+    "XGB-d3-lr0.1",
+    "XGB-d6-lr0.05",
+    "XGB-d6-lr0.1",
+]
+TREE_CONFIGURATIONS = [
+    {"family": "DT", "max_depth": 10, "min_samples_leaf": 1},
+    {"family": "RF", "max_depth": None, "min_samples_leaf": 3},
+    {"family": "XGB", "max_depth": 3, "learning_rate": 0.05},
+]
+
+
 class FamilyTest(RunTestCase):
     def run_config(self, configurations):
         config = {**self.config(), "configurations": configurations}
@@ -605,6 +629,136 @@ class FamilyTest(RunTestCase):
         entries = json.loads(path.read_text())["configurations"]
         resolved = experiment.resolve_configurations(entries)
         self.assertEqual([c["id"] for c in resolved], M3_IDS)
+
+    def test_m3_5_config_resolves_to_the_26_local_ids(self):
+        path = Path(__file__).resolve().parents[1] / "configs" / "m3-5.json"
+        config = json.loads(path.read_text())
+        resolved = experiment.resolve_configurations(config["configurations"])
+        self.assertEqual([c["id"] for c in resolved], M3_5_LOCAL_IDS)
+        self.assertEqual(config["matrix"], "m3.5")
+        self.assertEqual(
+            [c for c in experiment.MATRICES["m3.5"]["ids"] if c != "Jev"],
+            M3_5_LOCAL_IDS,
+        )
+        self.assertEqual(len(experiment.MATRICES["m3.5"]["ids"]), 27)
+
+    def test_resolution_rejects_missing_and_extra_keys(self):
+        for entry in (
+            {"family": "DT", "max_depth": 10},
+            {"family": "B0", "C": 1},
+            {"family": "L2"},
+            {"family": "XGB", "max_depth": 3, "learning_rate": 0.1, "C": 1},
+        ):
+            with (
+                self.subTest(entry=entry),
+                self.assertRaisesRegex(ValueError, "configuration"),
+            ):
+                experiment.resolve_configurations([entry])
+
+    def test_unknown_matrix_is_refused_before_fitting(self):
+        config = {**self.config(), "matrix": "m9", "configurations": CONFIGURATIONS}
+        self.config_path.write_text(json.dumps(config))
+        code, output = self.run_id("a")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown matrix", output)
+        self.assertFalse((self.root / "results" / "a").exists())
+
+    def jev_entry(self, max_requests):
+        def send(body):
+            probabilities = dict(zip(LABELS, (0.1, 0.2, 0.6, 0.1)))
+            answer = {"type": "choice", "choice": "calculation", "confidence": 0.5}
+            answer["probabilities"] = probabilities
+            return 200, {"model": "jev-1.14.0", "answers": {"first_action": answer}}
+
+        log = self.root / "jev.jsonl"
+        validation = experiment.load_rows(self.root / "validation.jsonl", "validation")
+        jev.collect(validation, log, max_requests, send)
+        return {
+            "family": "Jev",
+            "responses": str(log),
+            "responses_sha256": file_sha256(log),
+        }
+
+    def test_jev_replays_saved_answers_without_the_network(self):
+        rows = self.run_config([self.jev_entry(max_requests=100)])
+        self.assertEqual({r["prediction"] for r in rows}, {"calculation"})
+        self.assertEqual(rows[0]["scores"], [0.1, 0.2, 0.6, 0.1])
+        self.assertEqual(rows[0]["score_type"], "probability")
+        outcome = self.result("a", "outcomes.json")[0]
+        self.assertEqual((outcome["id"], outcome["status"]), ("Jev", "ok"))
+
+    def test_jev_without_an_answer_for_every_query_fails_whole(self):
+        config = {
+            **self.config(),
+            "configurations": [{"family": "B0"}, self.jev_entry(max_requests=9)],
+        }
+        self.config_path.write_text(json.dumps(config))
+        self.assertEqual(self.run_id("a")[0], 1)
+        outcomes = {o["id"]: o for o in self.result("a", "outcomes.json")}
+        self.assertEqual(outcomes["B0"]["status"], "ok")
+        self.assertEqual(outcomes["Jev"]["status"], "failed")
+        self.assertIn("1 queries have no valid Jev answer", outcomes["Jev"]["error"])
+
+    def test_trees_forest_and_boosting_run_end_to_end(self):
+        rows = self.run_config(TREE_CONFIGURATIONS)
+        self.assertEqual(len(rows), 30)
+        for row in rows:
+            self.assertIn(row["prediction"], LABELS)
+            self.assertEqual(row["score_type"], "probability")
+            self.assertAlmostEqual(sum(row["scores"]), 1.0, places=5)
+            self.assertEqual(
+                LABELS[row["scores"].index(max(row["scores"]))], row["prediction"]
+            )
+        params = self.result("a", "config.json")["resolved_params"]
+        dt = params["DT-d10-leaf1"]["classifier"]
+        self.assertEqual(
+            (
+                dt["criterion"],
+                dt["max_depth"],
+                dt["min_samples_leaf"],
+                dt["random_state"],
+            ),
+            ("gini", 10, 1, 42),
+        )
+        rf = params["RF-dNone-leaf3"]["classifier"]
+        self.assertEqual(
+            (rf["n_estimators"], rf["max_features"], rf["bootstrap"], rf["n_jobs"]),
+            (200, "sqrt", True, 1),
+        )
+        self.assertIsNone(rf["max_depth"])
+        xgb = params["XGB-d3-lr0.05"]["classifier"]
+        self.assertEqual(
+            (xgb["estimator__tree_method"], xgb["estimator__objective"]),
+            ("hist", "multi:softprob"),
+        )
+        self.assertEqual(
+            (xgb["estimator__n_estimators"], xgb["estimator__learning_rate"]),
+            (200, 0.05),
+        )
+        self.assertEqual(self.result("a", "provenance.json")["xgboost"][:2], "3.")
+
+    def test_xgb_treats_absent_words_as_missing_values(self):
+        train = experiment.load_rows(self.root / "train.jsonl", "train")
+        validation = experiment.load_rows(self.root / "validation.jsonl", "validation")
+        entry = experiment.resolve_configurations(
+            [{"family": "XGB", "max_depth": 3, "learning_rate": 0.1}]
+        )[0]
+        pipeline = experiment.fit_predict(entry, train, validation)["pipeline"]
+        sparse = pipeline.named_steps["vec"].transform([r["text"] for r in validation])
+        self.assertTrue((sparse.data != 0).all())
+        dense = sparse.toarray()
+        dense[dense == 0] = float("nan")
+        clf = pipeline.named_steps["clf"]
+        self.assertTrue(
+            numpy.allclose(clf.predict_proba(sparse), clf.predict_proba(dense))
+        )
+
+    def test_tree_families_reproduce_between_runs(self):
+        self.run_config(TREE_CONFIGURATIONS)
+        self.assertEqual(self.run_id("b")[0], 0)
+        self.assertEqual(
+            experiment.compare(self.root / "results/a", self.root / "results/b"), []
+        )
 
     def test_s1_margins_follow_labels_order_and_are_labeled_margin(self):
         rows = self.run_config([{"family": "S1", "C": 1}])
@@ -651,15 +805,26 @@ class FamilyTest(RunTestCase):
         self.assertLessEqual(latency["median_seconds"], latency["p95_seconds"])
 
 
-def write_run(directory, spec, run_id="fx", blocked=None):
-    """Write a literal run: spec maps id -> (family, C, status, macro_f1, latency)."""
+def write_run(directory, spec, run_id="fx", matrix=None):
+    """Write a literal run: spec maps id -> (family, C, status, macro_f1, latency).
+
+    C may be a dict of the family's other parameters instead of a number.
+    """
     directory.mkdir(parents=True)
     entries = [
-        {"id": cid, "family": family, "C": c}
+        {
+            "id": cid,
+            "family": family,
+            "C": None,
+            **(c if isinstance(c, dict) else {"C": c}),
+        }
         for cid, (family, c, *_rest) in spec.items()
     ]
     contents = {
-        "config.json": {"configurations": entries},
+        "config.json": {
+            "configurations": entries,
+            **({"config": {"matrix": matrix}} if matrix else {}),
+        },
         "provenance.json": {
             "run_id": run_id,
             "manifest_dataset_sha256": "d" * 64,
@@ -698,11 +863,29 @@ def write_run(directory, spec, run_id="fx", blocked=None):
 def full_spec(**overrides):
     """All 14 required configurations ok at macro-F1 0.5 unless overridden."""
     spec = {}
-    for cid in experiment.REQUIRED_IDS:
+    for cid in experiment.M3_IDS:
         family, _, c = cid.partition("-C")
         spec[cid] = (family, float(c) if c else None, "ok", 0.5, 0.1)
     for key, value in overrides.items():
         spec[key.replace("_C", "-C")] = value
+    return spec
+
+
+def full_spec_m3_5(**overrides):
+    """The 26 local m3.5 configurations ok at macro-F1 0.5 unless overridden."""
+    spec = full_spec()
+    for cid in experiment.M3_5_IDS[len(experiment.M3_IDS) :]:
+        family, *tokens = cid.split("-")
+        if family == "Jev":
+            continue
+        depth = tokens[0][1:]
+        depth = None if depth == "None" else int(depth)
+        if family == "XGB":
+            params = {"max_depth": depth, "learning_rate": float(tokens[1][2:])}
+        else:
+            params = {"max_depth": depth, "min_samples_leaf": int(tokens[1][4:])}
+        spec[cid] = (family, params, "ok", 0.5, 0.1)
+    spec.update(overrides)
     return spec
 
 
@@ -712,9 +895,16 @@ class SelectionTest(unittest.TestCase):
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
 
-    def select(self, spec):
-        write_run(self.root / "run", spec)
+    def select(self, spec, matrix=None):
+        write_run(self.root / "run", spec, matrix=matrix)
         return experiment.select(self.root / "run")
+
+    def select_m3_5(self, jev=True, **overrides):
+        spec = full_spec_m3_5(**overrides)
+        if not jev:
+            return self.select(spec, matrix="m3.5")
+        spec["Jev"] = ("Jev", {}, "ok", 0.5, 0.1)
+        return self.select(spec, matrix="m3.5")
 
     def test_tie_within_tolerance_picks_smallest_c(self):
         # 0.80 - 0.79 is exactly the inclusive tolerance.
@@ -801,6 +991,168 @@ class SelectionTest(unittest.TestCase):
             }
         )
         self.assertEqual(selection["overall"]["chosen"], "L3-C1")
+
+    def test_m3_5_dt_tie_prefers_shallower_then_larger_leaf(self):
+        selection = self.select_m3_5(
+            **{
+                "DT-d10-leaf1": (
+                    "DT",
+                    {"max_depth": 10, "min_samples_leaf": 1},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "DT-d10-leaf3": (
+                    "DT",
+                    {"max_depth": 10, "min_samples_leaf": 3},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "DT-d30-leaf1": (
+                    "DT",
+                    {"max_depth": 30, "min_samples_leaf": 1},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "DT-d30-leaf3": (
+                    "DT",
+                    {"max_depth": 30, "min_samples_leaf": 3},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+            }
+        )
+        family = selection["families"]["DT"]
+        self.assertEqual(
+            family["tie_set"],
+            ["DT-d10-leaf3", "DT-d10-leaf1", "DT-d30-leaf3", "DT-d30-leaf1"],
+        )
+        self.assertEqual(family["chosen"], "DT-d10-leaf3")
+
+    def test_m3_5_rf_unlimited_depth_ranks_last(self):
+        selection = self.select_m3_5(
+            **{
+                "RF-dNone-leaf3": (
+                    "RF",
+                    {"max_depth": None, "min_samples_leaf": 3},
+                    "ok",
+                    0.8,
+                    0.1,
+                ),
+                "RF-dNone-leaf1": (
+                    "RF",
+                    {"max_depth": None, "min_samples_leaf": 1},
+                    "ok",
+                    0.8,
+                    0.1,
+                ),
+                "RF-d30-leaf1": (
+                    "RF",
+                    {"max_depth": 30, "min_samples_leaf": 1},
+                    "ok",
+                    0.8,
+                    0.1,
+                ),
+            }
+        )
+        family = selection["families"]["RF"]
+        self.assertEqual(family["chosen"], "RF-d30-leaf1")
+        self.assertEqual(family["tie_set"][-2:], ["RF-dNone-leaf3", "RF-dNone-leaf1"])
+
+    def test_m3_5_xgb_tie_prefers_shallower_then_lower_learning_rate(self):
+        selection = self.select_m3_5(
+            **{
+                "XGB-d3-lr0.05": (
+                    "XGB",
+                    {"max_depth": 3, "learning_rate": 0.05},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "XGB-d3-lr0.1": (
+                    "XGB",
+                    {"max_depth": 3, "learning_rate": 0.1},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "XGB-d6-lr0.05": (
+                    "XGB",
+                    {"max_depth": 6, "learning_rate": 0.05},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+                "XGB-d6-lr0.1": (
+                    "XGB",
+                    {"max_depth": 6, "learning_rate": 0.1},
+                    "ok",
+                    0.7,
+                    0.1,
+                ),
+            }
+        )
+        family = selection["families"]["XGB"]
+        self.assertEqual(
+            family["tie_set"],
+            ["XGB-d3-lr0.05", "XGB-d3-lr0.1", "XGB-d6-lr0.05", "XGB-d6-lr0.1"],
+        )
+        self.assertEqual(family["chosen"], "XGB-d3-lr0.05")
+
+    def test_m3_5_overall_tie_prefers_l3_then_dt_then_rf_then_xgb(self):
+        selection = self.select_m3_5(
+            **{
+                "XGB-d3-lr0.05": (
+                    "XGB",
+                    {"max_depth": 3, "learning_rate": 0.05},
+                    "ok",
+                    0.80,
+                    0.001,
+                ),
+                "RF-d30-leaf1": (
+                    "RF",
+                    {"max_depth": 30, "min_samples_leaf": 1},
+                    "ok",
+                    0.80,
+                    0.002,
+                ),
+                "DT-d10-leaf1": (
+                    "DT",
+                    {"max_depth": 10, "min_samples_leaf": 1},
+                    "ok",
+                    0.80,
+                    0.003,
+                ),
+                "L3-C1": ("L3", 1, "ok", 0.80, 0.9),
+            }
+        )
+        self.assertEqual(
+            selection["overall"]["tie_set"],
+            ["L3-C1", "DT-d10-leaf1", "RF-d30-leaf1", "XGB-d3-lr0.05"],
+        )
+        self.assertEqual(selection["overall"]["chosen"], "L3-C1")
+        self.assertEqual(
+            selection["rules"]["simplicity_order"],
+            ["B0", "B1", "L1", "L2", "S1", "L3", "DT", "RF", "XGB", "Jev"],
+        )
+
+    def test_m3_5_run_without_jev_is_invalid_and_lists_it_missing(self):
+        selection = self.select_m3_5(jev=False)
+        self.assertIs(selection["valid"], False)
+        self.assertIs(selection["complete_matrix"], False)
+        self.assertEqual(selection["missing"], ["Jev"])
+        self.assertEqual(selection["unexpected"], [])
+        self.assertIsNone(selection["overall"]["chosen"])
+
+    def test_m3_run_keeps_the_m3_rules_and_order(self):
+        selection = self.select(full_spec())
+        self.assertEqual(
+            selection["rules"]["simplicity_order"], ["B0", "B1", "L1", "L2", "S1", "L3"]
+        )
+        self.assertIn("exactly the 14 required", selection["rules"]["text"])
 
     def test_cli_writes_invalid_selection_and_exits_1_and_refuses_overwrite(self):
         write_run(
