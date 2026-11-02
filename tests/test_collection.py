@@ -3,6 +3,8 @@ import random
 import unittest
 
 from orchestra.collection import (
+    cap_hold,
+    check_release,
     import_row,
     interleave,
     passage_attachment,
@@ -10,7 +12,7 @@ from orchestra.collection import (
     split_passage,
     table_attachment,
 )
-from orchestra.data import FIELDS
+from orchestra.data import FIELDS, LABELS
 
 
 class SeededOrderTest(unittest.TestCase):
@@ -109,6 +111,135 @@ class ImportAdapterTest(unittest.TestCase):
         self.assertNotIn("text", record)
         with self.assertRaises(ValueError):
             table_attachment("q1", "data/x/all.parquet", "e75d53a", "not-a-hash")
+
+
+def release_rows():
+    """2 parent and 6 new rows per class, over two sources and four types."""
+    rows, types = [], {}
+    for c, label in enumerate(LABELS):
+        for i in range(2):
+            qid = f"p{c}{i}"
+            rows.append(
+                _row(qid, f"pg{c}{i}", f"parent {label} words {qid}", label, "s1")
+            )
+            types[qid] = "t0"
+        for i in range(6):
+            qid = f"n{c}{i}"
+            source = "s1" if i % 2 else "s2"
+            text = f"{label} distinct item {i} " + " ".join(
+                f"w{c}{i}{k}" for k in range(6)
+            )
+            rows.append(_row(qid, f"ng{c}{i}", text, label, source))
+            types[qid] = f"t{i % 3 + 1}"
+    return rows, types
+
+
+def _row(qid, group, text, label, source):
+    return {
+        "query_id": qid,
+        "group_id": group,
+        "text": text,
+        "label": label,
+        "source_id": source,
+    }
+
+
+PARENT = {f"p{c}{i}" for c in range(4) for i in range(2)}
+
+
+class ReleaseCheckTest(unittest.TestCase):
+    def errors(self, rows, types, pairs=()):
+        return check_release(rows, PARENT, types, pairs)["errors"]
+
+    def test_balanced_release_passes_and_reports_counts(self):
+        rows, types = release_rows()
+        report = check_release(rows, PARENT, types, ())
+        self.assertEqual(report["errors"], [])
+        self.assertEqual(report["by_class"]["calculation"]["rows"], 8)
+        self.assertEqual(report["by_class"]["calculation"]["new_groups"], 6)
+
+    def test_exact_duplicate_after_normalizing_fails(self):
+        rows, types = release_rows()
+        rows[3]["text"] = "  " + rows[2]["text"].upper()
+        self.assertTrue(any("same text" in e for e in self.errors(rows, types)))
+
+    def test_fifth_row_in_a_group_fails(self):
+        rows, types = release_rows()
+        for row in rows[2:7]:
+            row["group_id"] = "ng00"
+        self.assertTrue(any("5 rows" in e for e in self.errors(rows, types)))
+
+    def test_source_above_75_percent_of_a_class_fails(self):
+        rows, types = release_rows()
+        for row in rows[:8]:
+            row["source_id"] = "s1"
+        self.assertTrue(any("source s1" in e for e in self.errors(rows, types)))
+
+    def test_one_source_class_fails(self):
+        rows, types = release_rows()
+        for row in rows:
+            row["source_id"] = "s1"
+        self.assertTrue(any("2 sources" in e for e in self.errors(rows, types)))
+
+    def test_type_above_40_percent_of_a_class_fails(self):
+        rows, types = release_rows()
+        for qid in ("n01", "n02"):
+            types[qid] = "t1"
+        self.assertTrue(any("type t1" in e for e in self.errors(rows, types)))
+
+    def test_missing_type_fails(self):
+        rows, types = release_rows()
+        del types["n00"]
+        self.assertTrue(any("no request type" in e for e in self.errors(rows, types)))
+
+    def test_fewer_than_five_new_groups_fails(self):
+        rows, types = release_rows()
+        for row in rows[2:6]:
+            row["group_id"] = "ng-shared"
+        self.assertTrue(any("new groups" in e for e in self.errors(rows, types)))
+
+    def test_new_row_in_a_parent_group_fails(self):
+        rows, types = release_rows()
+        rows[2]["group_id"] = "pg00"
+        self.assertTrue(any("parent group" in e for e in self.errors(rows, types)))
+
+    def test_new_row_overlapping_a_parent_row_fails_without_printing_it(self):
+        rows, types = release_rows()
+        rows[2]["text"] = rows[0]["text"] + " extra"
+        errors = self.errors(rows, types)
+        self.assertTrue(any("p00" in e for e in errors))
+        self.assertFalse(any(rows[0]["text"] in e for e in errors))
+
+    def test_close_pair_needs_a_recorded_hand_check(self):
+        rows, types = release_rows()
+        rows[3]["text"] = rows[2]["text"] + " more"
+        self.assertTrue(any("hand check" in e for e in self.errors(rows, types)))
+        decided = [{"pair": ["n00", "n01"], "same_group": False, "reason": "frame"}]
+        self.assertEqual(self.errors(rows, types, decided), [])
+        joined = [{"pair": ["n00", "n01"], "same_group": True, "reason": "swap"}]
+        self.assertTrue(
+            any("share a group" in e for e in self.errors(rows, types, joined))
+        )
+
+
+class CapHoldTest(unittest.TestCase):
+    def test_candidate_over_a_source_or_type_cap_is_held(self):
+        rows = [_row(f"q{i}", f"g{i}", "t", "calculation", "big") for i in range(3)]
+        rows.append(_row("q3", "g3", "t", "calculation", "small"))
+        types = {"q0": "a", "q1": "a", "q2": "b", "q3": "b"}
+        new = _row("q4", "g4", "t", "calculation", "big")
+        self.assertIn("source big", cap_hold(rows, types, new, "c"))
+        other = _row("q5", "g5", "t", "calculation", "small")
+        self.assertIsNone(cap_hold(rows, types, other, "c"))
+        self.assertIn("type b", cap_hold(rows, types, other, "b"))
+
+    def test_other_classes_do_not_count(self):
+        rows = [_row(f"d{i}", f"h{i}", "t", "direct_answer", "big") for i in range(6)]
+        rows += [_row("c0", "g0", "t", "calculation", "small")]
+        rows += [_row("c1", "g1", "t", "calculation", "mid")]
+        types = {r["query_id"]: "a" for r in rows} | {"c1": "b"}
+        new = _row("q1", "g2", "t", "calculation", "big")
+        self.assertIsNone(cap_hold(rows, types, new, "c"))
 
 
 if __name__ == "__main__":
