@@ -14,6 +14,8 @@ A [draft M3.5 collection brief](collection-brief-m3-5.md) now sets out the class
 
 On November 2 Altan asked to implement the four methods. The [classifier implementation](evidence/m3-5-classifiers.md) adds `DT`, `RF` and `XGB` with this plan's settings, a Jev adapter with a capped collection command and offline replay, and an `m3.5` matrix with the tie rules in section 4. XGBoost 3.4.1 is pinned; macOS also needs Homebrew's `libomp`. The M3 selection and a fresh M3 rerun reproduce the stored M3 evidence. A training-only pilot fitted all 26 local configurations in 2.15 seconds with a 164.8 MiB peak. No new family has a validation score; Altan chose on November 2 to score them first in the M3.5 comparison rather than on the M3 validation rows. No Jev request was sent: Jev needs an account, key, spending cap and data-handling approval. Confidence and final-test integration of the new families remain open.
 
+On November 2 Altan changed the review protocol and the brief was frozen. AI screens and separate blind AI checks reviewed 7,206 candidates; 727 flagged rows went to Altan, who answered three times by adopting the agent's proposed theme defaults. When more data became the priority, Altan raised the size to up to 1,000 rows per class and kept every quality rule. The [M3.5 release](evidence/m3-5-dataset.md) `m3-5-v1` has 3,145 accepted rows: retrieval 1,000, direct answer 1,000, calculation 651 and lookup 494. Lookup is short because every listed lookup pool was walked; calculation because its other sources ran out and the 40% word-problem cap holds the remaining GSM8K rows. The M3 split was extended from its pinned hash to 1,888 training, 629 validation and 628 sealed test rows.
+
 ## Research question and starting evidence
 
 Does a broader public-data sample change the relative performance and errors of the existing text classifiers, tree methods, and a pretrained structured-output model for the same four first actions?
@@ -83,8 +85,8 @@ M4 keeps the required logistic raw-versus-sigmoid calibration comparison using g
 
 ## Completion evidence and handoff
 
-- [ ] Capacity/source decision and a separately frozen M3.5 collection brief, with licenses, revisions, mapping, quotas, stop rule and review workload.
-- [ ] At least 2,000 accepted rows under the near-balanced design (lookup at least 350, other classes equal; more if supply allows), with the review ledger, source/class/group/batch checks, exclusion counts, and independent-group split lineage.
+- [x] Capacity/source decision and a separately frozen M3.5 collection brief, with licenses, revisions, mapping, quotas, stop rule and review workload. Frozen November 2; Altan replaced per-row labeling with adjudication of disagreements.
+- [x] At least 2,000 accepted rows under the near-balanced design (lookup at least 350, other classes equal; more if supply allows), with the review ledger, source/class/group/batch checks, exclusion counts, and independent-group split lineage. `m3-5-v1` holds 3,145 rows under Altan's later rule of up to 1,000 per class ([record](evidence/m3-5-dataset.md)); it is not near-balanced, with classes from 494 to 1,000.
 - [ ] Frozen experiment manifest; all existing and selected new methods have outcomes, or an explicit accepted scope decision for an infeasible method.
 - [ ] Matched-split validation comparison, saved errors/timing/resource/API evidence, deterministic local reruns and archive reproduction; Jev reproducibility limits disclosed.
 - [ ] Selection and final-test integration pass fixtures; no research test exposure. M4 reads the expanded release and the new frozen selections.
