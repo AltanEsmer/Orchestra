@@ -47,4 +47,8 @@ Existing pools and orders at the freeze, all ignored under `work/`:
 | `m3-5-screen/existing/no_robots_direct_train-pool.jsonl` | `b0c8d1e5f664d773a2e3bf717eceb246b277ec1fc23dbcdad7a2cfe3ae0b77e6` |
 | `m3-5-screen/existing/dolly_direct-pool.jsonl` | `0d62df76f7880f56ec8d413701688d0a3ae5fe24eb92011f4c06966363739c14` |
 
+## Size change after freezing, November 2
+
+After the first adjudication round, Altan asked for more data ("We can make rules less strict than before to even obtain more dataset as it is one of the most important") and then chose "Up to 1,000 per class" and "Keep all rules". The brief's new section "Change after freezing" records it as decision 8, replacing the 2,000 total; every quality rule stays. The amended brief's SHA-256 is `5f881f83df5ed6a96585a3788ca9bd8c568286bba2570bf9bc6b9bdae8163f92`; the frozen version above stays the reference for rows screened before the change.
+
 The `m3-5-screen/existing` pools saved only a seed-42 sample, not a full order. Their full orders keep that sample first and add the rest in a seed-42 shuffle, as the M3 import did; they are built with the two new pools and hashed below before any review. The full hash list, including the samples, is in ignored `work/m3-5-dataset/freeze.json`, written by `work/m3-5-dataset/freeze_hashes.py`.

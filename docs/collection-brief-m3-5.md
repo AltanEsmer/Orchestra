@@ -159,3 +159,11 @@ Altan's further answers on November 2:
 7. **Size.** Keep option B as written: lookup takes every reviewed row that passes, up to 500 (floor 350), and the other three classes split the rest to 2,000 in total, per the target table and stop rule. Do not collect past the targets.
 
 With these answers the brief is frozen. Next: record its hash, add the source-manifest entries, then build the new pools, the import adapters and the M3.5 count and batch checks.
+
+## Change after freezing, November 2
+
+The frozen brief's SHA-256 was `5320797319b1206f4e11acae5ec7e16f90ea2500b14e21cc0f882ff80957e50e`. After Altan adjudicated the first worksheet, lookup stood at 483 accepted rows with all its pools screened. Altan then wrote: "We can make rules less strict than before to even obtain more dataset as it is one of the most important." Asked which rules, Altan chose **"Up to 1,000 per class"** and **"Keep all rules"**.
+
+8. **Size, replacing decision 7.** Every class takes each reviewed row that passes, up to 1,000 rows in total including M3's 100, until its listed sources run out. This replaces the 2,000 total, the target table and step 2 of the stop rule's targets. Lookup keeps its floor of 350. The four-row group cap, the 75% source and 40% request-type caps, the guide v3 boundaries, the sources, the interleaving and the review protocol all stay as frozen. Rows are still drawn in pool order, and no new source, AI draft or synthetic row is added. Classes may end unequal; report actual counts.
+
+The agent recorded this section before drawing any row that the old targets would have stopped. Rows screened earlier under the 2,000 design keep their decisions.
