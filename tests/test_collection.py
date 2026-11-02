@@ -1,7 +1,13 @@
+import contextlib
 import hashlib
+import io
+import json
 import random
+import tempfile
 import unittest
+from pathlib import Path
 
+from orchestra.__main__ import main
 from orchestra.collection import (
     cap_hold,
     check_release,
@@ -240,6 +246,46 @@ class CapHoldTest(unittest.TestCase):
         types = {r["query_id"]: "a" for r in rows} | {"c1": "b"}
         new = _row("q1", "g2", "t", "calculation", "big")
         self.assertIsNone(cap_hold(rows, types, new, "c"))
+
+
+class CheckCollectionCommandTest(unittest.TestCase):
+    def run_command(self, rows, types, pairs):
+        rows = [r | {"status": "accepted"} for r in rows]
+        parent_rows = [r for r in rows if r["query_id"] in PARENT]
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            files = {
+                "dataset": (tmp / "d.jsonl", rows),
+                "parent": (tmp / "p.jsonl", parent_rows),
+            }
+            for path, data in files.values():
+                path.write_text("".join(json.dumps(r) + "\n" for r in data))
+            (tmp / "t.json").write_text(json.dumps(types))
+            (tmp / "pairs.json").write_text(json.dumps(pairs))
+            argv = ["check-collection", "--dataset", str(tmp / "d.jsonl")]
+            argv += ["--parent", str(tmp / "p.jsonl"), "--types", str(tmp / "t.json")]
+            argv += ["--pairs", str(tmp / "pairs.json"), "--out", str(tmp / "r.json")]
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                code = main(argv)
+            report = json.loads((tmp / "r.json").read_text())
+        return code, output.getvalue(), report
+
+    def test_passing_release_exits_zero_and_saves_the_report(self):
+        rows, types = release_rows()
+        code, output, report = self.run_command(rows, types, [])
+        self.assertEqual(code, 0)
+        self.assertIn("PASS", output)
+        self.assertEqual(report["errors"], [])
+
+    def test_failing_release_exits_one_without_printing_text(self):
+        rows, types = release_rows()
+        rows[2]["text"] = rows[0]["text"] + " extra"
+        code, output, report = self.run_command(rows, types, [])
+        self.assertEqual(code, 1)
+        self.assertIn("overlaps parent row p00", output)
+        self.assertNotIn(rows[0]["text"], output)
+        self.assertTrue(report["errors"])
 
 
 if __name__ == "__main__":
