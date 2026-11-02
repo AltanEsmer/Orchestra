@@ -1,6 +1,6 @@
 # Collection brief for M3.5
 
-Draft prepared November 1, 2026. **Not frozen.** Altan answered decisions 1 to 5 on November 2, 2026; the timing pilot and the affected-row check at the end remain before freezing. Once frozen, record this file's hash before importing any row, and document later changes before collecting affected rows. The October 26 [M3 brief](collection-brief.md) stays unchanged and hash-bound. **Guide v3** means the v2 [annotation guide](annotation-guide.md) plus the "Guide v3" section below; the frozen brief's hash binds both. This draft contains no research query rows.
+Draft prepared November 1, 2026. **Frozen November 2, 2026**, after Altan answered decisions 1 to 7 at the end. Its SHA-256 and guide v3's are recorded in the [M3.5 dataset record](evidence/m3-5-dataset.md) before any row is imported. Document later changes before collecting affected rows. The October 26 [M3 brief](collection-brief.md) stays unchanged and hash-bound. **Guide v3** means the v2 [annotation guide](annotation-guide.md) plus the "Guide v3" section below; the frozen brief's hash binds both. This draft contains no research query rows.
 
 ## What M3.5 adds
 
@@ -73,18 +73,29 @@ Group under guide v2, with these M3.5 specifics:
 
 Every batch of at most 100 rows passes the cumulative checks before acceptance: no exact duplicates; a hand check of pairs at 0.5 token overlap or more; at most four rows per group; at least two sources per class with none above 75%; no request type above 40%. Each class needs at least five new groups. These checks apply to the cumulative release, not just the batch.
 
+Token overlap is token-set Jaccard over `re.findall(r"[a-z0-9']+", text.casefold())`, as in the discovery lanes. The lead agent hand-checks every new pair at 0.5 or more and records whether the rows share a group; a pair it cannot settle goes to Altan. The parent-overlap check reads M3 training and validation rows. Sealed test rows enter only computed checks (exact match and Jaccard), never printed, as in the affected-row check.
+
 ## Pools, order and caps
 
-**Pools.** Each source's candidates come from its saved screening pool and seed-42 order: DataBench in `work/m3-5-groups/option-b/databench/`; ToolACE, ToolAlpaca and Glaive in `work/m3-5-groups/lookup/` and `work/m3-5-groups/option-b/keyed/`; CLINC150, MASSIVE, oasst2 and TheoremQA in `work/m3-5-groups/discovery/`; Dolly, No Robots and GSM8K in `work/m3-5-screen/existing/`. Pools that do not exist yet, the CLINC150/MASSIVE direct intents and the cue candidates below, are built and their orders saved before any of their rows is reviewed. Pool and order hashes are recorded when the brief is frozen.
+**Pools.** Each source's candidates come from its saved screening pool and seed-42 order: DataBench in `work/m3-5-groups/option-b/databench/`; ToolACE, ToolAlpaca and Glaive in `work/m3-5-groups/lookup/` and `work/m3-5-groups/option-b/keyed/`; CLINC150, MASSIVE, oasst2 and TheoremQA in `work/m3-5-groups/discovery/`; Dolly, No Robots and GSM8K in `work/m3-5-screen/existing/`. Pools that do not exist yet, the CLINC150/MASSIVE direct intents and the cue candidates below, are built and their orders saved before any of their rows is reviewed. Pool and order hashes are recorded when the brief is frozen, and for the two new pools when they are built.
+
+The two new pools follow the discovery lanes' contract: unchanged text, normalized exact duplicates dropped, token-set Jaccard 0.5 or more against any M3 row dropped (computed, never printed), then a `random.Random(42)` order.
+
+- **Direct intents.** CLINC150 `definition`, `translate`, `tell_joke`, `fun_fact` and `spelling` (train, val and test splits; out-of-scope splits excluded), and MASSIVE en-US `qa_definition`, `general_joke` and `qa_factoid`. Each corpus keeps its own order; the stream alternates them.
+- **Cue candidates.** The eight "dataset" rows in the Dolly and No Robots pools and the 80 No Robots passage prompts with "my", by the regexes in `cues.py`. Accepted rows count toward their class and source as usual.
+
+Store-kind candidates alternate the CLINC150 and MASSIVE lookup orders. Tool candidates rotate ToolACE (its focused order, then the remainder order), ToolAlpaca's focused order and the six Glaive lookups of the earlier inventory; Glaive's focused pool stays skipped (0 of 120 on October 31). The calculation "earlier inventory" is the 49 provisional rows of `work/m3-5-groups/audit/integrated-inventory.jsonl` from adopted sources (GSM8K 30, Glaive 10, BFCL 7, Dolly 2), in inventory order; its Math Stack Exchange and synthetic-benchmark rows stay excluded. A candidate already reached through another pool is skipped as a duplicate.
 
 **Interleaving.** Within a class, fill each batch from the sources in the ratios below, taking the next candidates in each source's order:
 
 - **Lookup.** Every eligible candidate, since supply is below 500. Interleave DataBench, store kinds and tool corpora about 3 : 1 : 1, so keyed records stay under 40%.
 - **Calculation.** CLINC150, TheoremQA, MASSIVE, oasst2 and the earlier inventory in proportion to their estimated supply (about 168 : 112 : 65 : 52 : 49). New GSM8K word problems come in only once those run out or are cap-held.
 - **Retrieval.** Two Dolly rows per No Robots row. Within Dolly, alternate closed QA with extraction and summarization so document questions stay under 40%.
-- **Direct.** Two No Robots rows per Dolly row, plus CLINC150/MASSIVE direct rows as their screen finds them, within group caps.
+- **Direct.** Two No Robots rows per Dolly row, plus CLINC150/MASSIVE direct rows as their screen finds them, within group caps. The direct-intent stream is drawn at one candidate per Dolly candidate.
 
-**Cap holds.** M3 already sits at several limits: keyed lookups (40 of 100), BFCL in calculation (75), Dolly in retrieval (75), No Robots in direct answers (75) and document questions (40). A candidate that passes review but would push a cumulative share over its cap is held as `cap-hold`, neither accepted nor rejected. It returns first when later rows make room. A temporarily over-cap batch is never accepted.
+Ratios are applied to candidates drawn for screening, by a deterministic smooth weighted round robin. A batch is at most 100 eligible or held candidates of one class sent together to the blind check.
+
+**Cap holds.** M3 already sits at several limits: keyed lookups (40 of 100), BFCL in calculation (75), Dolly in retrieval (75), No Robots in direct answers (75) and document questions (40). A candidate that passes review but would push a cumulative share over its cap is held as `cap-hold`, neither accepted nor rejected. It returns first when later rows make room. A temporarily over-cap batch is never accepted. A candidate whose group already holds four accepted or pending rows is skipped as `group-full`, before screening when its group is known in advance (a table, an intent's store kind, a number-swap skeleton); it returns in order if one of those rows fails review.
 
 **Stop rule.**
 
@@ -94,15 +105,18 @@ Every batch of at most 100 rows passes the cumulative checks before acceptance: 
 
 ## Review
 
-**Timing pilot first.** Run the prepared 12-case pilot (`work/m3-5-screen/existing/human-pilot.md`) before collecting, by November 3 if the schedule holds. The workload is minutes per candidate times candidates reviewed, plus adjudication time. Candidates reviewed exceed the 1,600 accepted rows by the share Altan rejects, which is unknown until the first batch. The pilot's twelve hand-picked cases cannot estimate that yield. Re-estimate after the first batch of 100 and label the estimate inferred. If it does not fit the November 12 target, Altan decides scope or schedule.
+**Protocol change, November 2.** Before freezing, Altan replaced per-row human labeling. A new row is accepted when the AI screen's label and an independent blind AI check agree and neither flags it. Altan adjudicates every disagreement, flag or abstention. Altan does not label every row. The 12-case timing pilot is not run, because the change removes per-row human labeling; Altan's workload is the adjudications.
 
-**Two stages.** First, the AI screen applies this brief to each pool in order and records eligible, held and excluded candidates, as the discovery screens did. Second, Altan reviews every eligible and held candidate in the same order, using the M3 method:
+**Two stages.**
 
-- Altan records the primary label and rationale for every new row, without seeing the screen's proposed label.
-- A blind AI check reviews every new row. It sees guide v3, the query text, and whether a passage or table is attached.
-- Clear, unflagged agreements are accepted. Every flag, abstention or disagreement needs Altan's adjudication.
+1. **Screen.** A Claude Sonnet 5.5 worker at medium effort applies this brief to each pool in order. It records eligible, held and excluded candidates. For each eligible or held candidate it proposes a label, request type, group key and one-sentence rationale. Its exclusions are recorded with reasons and counted; they get no further review.
+2. **Blind check.** A separate Claude Opus 5.5 agent at high effort reviews every eligible and held candidate. It sees guide v3, the query text and whether a passage or table is attached. It never sees the source, pool, screen label or rationale.
 
-Screening verdicts are not labels. A pool's source still hints at a label; disclose that, along with the facts that AI consistency is not human agreement and that approving agent proposals carries an anchoring risk. Record exclusions and unresolved boundaries.
+A candidate is accepted when the screen marked it eligible, both labels agree, the blind check judged it clear and neither flagged it, and the batch passes the cumulative checks and cap holds above. Every disagreement, flag, hold or abstention goes to Altan with both labels and rationales. Only Altan's actual answers are recorded.
+
+In the review ledger, `original_label` is the screen's label and `review_label` the blind check's. A new row's `annotator_ids` name the screen (`ai-screen`), plus `A1` where Altan adjudicated. The screen's model, prompt, input and output hashes go in the import provenance.
+
+Screening verdicts are not labels. Disclose that the release is AI-labeled with human adjudication of disagreements. AI agreement is not human agreement: both checks come from one model family, so shared-model bias remains. A pool's source still hints at a label, and Altan sees the screen's proposal when adjudicating, which carries an anchoring risk. Record exclusions and unresolved boundaries.
 
 ## Known cues to inspect
 
@@ -139,6 +153,9 @@ On November 2, Altan answered "Accept all five" to the recommended answers:
 
 Done on November 2: the affected-row check under guide v3 (no label changes; live-status wording aligned with guide v2).
 
-Still open:
+Altan's further answers on November 2:
 
-6. **Timing pilot.** Altan runs it and confirms the schedule from its result. After approval: record the brief's hash, add the source-manifest entries, then build the import adapters and the M3.5 count and batch checks. None of that implementation exists yet.
+6. **Review protocol.** Accept a new row when the AI screen's label and an independent blind AI check agree and neither flags it. Altan adjudicates every disagreement, flag or abstention and does not label every row. The timing pilot is not run, because this change removes per-row human labeling. Disclose the release as AI-labeled with human adjudication of disagreements; AI agreement is not human agreement.
+7. **Size.** Keep option B as written: lookup takes every reviewed row that passes, up to 500 (floor 350), and the other three classes split the rest to 2,000 in total, per the target table and stop rule. Do not collect past the targets.
+
+With these answers the brief is frozen. Next: record its hash, add the source-manifest entries, then build the new pools, the import adapters and the M3.5 count and batch checks.
