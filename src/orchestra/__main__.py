@@ -302,7 +302,12 @@ def analyze_confidence(args):
 def freeze_study(args):
     from orchestra.confidence import freeze
 
-    freeze(args.confidence, args.out, error_review=args.error_review)
+    freeze(
+        args.confidence,
+        args.out,
+        error_review=args.error_review,
+        jev_test_log=args.jev_test_log,
+    )
     print(f"PASS: final-test decisions frozen at {args.out}")
     return 0
 
@@ -310,7 +315,17 @@ def freeze_study(args):
 def final_test(args):
     from orchestra.confidence import final_test
 
-    out = final_test(args.freeze, args.out, resume=args.resume)
+    send = None
+    if args.send_jev_test:
+        key = os.environ.get(jev.KEY_VARIABLE)
+        if not key:
+            print(f"ERROR: {jev.KEY_VARIABLE} is not set")
+            return 1
+
+        def send(body):
+            return jev.post(body, key)
+
+    out = final_test(args.freeze, args.out, resume=args.resume, jev_send=send)
     print(f"PASS: frozen final-test evidence at {out}")
     return 0
 
@@ -459,6 +474,10 @@ def main(argv=None):
     freeze_parser.add_argument(
         "--error-review", help="completed validation interpretation ledger for research"
     )
+    freeze_parser.add_argument(
+        "--jev-test-log",
+        help="ignored path where final-test will log Jev's test answers",
+    )
     freeze_parser.set_defaults(run=guarded(freeze_study))
     final_parser = commands.add_parser(
         "final-test", help="evaluate frozen systems once per split"
@@ -469,6 +488,11 @@ def main(argv=None):
         "--resume",
         action="store_true",
         help="retry the identical failed frozen request",
+    )
+    final_parser.add_argument(
+        "--send-jev-test",
+        action="store_true",
+        help="send the sealed test queries to TypeSafe Jev (needs TYPESAFE_API_KEY)",
     )
     final_parser.set_defaults(run=guarded(final_test))
     figures_parser = commands.add_parser(
