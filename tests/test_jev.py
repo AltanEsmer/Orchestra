@@ -152,6 +152,21 @@ class CollectTest(CollectTestCase):
         self.assertEqual(len(sent), total)
         self.assertEqual(len(set(sent)), total)
 
+    def test_rejected_key_stops_after_one_request(self):
+        for status in (401, 403):
+            with self.subTest(status=status):
+                self.log.unlink(missing_ok=True)
+                sent = []
+
+                def send(body, status=status, sent=sent):
+                    sent.append(body)
+                    return status, {"error": "invalid key"}
+
+                summary = jev.collect(self.validation, self.log, 1000, send)
+                self.assertEqual((summary["requests"], len(sent)), (1, 1))
+                self.assertEqual(len(summary["missing"]), len(self.validation))
+                self.assertEqual(self.lines()[0]["error"], f"HTTP status {status}")
+
     def test_invalid_response_is_logged_with_error_and_requested_again(self):
         rows = self.validation[:1]
         bad = jev.collect(rows, self.log, 5, lambda body: (200, {"answers": {}}))
