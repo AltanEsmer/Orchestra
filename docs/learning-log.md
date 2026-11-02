@@ -1213,3 +1213,46 @@ Practice prompts, unanswered:
 3. Why does the record also report the 79 M3 rows separately from the 550 new rows?
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged; earlier M3.5 prompts also remain unanswered.
+
+## M3.5 integration with M4, November 2, 2026
+
+Altan answered "Merge #29, then integrate". The agent merged PR #29 and extended the M4 commands (`confidence`, `freeze`, `final-test`) to the 27-configuration decision set.
+
+What changed:
+- **`systems.json`:** `confidence` writes it, declaring each chosen system's score type, calibration and validation metrics. Only the chosen logistic system is recalibrated.
+- **Freeze:** when Jev is chosen, the freeze names an ignored Jev test log that must not exist yet.
+- **Final test:** `final-test` refuses a Jev set unless `--send-jev-test` and a key are given, before any receipt. It collects Jev's test answers only inside the reservation, and `--resume` resends only the missing queries.
+- **XGBoost version:** an M3.5 run must record its XGBoost version, and it must match.
+- **Rejected key:** `jev collect` stops after a 401 or 403 instead of sending every remaining query.
+- **Probability sums:** rows may sum to 1 within 1e-3, the bound Jev's parser already used. The old 1e-10 rejected XGBoost's float32 probabilities.
+
+Relevant ML concepts:
+- **Calibration:** it fits a small model that maps raw scores to better probabilities. It needs data the classifier did not train on, here grouped training folds.
+- **Why only one system:** a pretrained API model cannot be refit inside those folds, so Jev's probabilities are reported as they are.
+- **Single test:** a final test is meaningful only if every decision is frozen before the test is read. Sending test text to an API is also reading it, so it belongs inside the same one-time reservation.
+
+Alternatives considered and not taken:
+- **Collecting Jev's test answers with the `jev` command before the freeze:** that would expose the test outside the receipt.
+- **Calibrating Jev or the trees too:** not declared in the plan, and it would add choices before freezing.
+- **Renormalizing XGBoost's probabilities:** a tolerance changes no saved prediction.
+
+Actual verification:
+- **Tests:** `sh scripts/check.sh` exits 0 with 284 tests.
+- **Mutation checks:** fifteen mutations of the new checks were each caught by a failing test, after three tests were tightened.
+- **Real run:** `confidence` on `m3-5-full-a`, written to a scratch folder, reproduced all ten chosen systems and calibrated only L3-C10, before and after the review fixes.
+- **Independent review:** an Opus reviewer at high effort found no blocking defect and confirmed that test rows are read or sent only after the `opened` receipt. Its three medium findings were fixed, each with a new test:
+  - a log edited between attempts went undetected;
+  - a missing log folder failed only after opening;
+  - a rejected key sent every query.
+
+  So were its low ones: a request count from the last attempt only, a send function accepted without Jev, the XGBoost check depending on the recorded field, and boundary tests for the tolerance.
+- **Sealed test:** not opened.
+
+Teaching trace: say Altan approves and runs the final test. `freeze` records `results/jev/m3-5-test.jsonl`, which does not exist yet. `final-test --send-jev-test` reserves the split and opens the 628 test rows. Then it sends each row as `{"query": <text>}` with the same frozen question as validation. If TypeSafe drops three requests, the attempt stops with a `failed_after_reservation` receipt, and the identical command with `--resume` sends only those three. Jev's predictions then come from replaying the completed test log, whose hash goes into the results, next to the nine local systems refit on training rows.
+
+Practice prompts, unanswered:
+1. Why does sending the test queries to Jev count as opening the test?
+2. Why is only one system calibrated, and why not Jev?
+3. What would go wrong if a failed Jev request were treated as a wrong answer instead of being resent?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged.

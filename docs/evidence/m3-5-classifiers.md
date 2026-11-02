@@ -61,7 +61,7 @@ Expected cost is small but unmeasured. The instructions and criteria hold 112 wo
 4. **A decomposed Jev variant.** TypeSafe's guidance prefers several yes/no questions combined by code. Here that would mean asking whether the query names a document, a structured record or a numeric result, with the guide's order applied in code. It would be a second Jev setup, outside the plan's single one.
 5. **Answers without probabilities.** The adapter treats a Choice answer without four valid probabilities as invalid, so the row is re-sent and can fail the Jev configuration. Plan section 3 instead keeps classification metrics when probabilities are missing. The stricter rule keeps every saved score usable; Altan should confirm it. The November 2 collection ran without that confirmation; every answer had four valid probabilities, so the rule excluded nothing, and it still awaits Altan's confirmation.
 6. **Archive.** `archive` and `restore` do not yet copy the Jev log. A restored archive can replay Jev only where the same log, with the same hash, sits at the configured path. The November 2 archive names both Jev logs in its file list, so it replays Jev.
-7. **M4.** Confidence analysis and the final-test decision set still enumerate the M3 families only.
+7. **M4 (implemented).** On November 2 confidence, freeze and final test were extended to the M3.5 decision set; see the plan's checklist and the protocol's "M4 integration" paragraph. Sending Jev the sealed test queries still needs Altan's approval.
 
 ## Reproduction
 
