@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-from orchestra import experiment
+from orchestra import experiment, jev
 from orchestra.data import file_sha256, read_jsonl, validate
 from orchestra.splits import (
     check_extension,
@@ -372,6 +372,12 @@ def main(argv=None):
     run_parser.add_argument("--config", required=True)
     run_parser.add_argument("--run-id", required=True)
     run_parser.set_defaults(run=guarded(run_experiment))
+    jev_parser = commands.add_parser("jev", help="collect Jev answers for validation")
+    jev_parser.add_argument("--config", required=True)
+    jev_parser.add_argument("--log", required=True)
+    jev_parser.add_argument("--max-requests", type=int, required=True)
+    jev_parser.add_argument("--dry-run", action="store_true")
+    jev_parser.set_defaults(run=guarded(jev.run_jev))
     compare_parser = commands.add_parser("compare", help="check two runs reproduce")
     compare_parser.add_argument("--left", required=True)
     compare_parser.add_argument("--right", required=True)
