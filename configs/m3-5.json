@@ -2,7 +2,7 @@
   "matrix": "m3.5",
   "parent_dataset": "data/processed/m3-v1.jsonl",
   "parent_manifest": "data/splits/m3-split.json",
-  "parent_manifest_sha256": null,
+  "parent_manifest_sha256": "6d48e18bae6ac319bffecc98c68b6b02c8c4483f68a75eddb63db2a52213225f",
   "dataset": "data/processed/m3-5-v1.jsonl",
   "sources": "data/manifests/sources.json",
   "seed": 42,
