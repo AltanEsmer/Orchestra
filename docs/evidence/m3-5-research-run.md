@@ -104,6 +104,6 @@ All ignored and local except this note.
 
 ## Still open
 
-- **Jev.** It needs a TypeSafe key, a spending cap and Altan's approval to send validation queries. Then `orchestra jev` collects the log, the Jev entry joins the prepared config, and both runs and the selection repeat. Otherwise Altan records a scope decision for Jev.
+- **Jev.** Done later on November 2 with Altan's key: the [27-configuration run](m3-5-full-run.md) collected Jev's answers, repeated both runs and the selection, and selected Jev.
 - **Limits.** Altan's formal answer on the 15-minute and 2 GiB limits.
 - **M4 integration.** Confidence and final-test integration of the new families, and the error interpretations.

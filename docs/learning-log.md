@@ -1185,3 +1185,31 @@ Alternatives considered and not taken: choosing an overall winner without Jev (t
 Actual verification: both runs `ok` for all 26; `compare`: `PASS: runs reproduce`; `select`: invalid, `missing: ["Jev"]`; restored archive: `PASS: 59 restored files byte-identical to originals` and `PASS: runs reproduce`. About 22 s and 320 MiB per run.
 
 Teaching trace: q0449, the pound-to-kilogram conversion from the dataset entry, is a training row. During `run`, the TF-IDF vectorizer learns its words' weights from training rows only. L3-C10's logistic regression then learns one weight per word or word pair and class from all training rows, this one included. No score is computed for a training row; the model predicts the 629 validation rows, and selection reads only those predictions. Practice prompts, unanswered: (1) Why is the overall selection marked invalid rather than choosing L3-C10 now? (2) L3-C10 makes no error on the 35 validation rows containing "dataset". Why does that not prove the model understands lookups? (3) Why can a random forest beat a single tree on the same features? Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged.
+
+## M3.5 Jev run and 27-configuration selection, November 2, 2026
+
+Altan wrote "Create and merge PR for dataset updates and then complete m3.5" and pointed to a local file with a TypeSafe key. The agent merged the run record (PR #28), sent the 629 validation queries to `jev-1.14.0` in a main and a repeat pass, added the Jev entry, reran all 27 configurations twice, selected, reported and reproduced from a restored archive. The [27-configuration record](evidence/m3-5-full-run.md) holds the numbers. The agent's first look at the key file printed the key into the local session transcript; it told Altan and advised rotating the key.
+
+What changed: no code. The new evidence note, and status lines in the plan, roadmap, README, runbook, repo guide, data protocol and earlier M3.5 notes. Logs and results stay in ignored `results/`.
+
+Relevant ML concepts: Jev is a pretrained model that reads the four label descriptions, so it needs no training rows; the local models learn the same distinction only from 1,888 labeled examples. That makes this a system comparison, not a feature or classifier comparison on equal inputs. Jev scores 0.975 validation macro-F1 against L3-C10's 0.952, and the frozen tie rules select it because no local winner is within 0.01. Jev and L3-C10 share only one error, so they fail on different rows. Probability quality is separate from accuracy: Jev's Brier score (0.059) is lower than L3-C10's (0.096), but its probabilities are underconfident (mean top 0.92 against 0.97 accuracy). An API model can answer differently when asked again: the repeat flipped 2 of 629 top choices.
+
+Alternatives considered and not taken: tuning the Jev prompt on validation (the prompt was frozen before any request); dropping or re-asking rows Jev got wrong (the failure policy re-sends only failed requests); a decomposed set of yes/no questions (a second Jev setup outside the plan); sending the sealed test (that is M4's single final test, and it needs Altan's separate approval).
+
+Actual verification:
+
+- Jev collection: smoke test 3 of 3 valid, then the main pass 629 of 629 and the repeat 629 of 629, with no failed request.
+- Runs: `m3-5-full-a` and `m3-5-full-b` report all 27 configurations `ok`, and `compare` prints `PASS: runs reproduce`.
+- Selection: `select` prints `PASS: overall Jev`.
+- Restored archive: `PASS: 62 restored files byte-identical to originals`, and its rerun prints `PASS: runs reproduce`.
+- The 26 local metrics equal the first run's.
+
+Teaching trace for q2851, a retrieval row in the validation partition (its text is not quoted here). In the main pass, Jev received `{"query": <its text>}` with the frozen question and returned `document_retrieval` with top probability 0.52. In the repeat pass it returned `direct_answer` with 0.50. The runs replay only the main log, whose hash is pinned in the config, so both runs saw `document_retrieval` and the row counts as correct. Replay makes the run deterministic; the repeat log shows the API itself is not.
+
+Practice prompts, unanswered:
+
+1. Jev scores 0.975 and L3-C10 0.952 on the same 629 rows. Why is that still not evidence of which one does better on the sealed test?
+2. The two answers that flipped had top probabilities near 0.5. What does a probability near 0.5 tell you about a single prediction?
+3. Why does the record also report the 79 M3 rows separately from the 550 new rows?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged; earlier M3.5 prompts also remain unanswered.

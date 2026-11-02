@@ -18,6 +18,8 @@ On November 2 Altan changed the review protocol and the brief was frozen. AI scr
 
 The [first M3.5 run](evidence/m3-5-research-run.md) fitted the 26 local configurations twice with one thread; the runs and a restored-archive rerun reproduce. Per-family validation winners under the frozen rules are B1 0.878, L1-C1 0.922, L2-C1 0.924, S1-C1 0.936, L3-C10 0.952, DT-d30-leaf1 0.818, RF-dNone-leaf1 0.913 and XGB-d6-lr0.05 0.901 macro-F1. `select` marks the overall choice invalid because Jev has no outcome, the expected stop state. Each run took about 22 seconds and 320 MiB, inside the proposed 15-minute and 2 GiB limits, which Altan has not formally answered.
 
+Later on November 2 Altan supplied a TypeSafe key and asked to complete M3.5. The [27-configuration run](evidence/m3-5-full-run.md) sent the 629 validation queries to `jev-1.14.0` twice, at about 317,000 input tokens per pass, with no failed request. It then reran all 27 configurations twice and reproduced them from a restored archive. Jev scores 0.975 validation macro-F1, against 0.952 for L3-C10, so the frozen rules select **Jev** overall. The repeat pass flipped 2 of 629 top choices. M4 integration, the study guide and Altan's learning attempt remain.
+
 ## Research question and starting evidence
 
 Does a broader public-data sample change the relative performance and errors of the existing text classifiers, tree methods, and a pretrained structured-output model for the same four first actions?
@@ -89,8 +91,8 @@ M4 keeps the required logistic raw-versus-sigmoid calibration comparison using g
 
 - [x] Capacity/source decision and a separately frozen M3.5 collection brief, with licenses, revisions, mapping, quotas, stop rule and review workload. Frozen November 2; Altan replaced per-row labeling with adjudication of disagreements.
 - [x] At least 2,000 accepted rows under the near-balanced design (lookup at least 350, other classes equal; more if supply allows), with the review ledger, source/class/group/batch checks, exclusion counts, and independent-group split lineage. `m3-5-v1` holds 3,145 rows under Altan's later rule of up to 1,000 per class ([record](evidence/m3-5-dataset.md)); it is not near-balanced, with classes from 494 to 1,000.
-- [ ] Frozen experiment manifest; all existing and selected new methods have outcomes, or an explicit accepted scope decision for an infeasible method.
-- [ ] Matched-split validation comparison, saved errors/timing/resource/API evidence, deterministic local reruns and archive reproduction; Jev reproducibility limits disclosed.
+- [x] Frozen experiment manifest; all existing and selected new methods have outcomes, or an explicit accepted scope decision for an infeasible method. All 27 configurations are `ok` in `m3-5-full-a` and `m3-5-full-b` ([record](evidence/m3-5-full-run.md)).
+- [x] Matched-split validation comparison, saved errors/timing/resource/API evidence, deterministic local reruns and archive reproduction; Jev reproducibility limits disclosed. Two runs and a restored-archive rerun reproduce; Jev's repeat pass and its limits are in the [record](evidence/m3-5-full-run.md).
 - [ ] Selection and final-test integration pass fixtures; no research test exposure. M4 reads the expanded release and the new frozen selections.
 - [ ] Updated editable M3.5 study guide and verified `M3.5-data-and-methods.pdf` in the external study folder, with checked course references and a dated completion snapshot. No research guide/PDF is claimed delivered by this plan.
 - [ ] Actual checks, commits/runs, limitations and Altan's learning attempt recorded. Unanswered earlier questions remain open.
