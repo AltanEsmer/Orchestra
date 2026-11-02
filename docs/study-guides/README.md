@@ -29,6 +29,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M1 | Labels, provenance, ambiguous examples, annotation review, class and group distribution. Supplies the data section. |
 | M2 | Validator, group splits, dummy and logistic baselines, fit versus transform, saved runs. Supplies methods and initial validation evidence. |
 | M3 | Classifier assumptions, count versus TF-IDF, regularization, controlled comparisons, selection. Supplies the main methods and comparison results. |
+| M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. Planned `M3.5-data-and-methods.pdf` under the [M3.5 plan](../m3-5-plan.md); no edition delivered yet. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. |
 | M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. Supports Altan's own synthesis. |
 | M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
@@ -90,3 +91,11 @@ Inspected course source revisions for the M0 edition. The M1 and M2 editions als
 | `Lecture6-ArtificialNeuralNetworks.pdf` | `4096ea75c917389ad65c0322bb1e045fcba82154ecde673f7221da3440b7d94d` |
 | `Lecture4-LinearModelsforRegression.pdf` | `8a58746abec856b9168dbca3bd64b446297425570cc78e8c3b378c358d4315cc` |
 | `UTF-8''Lecture7-Ensemble%20Methods%20and%20Model%20Evaluations.pdf` | `918f33dc045f3fbbaaae8a33b1a779e9eb7785e8625f1008aa5fc144b49813fd` |
+
+## M3.5 interim screening edition, October 31, 2026
+
+The [editable screening lesson](m3-5-data-screening.md) accompanies the first public-data screen. `M3.5-data-screening.pdf` and its hash manifest are saved in the external study folder. All three pages were rendered and visually checked, with the final question layout rechecked. Lecture 2 PDF page 8 was extracted and visually verified at the hash recorded in the source. This interim edition does not complete the planned `M3.5-data-and-methods.pdf`, data release or model comparison. The evidence remains screening proposals; 400 rows are accepted.
+
+## M3.5 interim group and quota audit, October 31, 2026
+
+The [editable audit lesson](m3-5-group-quota-audit.md) records the follow-up independent-group checks, source/type quotas and remaining diversity gaps. `M3.5-group-and-quota-audit.pdf` and its companion source/PDF hash manifest are in the external study folder. Both pages were rendered and visually checked. The lesson retains the verified Lecture 2 page 8 connection and explicitly separates project caps from course requirements. The earlier screening edition is preserved. This is interim evidence, with 400 accepted rows and all learning questions unanswered; the full methods edition remains future work.

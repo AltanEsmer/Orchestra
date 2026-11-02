@@ -15,7 +15,10 @@ import numpy
 import scipy
 import sklearn
 import threadpoolctl
+import xgboost
+from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.dummy import DummyClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -26,8 +29,12 @@ from sklearn.metrics import (
 )
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
 from sklearn.svm import LinearSVC
+from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 
+from orchestra import jev
 from orchestra.data import LABELS, file_sha256, read_jsonl
 from orchestra.splits import check_materialized
 
@@ -62,8 +69,23 @@ THREAD_VARS = (
     "MKL_NUM_THREADS",
     "VECLIB_MAXIMUM_THREADS",
 )
-REQUIRED_IDS = ["B0", "B1"] + [
+M3_IDS = ["B0", "B1"] + [
     f"{family}-C{c:g}" for family in ("L1", "L2", "S1", "L3") for c in (0.1, 1, 10)
+]
+M3_5_IDS = M3_IDS + [
+    "DT-d10-leaf1",
+    "DT-d10-leaf3",
+    "DT-d30-leaf1",
+    "DT-d30-leaf3",
+    "RF-d30-leaf1",
+    "RF-d30-leaf3",
+    "RF-dNone-leaf1",
+    "RF-dNone-leaf3",
+    "XGB-d3-lr0.05",
+    "XGB-d3-lr0.1",
+    "XGB-d6-lr0.05",
+    "XGB-d6-lr0.1",
+    "Jev",
 ]
 
 
@@ -93,7 +115,7 @@ def tfidf(ngram_range=(1, 1)):
     )
 
 
-def build_b0(C, max_iter):
+def build_b0(entry, max_iter):
     # The dummy never reads X. It shares the TF-IDF step only so every family
     # is a (vectorizer, classifier) pipeline with the same fit/predict calls.
     return Pipeline(
@@ -101,7 +123,7 @@ def build_b0(C, max_iter):
     )
 
 
-def build_b1(C, max_iter):
+def build_b1(entry, max_iter):
     clf = MultinomialNB(alpha=1.0, force_alpha=True, fit_prior=True)
     return Pipeline([("vec", counts()), ("clf", clf)])
 
@@ -119,24 +141,24 @@ def logistic(C, max_iter):
     )
 
 
-def build_l1(C, max_iter):
-    return Pipeline([("vec", counts()), ("clf", logistic(C, max_iter))])
+def build_l1(entry, max_iter):
+    return Pipeline([("vec", counts()), ("clf", logistic(entry["C"], max_iter))])
 
 
-def build_l2(C, max_iter):
-    return Pipeline([("vec", tfidf()), ("clf", logistic(C, max_iter))])
+def build_l2(entry, max_iter):
+    return Pipeline([("vec", tfidf()), ("clf", logistic(entry["C"], max_iter))])
 
 
-def build_l3(C, max_iter):
-    return Pipeline([("vec", tfidf((1, 2))), ("clf", logistic(C, max_iter))])
+def build_l3(entry, max_iter):
+    return Pipeline([("vec", tfidf((1, 2))), ("clf", logistic(entry["C"], max_iter))])
 
 
-def build_s1(C, max_iter):
+def build_s1(entry, max_iter):
     # LinearSVC's default multi_class="ovr" is the one-vs-rest strategy the
     # protocol asks for; it is not deprecated in 1.9.1, so it is left implicit
     # and appears in the exported resolved parameters.
     clf = LinearSVC(
-        C=C,
+        C=entry["C"],
         penalty="l2",
         loss="squared_hinge",
         dual="auto",
@@ -149,42 +171,192 @@ def build_s1(C, max_iter):
     return Pipeline([("vec", tfidf()), ("clf", clf)])
 
 
-# One entry per family. retry_max_iter is the single bounded convergence retry
-# applied to the whole family; None means the family has no iteration limit.
+class EncodedLabels(ClassifierMixin, BaseEstimator):
+    """XGBoost rejects string labels, so fit it on integer codes of the classes."""
+
+    def __init__(self, estimator):
+        self.estimator = estimator
+
+    def fit(self, X, y):
+        self.classes_, codes = numpy.unique(y, return_inverse=True)
+        self.estimator_ = clone(self.estimator).fit(X, codes)
+        return self
+
+    def predict(self, X):
+        return self.classes_[self.estimator_.predict(X)]
+
+    def predict_proba(self, X):
+        return self.estimator_.predict_proba(X)
+
+
+def build_dt(entry, max_iter):
+    clf = DecisionTreeClassifier(
+        criterion="gini",
+        max_depth=entry["max_depth"],
+        min_samples_leaf=entry["min_samples_leaf"],
+        class_weight=None,
+        random_state=MODEL_SEED,
+    )
+    return Pipeline([("vec", tfidf()), ("clf", clf)])
+
+
+def build_rf(entry, max_iter):
+    clf = RandomForestClassifier(
+        n_estimators=200,
+        criterion="gini",
+        max_depth=entry["max_depth"],
+        min_samples_leaf=entry["min_samples_leaf"],
+        max_features="sqrt",
+        bootstrap=True,
+        class_weight=None,
+        random_state=MODEL_SEED,
+        n_jobs=1,
+    )
+    return Pipeline([("vec", tfidf()), ("clf", clf)])
+
+
+def build_xgb(entry, max_iter):
+    # Absent TF-IDF words are sparse-matrix entries XGBoost treats as missing.
+    clf = XGBClassifier(
+        n_estimators=200,
+        max_depth=entry["max_depth"],
+        learning_rate=entry["learning_rate"],
+        objective="multi:softprob",
+        tree_method="hist",
+        random_state=MODEL_SEED,
+        n_jobs=1,
+    )
+    return Pipeline([("vec", tfidf()), ("clf", EncodedLabels(clf))])
+
+
+def build_jev(entry, max_iter):
+    # Jev reads raw query text; the identity step keeps the (vec, clf) shape.
+    replay = jev.Replay(entry["responses"], entry["responses_sha256"])
+    return Pipeline([("vec", FunctionTransformer()), ("clf", replay)])
+
+
+def family_id(entry):
+    return entry["family"]
+
+
+def c_id(entry):
+    return f"{entry['family']}-C{entry['C']:g}"
+
+
+def c_tie(entry):
+    return (entry["C"],)
+
+
+def tree_id(entry):
+    return f"{entry['family']}-d{entry['max_depth']}-leaf{entry['min_samples_leaf']}"
+
+
+def tree_tie(entry):
+    depth = math.inf if entry["max_depth"] is None else entry["max_depth"]
+    return (depth, -entry["min_samples_leaf"])
+
+
+def xgb_id(entry):
+    return f"XGB-d{entry['max_depth']}-lr{entry['learning_rate']:g}"
+
+
+def xgb_tie(entry):
+    return (entry["max_depth"], entry["learning_rate"])
+
+
+def no_tie(entry):
+    return ()
+
+
+# One entry per family. params are the configuration keys besides "family";
+# tie orders members within a family; retry_max_iter is the single bounded
+# convergence retry applied to the whole family (None: no iteration limit).
 FAMILIES = {
-    "B0": {"build": build_b0, "retry_max_iter": None, "score": "probability"},
-    "B1": {"build": build_b1, "retry_max_iter": None, "score": "probability"},
+    "B0": {
+        "params": (),
+        "id": family_id,
+        "tie": no_tie,
+        "build": build_b0,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
+    "B1": {
+        "params": (),
+        "id": family_id,
+        "tie": no_tie,
+        "build": build_b1,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
     "L1": {
+        "params": ("C",),
+        "id": c_id,
+        "tie": c_tie,
         "max_iter": 100,
         "build": build_l1,
         "retry_max_iter": 1000,
         "score": "probability",
     },
     "L2": {
+        "params": ("C",),
+        "id": c_id,
+        "tie": c_tie,
         "max_iter": 100,
         "build": build_l2,
         "retry_max_iter": 1000,
         "score": "probability",
     },
     "S1": {
+        "params": ("C",),
+        "id": c_id,
+        "tie": c_tie,
         "max_iter": 1000,
         "build": build_s1,
         "retry_max_iter": 10000,
         "score": "margin",
     },
     "L3": {
+        "params": ("C",),
+        "id": c_id,
+        "tie": c_tie,
         "max_iter": 100,
         "build": build_l3,
         "retry_max_iter": 1000,
         "score": "probability",
     },
+    "DT": {
+        "params": ("max_depth", "min_samples_leaf"),
+        "id": tree_id,
+        "tie": tree_tie,
+        "build": build_dt,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
+    "RF": {
+        "params": ("max_depth", "min_samples_leaf"),
+        "id": tree_id,
+        "tie": tree_tie,
+        "build": build_rf,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
+    "XGB": {
+        "params": ("max_depth", "learning_rate"),
+        "id": xgb_id,
+        "tie": xgb_tie,
+        "build": build_xgb,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
+    "Jev": {
+        "params": ("responses", "responses_sha256"),
+        "id": family_id,
+        "tie": no_tie,
+        "build": build_jev,
+        "retry_max_iter": None,
+        "score": "probability",
+    },
 }
-
-
-def configuration_id(entry):
-    if "C" in entry:
-        return f"{entry['family']}-C{entry['C']:g}"
-    return entry["family"]
 
 
 def resolve_configurations(entries):
@@ -194,11 +366,19 @@ def resolve_configurations(entries):
     for entry in entries:
         if not isinstance(entry, dict) or entry.get("family") not in FAMILIES:
             raise ValueError(f"unknown configuration {entry!r}")
-        cid = configuration_id(entry)
+        params = FAMILIES[entry["family"]]["params"]
+        if set(entry) != {"family", *params}:
+            raise ValueError(
+                f"configuration {entry!r} needs exactly the keys family, {', '.join(params)}"
+            )
+        # "C" stays on every family (None when unused) so M3 files keep their bytes.
+        full = {"family": entry["family"], "C": entry.get("C")}
+        full.update({k: entry[k] for k in params if k != "C"})
+        cid = FAMILIES[entry["family"]]["id"](full)
         if cid in seen:
             raise ValueError(f"duplicate configuration {cid}")
         seen.add(cid)
-        resolved.append({"id": cid, "family": entry["family"], "C": entry.get("C")})
+        resolved.append({"id": cid, **full})
     return resolved
 
 
@@ -248,7 +428,7 @@ def confusion(y_true, y_pred):
 
 def fit_predict(entry, train, validation, max_iter=None):
     family = FAMILIES[entry["family"]]
-    pipeline = family["build"](entry["C"], max_iter)
+    pipeline = family["build"](entry, max_iter)
     started = time.perf_counter()
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -386,6 +566,7 @@ def provenance(config, manifest, started, rows):
         "sklearn": sklearn.__version__,
         "numpy": numpy.__version__,
         "scipy": scipy.__version__,
+        "xgboost": xgboost.__version__,
         "thread_env": {name: os.environ.get(name) for name in THREAD_VARS},
         "threadpools": json_safe(threadpoolctl.threadpool_info()),
         "started_utc": started,
@@ -410,6 +591,9 @@ def run(config, run_id):
     if not run_id or Path(run_id).name != run_id or run_id in (".", ".."):
         raise ValueError(f"run id {run_id!r} must be a plain name")
     started = now()
+    matrix = config.get("matrix", "m3")
+    if matrix not in MATRICES:
+        raise ValueError(f"unknown matrix {matrix!r}")
     configurations = resolve_configurations(config["configurations"])
     train = load_rows(config["train"], "train")
     validation = load_rows(config["validation"], "validation")
@@ -645,8 +829,7 @@ def compare(left_dir, right_dir):
 
 
 SELECTION_TOLERANCE = 0.01
-SIMPLICITY_ORDER = ("B0", "B1", "L1", "L2", "S1", "L3")
-SELECTION_RULES = (
+M3_RULES = (
     "Per family: candidates are configurations with status ok. The tie set is every "
     "candidate whose validation macro-F1 is within 0.01 (inclusive) of the family best; choose "
     "the smallest C (a family without C has one member). Overall: among family "
@@ -657,6 +840,31 @@ SELECTION_RULES = (
     "per family the latency and ID keys cannot decide an overall tie; the protocol "
     "declares them anyway."
 )
+M3_5_RULES = (
+    "Per family: candidates are configurations with status ok. The tie set is every "
+    "candidate whose validation macro-F1 is within 0.01 (inclusive) of the family best; choose "
+    "by the family's tie rule: the smallest C for L1, L2, S1 and L3 (B0, B1 and Jev have one "
+    "member); the shallowest max_depth, then the largest min_samples_leaf, for DT and RF "
+    "(unlimited depth ranks last); the shallowest max_depth, then the lowest learning_rate, "
+    "for XGB. Overall: among family winners within 0.01 (inclusive) of the best winner, "
+    "prefer B0, B1, L1, L2, S1, L3, DT, RF, XGB, Jev in that order, then lower median "
+    "prediction latency, then configuration ID. Any configuration that is not ok, or a run "
+    "that is not exactly the 27 required configurations, makes the selection invalid and "
+    "nothing is chosen. With one winner per family the latency and ID keys cannot decide an "
+    "overall tie; the protocol declares them anyway."
+)
+MATRICES = {
+    "m3": {
+        "ids": M3_IDS,
+        "order": ("B0", "B1", "L1", "L2", "S1", "L3"),
+        "rules": M3_RULES,
+    },
+    "m3.5": {
+        "ids": M3_5_IDS,
+        "order": ("B0", "B1", "L1", "L2", "S1", "L3", "DT", "RF", "XGB", "Jev"),
+        "rules": M3_5_RULES,
+    },
+}
 
 
 def within_tolerance(score, best):
@@ -670,6 +878,8 @@ def select(run_dir):
     if problems:
         raise ValueError("; ".join(problems))
     entries = run["config.json"]["configurations"]
+    matrix = MATRICES[run["config.json"].get("config", {}).get("matrix", "m3")]
+    required, order = matrix["ids"], matrix["order"]
     status = {o["id"]: o["status"] for o in run["outcomes.json"]}
     scores_by_id = {
         e["id"]: run["metrics.json"][e["id"]]["macro_f1"]
@@ -678,18 +888,18 @@ def select(run_dir):
     }
     blocking = [e["id"] for e in entries if e["id"] not in scores_by_id]
     resolved_ids = [e["id"] for e in entries]
-    missing = [cid for cid in REQUIRED_IDS if cid not in resolved_ids]
-    unexpected = [cid for cid in resolved_ids if cid not in REQUIRED_IDS]
+    missing = [cid for cid in required if cid not in resolved_ids]
+    unexpected = [cid for cid in resolved_ids if cid not in required]
     complete_matrix = not missing and not unexpected
     valid = complete_matrix and not blocking
-    c_of = {e["id"]: e["C"] for e in entries}
+    by_id = {e["id"]: e for e in entries}
     latency = {
         cid: t["latency"]["median_seconds"]
         for cid, t in run["timing.json"]["configurations"].items()
     }
 
     families, winners = {}, {}
-    for family in SIMPLICITY_ORDER:
+    for family in order:
         scores = {
             e["id"]: scores_by_id[e["id"]]
             for e in entries
@@ -700,7 +910,7 @@ def select(run_dir):
         best = max(scores.values(), default=None)
         tie_set = sorted(
             (cid for cid, f in scores.items() if within_tolerance(f, best)),
-            key=lambda cid: (c_of[cid] if c_of[cid] is not None else 0, cid),
+            key=lambda cid: (FAMILIES[family]["tie"](by_id[cid]), cid),
         )
         chosen = tie_set[0] if valid else None
         if chosen:
@@ -717,7 +927,7 @@ def select(run_dir):
                 if within_tolerance(scores_by_id[cid], top)
             ),
             key=lambda cid: (
-                SIMPLICITY_ORDER.index(next(f for f, w in winners.items() if w == cid)),
+                order.index(next(f for f, w in winners.items() if w == cid)),
                 latency.get(cid, math.inf),
                 cid,
             ),
@@ -730,9 +940,9 @@ def select(run_dir):
         "missing": missing,
         "unexpected": unexpected,
         "rules": {
-            "text": SELECTION_RULES,
+            "text": matrix["rules"],
             "tolerance": SELECTION_TOLERANCE,
-            "simplicity_order": list(SIMPLICITY_ORDER),
+            "simplicity_order": list(order),
         },
         "run_id": provenance_["run_id"],
         "run": str(run_dir),

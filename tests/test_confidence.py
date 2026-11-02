@@ -203,7 +203,7 @@ class LifecycleTest(unittest.TestCase):
             for label in LABELS
             for _ in range(3)
         ]
-        model = experiment.build_l2(1, 100).fit(
+        model = experiment.build_l2({"C": 1}, 100).fit(
             [r["text"] for r in train], [r["label"] for r in train]
         )
         predictions = list(model.predict(["unknownword"]))

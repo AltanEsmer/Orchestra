@@ -1,8 +1,12 @@
 # Project plan
 
-Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan prepares the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). It does not report experimental findings. The implementation covers the complete planned study workflow and has been verified with artificial fixtures. The reviewed guide-v1 pilot has 38 accepted rows; the 120-row release and actual experiment results remain absent.
+Orchestra studies course project 13, Learning to Route Queries in AI Systems. This plan develops the work described in [issue #1](https://github.com/AltanEsmer/Orchestra/issues/1). As of October 31, M1 froze 128 accepted rows, M2 reproduced its baselines, and [M3](evidence/m3-research-run.md) compared 14 configurations on 400 rows. No final-test result exists. The current work is [M3.5](m3-5-plan.md), requested after Altan's supervisor meeting.
 
-The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) specifies the data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records the completed tooling scope and its human evidence boundary. No 120-row M1 release or trained research model exists. The accepted pilot is recorded separately.
+The October 16 [M1 to M3 delivery plan](m1-m3-plan.md) records the original data and comparison gates. Altan approved that implementation on October 16 and authorized the remaining automation and merges on October 22. The [automation plan](automation-plan.md) records that tooling scope and its human evidence boundary. M3.5 extends it prospectively; the new models and larger release are not implemented by this planning change.
+
+Public-source screening started on October 31 at Altan’s request. The [capacity screen](evidence/m3-5-capacity-screen.md) records fixed samples, exclusions and unresolved group/review capacity. On November 1 Altan replaced the original 2,500 minimum and 4,000 aim with a near-balanced 2,000-row working minimum, lookup between 350 and 500 rows ([option B](evidence/m3-5-option-b-supply.md)); accepted data remain 400. No new collection brief is frozen and no classifier is trained in this screening step.
+
+The subsequent [group and quota audit](evidence/m3-5-group-quota-audit.md) reconstructs actual parent source/type counts and integrates 99 provisional calculation and 46 provisional lookup rows. Proposed groups still require semantic review. The balanced minimum requires at least 304 more non-keyed lookup and 234 more non-word-problem calculation candidates beyond this inventory, even if all current proposals become accepted. Continue those strata and resolve source/adapter holds before the collection-brief decision.
 
 ## Research question and scope
 
@@ -21,6 +25,8 @@ Completion means both baselines run twice from the same committed configuration 
 ## Milestones working back from submission
 
 The [roadmap](../ROADMAP.md#milestones) is the primary tracker for milestone dates, dependencies, statuses, and completion evidence. Its targets lead to the December 6, 2026 submission deadline. Update that tracker when progress or dates change.
+
+On October 31 Altan requested M3.5 before M4: expand the 400-row study with compatible public data to **at least 2,500 accepted rows, aiming for 4,000**, and add **Decision Tree, Random Forest, XGBoost, and TypeSafe AI Jev**. On November 1 Altan lowered the minimum to a near-balanced 2,000 rows after source discovery showed too few compliant lookups. Rerun the existing 14 configurations on the same expanded split. The [M3.5 plan](m3-5-plan.md) defines source/review capacity gates, a bounded matrix, Jev's distinct API comparison, split preservation, and the required M4 integration. M4 waits for this evidence. The supplied supervisor email motivates broader research; the four selected methods and numerical minimum are Altan's requested scope, not claims about the original course PDFs.
 
 Understanding checkpoints remain in the [learning log](learning-log.md#topic-ledger-and-question-bank). At each milestone, review the corresponding topics and carry gaps forward. These checkpoints are part of the work plan, not scheduled notifications.
 
@@ -45,8 +51,12 @@ After December submission, use the frozen project, saved results, and guide coll
 | Compare sparse count and TF-IDF features first. | This guarantees a representation comparison even if pretrained embeddings are infeasible. | The frozen-embedding resource check passes. |
 | Group by shared scenario or source, not request template (guide v2). | The v1 template rule let only a few public rows count, blocking M1. Scenario/source groups still stop a model from memorizing a shared source across splits; batch checks for request-type spread and source mix guard against a few request types or one source's phrasing dominating. Test scores now measure new topics and sources with familiar request types, not unseen request types. | An optional unseen-request-type analysis shows a large gap worth reporting as a limitation. |
 | Use one local CPU and no paid APIs. | The planned sparse models suit a course-sized dataset. | Measured limits justify a documented resource change. |
+| Add M3.5 before confidence and final testing. | Larger, reviewed public-data coverage and three tree families plus Jev broaden the research. Preserve M3 and rerun its baselines on the new split. | Capacity or review evidence shows the minimum cannot be met before the deadline. |
+| Treat Jev as a separate pretrained API condition. | It takes query text and label instructions instead of fitting the same TF-IDF features. Record access, costs, model/prompt versions, data handling and pretraining-overlap limits. | Concrete API feasibility and budget decision before execution. |
 
 ## Risks and unresolved decisions
+
+The October 24–26 source investigations below are historical. The accepted M3 release now exists; M3.5 capacity is unverified, especially for explicit-source lookup and retrieval queries. Source counts, annotation effort, Jev availability and new-method resource use are the next feasibility checks. The existing CPU/no-paid-API policy remains in force until a concrete Jev budget decision.
 
 On October 24, Altan authorized public-source investigation to reduce further manual writing. [No Robots](evidence/public-direct-answer.md) adds thirteen provisional direct-answer candidates in a twenty-record sample. [Dolly](evidence/public-document-retrieval.md) adds three conditional document-reading candidates in twenty records, provided their original linked passages are retained outside router input. These sources have distinct licenses and need mapping, attribution, and grouping review. A [blind AI pass](evidence/pilot-ai-review.md) matched the original forty labels. Altan subsequently chose single-human annotation with disclosed AI checks. A dedicated AI review kind preserves its provenance, keeps his original labels, and requires human adjudication of flagged cases. The report must disclose single-annotator bias and AI assistance rather than independent human agreement.
 
@@ -54,7 +64,7 @@ The earlier Berkeley Function Calling Leaderboard inspection also aimed to reduc
 
 The largest scientific risks are annotation shortcuts, overlapping action meanings, paraphrase leakage, a small test set, and synthetic language that fails to resemble real users. The [data protocol](data-and-evaluation.md) addresses each and requires limitations in the report. More models cannot repair unclear labels.
 
-Altan handles oral-exam arrangements, AI-use rules, disclosure, and submission mechanics. The agent does not require administrative answers to proceed with approved work. Before any external data or embedding download, record its license and immutable revision. Dataset size is a collection target, not a guaranteed sample size. If fewer than 400 rows are feasible, keep the held-out test and report uncertainty instead of inventing data or hiding exclusions.
+Altan handles oral-exam arrangements, AI-use rules, disclosure, and submission mechanics. The agent does not require administrative answers to proceed with approved work. Before any external data or embedding download, record its license and immutable revision. M3's 400-row target was achieved. M3.5 requires at least 2,500 accepted rows; if that proves infeasible, record a scope decision with Altan before advancing to M4. Keep the held-out test sealed and report exclusions and uncertainty honestly.
 
 ## Report outline and evidence map
 
@@ -72,6 +82,8 @@ Target an eight-page draft within the required 5–12 pages. Use IEEE conference
 References and final pagination must fit the course limit. Each result or figure links to a saved run and configuration. Do not write a conclusion before its evidence exists. Keep an agent-assistance record in the learning log. Altan manages the applicable disclosure requirements.
 
 ## Research steps after tooling preparation
+
+The sequence below records the original M1/M2 work, now completed in the linked evidence. Continue with the five stages in the [M3.5 plan](m3-5-plan.md), then M4; do not repeat collection or overwrite frozen artifacts from these earlier steps.
 
 1. Use the selected single-human, AI-assisted method, preserving Altan's forty original labels and recorded permission. Keep AI consistency separate from human agreement.
 2. Pilot review and guide v1 are complete as of October 26. Guide v2 then regrouped the 38 accepted rows by shared scenario or source (23 groups) at Altan's request. Preserve the rows, two practice-only exclusions, actual human decisions, and the v1 family history.

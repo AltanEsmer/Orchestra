@@ -3,7 +3,7 @@ import json
 import os
 from pathlib import Path
 
-from orchestra import experiment
+from orchestra import experiment, jev
 from orchestra.data import file_sha256, read_jsonl, validate
 from orchestra.splits import (
     check_extension,
@@ -349,6 +349,37 @@ def restore_archive(args):
     return 0
 
 
+def check_collection(args):
+    from orchestra.collection import check_release
+
+    rows, errors = read_jsonl(args.dataset)
+    parent, parent_errors = read_jsonl(args.parent)
+    if errors or parent_errors:
+        raise ValueError("; ".join(errors + parent_errors))
+    types = json.loads(Path(args.types).read_text(encoding="utf-8"))
+    pairs = json.loads(Path(args.pairs).read_text(encoding="utf-8"))
+    accepted = [r for r in rows if r["status"] == "accepted"]
+    parent_ids = {r["query_id"] for r in parent}
+    report = check_release(accepted, parent_ids, types, pairs)
+    report["dataset_sha256"] = file_sha256(args.dataset)
+    report["parent_sha256"] = file_sha256(args.parent)
+    with open(args.out, "x", encoding="utf-8") as file:
+        file.write(json.dumps(report, indent=2) + "\n")
+    for label, counts in report["by_class"].items():
+        print(
+            f"{label}: {counts['rows']} rows ({counts['new_rows']} new), "
+            f"{counts['groups']} groups ({counts['new_groups']} new)"
+        )
+    print(f"close new pairs: {len(report['close_pairs'])}")
+    for error in report["errors"]:
+        print(f"ERROR: {error}")
+    if report["errors"]:
+        print(f"FAIL: {len(report['errors'])} collection check errors")
+        return 1
+    print("PASS: M3.5 collection checks")
+    return 0
+
+
 def prepare_study(args):
     from orchestra.study import prepare
 
@@ -372,6 +403,12 @@ def main(argv=None):
     run_parser.add_argument("--config", required=True)
     run_parser.add_argument("--run-id", required=True)
     run_parser.set_defaults(run=guarded(run_experiment))
+    jev_parser = commands.add_parser("jev", help="collect Jev answers for validation")
+    jev_parser.add_argument("--config", required=True)
+    jev_parser.add_argument("--log", required=True)
+    jev_parser.add_argument("--max-requests", type=int, required=True)
+    jev_parser.add_argument("--dry-run", action="store_true")
+    jev_parser.set_defaults(run=guarded(jev.run_jev))
     compare_parser = commands.add_parser("compare", help="check two runs reproduce")
     compare_parser.add_argument("--left", required=True)
     compare_parser.add_argument("--right", required=True)
@@ -461,6 +498,19 @@ def main(argv=None):
     restore_parser.add_argument("--archive", required=True)
     restore_parser.add_argument("--out", required=True)
     restore_parser.set_defaults(run=guarded(restore_archive))
+    collection_parser = commands.add_parser(
+        "check-collection", help="run the M3.5 cumulative count and batch checks"
+    )
+    collection_parser.add_argument("--dataset", required=True)
+    collection_parser.add_argument("--parent", required=True)
+    collection_parser.add_argument(
+        "--types", required=True, help="JSON object of query ID to request type"
+    )
+    collection_parser.add_argument(
+        "--pairs", required=True, help="JSON list of close-pair hand checks"
+    )
+    collection_parser.add_argument("--out", required=True, help="new report file")
+    collection_parser.set_defaults(run=guarded(check_collection))
     prepare_parser = commands.add_parser(
         "prepare-study", help="check readiness and freeze inputs before splitting"
     )

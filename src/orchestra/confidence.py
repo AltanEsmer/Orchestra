@@ -322,7 +322,7 @@ def _fit(entry, train, rows):
 
 def _calibrate(entry, train, rows, folds):
     model = CalibratedClassifierCV(
-        ex.FAMILIES[entry["family"]]["build"](entry["C"], entry["max_iter"]),
+        ex.FAMILIES[entry["family"]]["build"](entry, entry["max_iter"]),
         method="sigmoid",
         cv=folds,
         ensemble=True,
