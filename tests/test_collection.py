@@ -223,6 +223,13 @@ class ReleaseCheckTest(unittest.TestCase):
         rows[2]["source_id"] = rows[3]["source_id"] = "s2"
         self.assertEqual(self.errors(rows, types), [])
 
+    def test_dropped_parent_row_fails(self):
+        rows, types = release_rows()
+        rows = [r for r in rows if r["query_id"] != "p00"]
+        self.assertTrue(
+            any("p00: parent row missing" in e for e in self.errors(rows, types))
+        )
+
     def test_close_pair_needs_a_recorded_hand_check(self):
         rows, types = release_rows()
         rows[3]["text"] = rows[2]["text"] + " more"

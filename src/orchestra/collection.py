@@ -147,6 +147,10 @@ def check_release(rows, parent_ids, types, pair_decisions):
     errors = []
     new = [r for r in rows if r["query_id"] not in parent_ids]
     parent = [r for r in rows if r["query_id"] in parent_ids]
+    # Unchanged parent content is extend's check; a dropped row must fail here too,
+    # or its text would escape the overlap check.
+    present = {r["query_id"] for r in parent}
+    errors += [f"{q}: parent row missing" for q in sorted(set(parent_ids) - present)]
 
     first_by_text = {}
     for row in rows:
