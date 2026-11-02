@@ -7,7 +7,8 @@ The commands below become research runs only after the human data gates pass.
 ## Prepare the local environment
 
 Run `uv python install 3.12.13`, then `uv sync --locked`.
-No API key, GPU, database, or paid service is required.
+On macOS, run `brew install libomp` once so XGBoost can load its OpenMP runtime.
+No GPU or database is required. Only the optional Jev collection needs an API key and a paid service.
 
 Use `scripts/run_experiment.sh` for training runs.
 The launcher sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`, `MKL_NUM_THREADS`, and `VECLIB_MAXIMUM_THREADS` to `1` before Python starts.
@@ -125,6 +126,28 @@ Read the comparison table and validation mistakes in `results/m3-a-report/`.
 Keep validation text out of Git.
 Archive complete results and provenance with the data release.
 Use the following commands for confidence, freezing, final evaluation, and plots after the real M3 artifacts exist.
+
+## Run the M3.5 classifier comparison
+
+The M3.5 matrix needs the frozen M3.5 release and its extended split first; until then these commands are planned, not run.
+[`configs/m3-5.json`](../configs/m3-5.json) names `"matrix": "m3.5"` and the 26 local configurations.
+Check the Jev request without sending anything:
+
+```sh
+uv run --locked python -m orchestra jev --config data/processed/m3-5-prepared.json --log results/jev/m3-5-validation.jsonl --max-requests 1 --dry-run
+```
+
+Only after Altan approves the spending cap and sending validation queries to TypeSafe, export `TYPESAFE_API_KEY` in the shell and collect answers.
+The command sends validation rows only, stops at the cap and appends every request and response to the ignored log.
+Rerun it to fill rows whose request failed; answered rows are never sent again.
+
+```sh
+uv run --locked python -m orchestra jev --config data/processed/m3-5-prepared.json --log results/jev/m3-5-validation.jsonl --max-requests 450
+```
+
+Add `{"family": "Jev", "responses": "results/jev/m3-5-validation.jsonl", "responses_sha256": "<printed hash>"}` to the prepared config's configurations, then run, compare, select and report as for M3 with run IDs `m3-5-a` and `m3-5-b`.
+A run replays the log offline and fails the Jev configuration if any validation query lacks a valid answer.
+The selection is invalid until all 27 configurations are `ok`.
 
 ## Prepare blind review
 
