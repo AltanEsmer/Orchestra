@@ -216,6 +216,13 @@ class ReleaseCheckTest(unittest.TestCase):
         self.assertTrue(any("p00" in e for e in errors))
         self.assertFalse(any(rows[0]["text"] in e for e in errors))
 
+    def test_source_at_exactly_75_percent_passes(self):
+        rows, types = release_rows()
+        for row in rows[2:8]:
+            row["source_id"] = "s1"
+        rows[2]["source_id"] = rows[3]["source_id"] = "s2"
+        self.assertEqual(self.errors(rows, types), [])
+
     def test_close_pair_needs_a_recorded_hand_check(self):
         rows, types = release_rows()
         rows[3]["text"] = rows[2]["text"] + " more"
@@ -238,6 +245,25 @@ class CapHoldTest(unittest.TestCase):
         other = _row("q5", "g5", "t", "calculation", "small")
         self.assertIsNone(cap_hold(rows, types, other, "c"))
         self.assertIn("type b", cap_hold(rows, types, other, "b"))
+
+    def test_shares_exactly_at_the_caps_are_allowed(self):
+        rows = [
+            _row(f"q{i}", f"g{i}", "t", "calculation", s) for i, s in enumerate("aab")
+        ]
+        types = {"q0": "x", "q1": "y", "q2": "z"}
+        self.assertIsNone(
+            cap_hold(rows, types, _row("n", "g", "t", "calculation", "a"), "w")
+        )
+        rows = [_row(f"q{i}", f"g{i}", "t", "calculation", f"s{i}") for i in range(4)]
+        types = {"q0": "x", "q1": "b", "q2": "c", "q3": "d"}
+        new = _row("n", "g", "t", "calculation", "s9")
+        self.assertIsNone(cap_hold(rows, types, new, "x"))
+
+    def test_type_just_over_40_percent_is_held(self):
+        rows = [_row(f"q{i}", f"g{i}", "t", "calculation", f"s{i}") for i in range(6)]
+        types = {"q0": "x", "q1": "x", "q2": "b", "q3": "c", "q4": "d", "q5": "e"}
+        new = _row("n", "g", "t", "calculation", "s9")
+        self.assertIn("type x: 3 of 7", cap_hold(rows, types, new, "x"))
 
     def test_other_classes_do_not_count(self):
         rows = [_row(f"d{i}", f"h{i}", "t", "direct_answer", "big") for i in range(6)]
