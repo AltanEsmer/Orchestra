@@ -55,12 +55,12 @@ Expected cost is small but unmeasured. The instructions and criteria hold 112 wo
 
 ## Open decisions
 
-1. **Jev access.** Calls need a TypeSafe account and key, a spending cap, and Altan's approval to send validation queries to TypeSafe under its terms and data handling. None exists yet.
+1. **Jev access (decided).** On November 2 Altan supplied a key and asked to complete M3.5. The agent took that as approval to send the validation queries, capped each pass at 700 requests, and recorded the [27-configuration run](m3-5-full-run.md).
 2. **Limits.** Accept or change the proposed 15-minute and 2 GiB limits before the full run.
 3. **An early look (decided).** The new families could have run on the frozen M3 validation rows now. Those rows stay in the M3.5 validation partition, so the scores would be seen before the expanded comparison. On November 2 Altan chose to wait: no new family is scored on validation before the M3.5 comparison.
 4. **A decomposed Jev variant.** TypeSafe's guidance prefers several yes/no questions combined by code. Here that would mean asking whether the query names a document, a structured record or a numeric result, with the guide's order applied in code. It would be a second Jev setup, outside the plan's single one.
-5. **Answers without probabilities.** The adapter treats a Choice answer without four valid probabilities as invalid, so the row is re-sent and can fail the Jev configuration. Plan section 3 instead keeps classification metrics when probabilities are missing. The stricter rule keeps every saved score usable; Altan should confirm it before collection.
-6. **Archive.** `archive` and `restore` do not yet copy the Jev log. A restored archive can replay Jev only where the same log, with the same hash, sits at the configured path.
+5. **Answers without probabilities.** The adapter treats a Choice answer without four valid probabilities as invalid, so the row is re-sent and can fail the Jev configuration. Plan section 3 instead keeps classification metrics when probabilities are missing. The stricter rule keeps every saved score usable; Altan should confirm it. The November 2 collection ran without that confirmation; every answer had four valid probabilities, so the rule excluded nothing, and it still awaits Altan's confirmation.
+6. **Archive.** `archive` and `restore` do not yet copy the Jev log. A restored archive can replay Jev only where the same log, with the same hash, sits at the configured path. The November 2 archive names both Jev logs in its file list, so it replays Jev.
 7. **M4.** Confidence analysis and the final-test decision set still enumerate the M3 families only.
 
 ## Reproduction

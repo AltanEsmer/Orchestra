@@ -137,17 +137,29 @@ Check the Jev request without sending anything:
 uv run --locked python -m orchestra jev --config data/processed/m3-5-prepared.json --log results/jev/m3-5-validation.jsonl --max-requests 1 --dry-run
 ```
 
-Only after Altan approves the spending cap and sending validation queries to TypeSafe, export `TYPESAFE_API_KEY` in the shell and collect answers.
+Only after Altan approves the spending cap and sending validation queries to TypeSafe, export `TYPESAFE_API_KEY` in the shell and collect answers. Never print the key or write it to a file in the repository.
 The command sends validation rows only, stops at the cap and appends every request and response to the ignored log.
 Rerun it to fill rows whose request failed; answered rows are never sent again.
 
 ```sh
-uv run --locked python -m orchestra jev --config data/processed/m3-5-prepared.json --log results/jev/m3-5-validation.jsonl --max-requests 450
+uv run --locked python -m orchestra jev --config data/processed/m3-5-prepared.json --log results/jev/m3-5-validation.jsonl --max-requests 700
 ```
 
-Add `{"family": "Jev", "responses": "results/jev/m3-5-validation.jsonl", "responses_sha256": "<printed hash>"}` to the prepared config's configurations, then run, compare, select and report as for M3 with run IDs `m3-5-a` and `m3-5-b`.
+Copy the prepared config to `data/processed/m3-5-prepared-jev.json` and add `{"family": "Jev", "responses": "results/jev/m3-5-validation.jsonl", "responses_sha256": "<printed hash>"}` to its configurations, so the 26-configuration input stays unchanged.
+Then run, compare, select and report with new run IDs:
+
+```sh
+scripts/run_experiment.sh --config data/processed/m3-5-prepared-jev.json --run-id m3-5-full-a
+scripts/run_experiment.sh --config data/processed/m3-5-prepared-jev.json --run-id m3-5-full-b
+uv run --locked python -m orchestra compare --left results/m3-5-full-a --right results/m3-5-full-b
+uv run --locked python -m orchestra select --run results/m3-5-full-a --out results/m3-5-full-a-selection.json
+uv run --locked python -m orchestra report --run results/m3-5-full-a --selection results/m3-5-full-a-selection.json --train data/processed/m3-5/train.jsonl --validation data/processed/m3-5/validation.jsonl
+```
+
 A run replays the log offline and fails the Jev configuration if any validation query lacks a valid answer.
 The selection is invalid until all 27 configurations are `ok`.
+For a repeat that measures how much Jev's answers vary, collect into a second log such as `results/jev/m3-5-validation-repeat.jsonl`; `work/m3-5-archive/run-full.sh` archives both logs and repeats the restored rerun with all 27 configurations.
+This was done on November 2 with Altan's key; the [27-configuration record](evidence/m3-5-full-run.md) holds the outputs.
 
 ## Prepare blind review
 
