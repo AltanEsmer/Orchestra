@@ -342,7 +342,7 @@ def review_test(args):
             f"{configuration}: {entry['interpreted']}/{entry['errors']} errors "
             f"interpreted, {entry['correct']} correct comparison; {categories}"
         )
-    print("PASS: test interpretations match the sealed final test")
+    print("PASS: test interpretations match the final-test predictions")
     return 0
 
 

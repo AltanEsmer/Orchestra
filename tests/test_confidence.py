@@ -294,6 +294,12 @@ class LifecycleTest(unittest.TestCase):
                 }
             },
         )
+        write(rows[1:])
+        with self.assertRaisesRegex(ValueError, "interpret at least"):
+            confidence.review_test(final, ledger)
+        write([{**rows[0], "category": "typo"}, *rows[1:]])
+        with self.assertRaisesRegex(ValueError, "allowed category"):
+            confidence.review_test(final, ledger)
         write([])
         with self.assertRaisesRegex(ValueError, "empty"):
             confidence.review_test(final, ledger)

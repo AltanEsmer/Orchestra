@@ -75,7 +75,7 @@ Every test mistake of Jev and raw L3-C10 now has a written hypothesis, in the sa
 $ uv run --locked python -m orchestra test-review --final-test results/final-test-m3-5 --interpretations results/test-interpretations-m3-5.jsonl
 Jev: 26/26 errors interpreted, 1 correct comparison; annotation_ambiguity 8, missing_context 13, vocabulary_mismatch 5
 L3-C10: 41/41 errors interpreted, 1 correct comparison; annotation_ambiguity 3, missing_context 9, multi_action_dependencies 1, other 5, vocabulary_mismatch 23
-PASS: test interpretations match the sealed final test
+PASS: test interpretations match the final-test predictions
 ```
 
 The ledger has 69 rows: all 67 errors plus the correct comparisons q2291 (Jev) and q2308 (L3-C10), both No Robots retrieval rows that name the missing text explicitly. It stays in ignored `results/` because it paraphrases test text.

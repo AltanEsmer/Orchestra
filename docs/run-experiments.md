@@ -225,7 +225,7 @@ Test mistakes are read only after `final-test` completes. Write their hypotheses
 uv run --locked python -m orchestra test-review --final-test results/final-test-m3-5 --interpretations results/test-interpretations-m3-5.jsonl
 ```
 
-The command first verifies the final-test hashes. It then applies the freeze's coverage rule to every system named in the ledger: each row must name a real test prediction once, use an allowed category, and the ledger must cover at least min(20, all errors) plus a correct comparison. It prints the interpreted errors and category counts per system. It never changes the frozen selection or any final-test artifact.
+The command first verifies the final-test files against that directory's manifest. It then applies the freeze's coverage rule to every system named in the ledger: each row must name a real test prediction once, use an allowed category, and the ledger must cover at least min(20, all errors) plus a correct comparison. It checks only the systems the ledger names, so state which systems were reviewed. It prints the interpreted errors and category counts per system. It never changes the frozen selection or any final-test artifact. The manifest vouches only for itself; the test receipt's `result_manifest_sha256` is what ties it to the one sealed run, so compare that hash with the manifest's SHA-256 when reporting.
 
 ## Render saved evidence
 
