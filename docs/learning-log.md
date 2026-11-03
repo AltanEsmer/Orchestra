@@ -1256,3 +1256,84 @@ Practice prompts, unanswered:
 3. What would go wrong if a failed Jev request were treated as a wrong answer instead of being resent?
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged.
+
+## M3.5 study guide and status check, November 3, 2026
+
+Altan wrote "Complete m3.5 and report me when m4 is fully ready" and pointed to a handoff. The agent re-verified the inherited state, delivered the [M3.5 study guide](study-guides/m3-5-data-and-methods.md) and its PDF, and corrected stale status text. No code, data or result changed.
+
+What changed:
+- **Study guide:** a new lesson on the release, the four new families, the selection of Jev, results, limits and a q0005 trace. The 18-page PDF is in the external study folder ([edition evidence](study-guides/README.md#m35-data-and-methods-edition-november-3-2026)).
+- **Course sources:** Lecture 7 (ensembles and model evaluation) is now listed with its verified pages.
+- **Status:** the plan intro, roadmap, README and repo guide now describe the November 3 state. M3.5 is in review; M4 stays blocked.
+
+Relevant ML concepts:
+- **Single tree:** it chooses each split by the lowest weighted Gini impurity. Depth and leaf size limit it.
+- **Bagging and boosting:** a forest averages many trees trained on bootstrap samples, which lowers variance. Boosting adds shallow trees in sequence, each reducing the remaining loss.
+- **Jev:** a pretrained system that sees none of the training rows, so its gap to L3-C10 is a system comparison.
+
+Actual verification:
+- **Software checks:** `sh scripts/check.sh` exits 0, with smoke passing, 284 tests, and Ruff and `git diff --check` clean.
+- **Release:** `check-collection` on `m3-5-v1` prints `PASS: M3.5 collection checks`, and a separate count finds 3,145 rows: 1,000 retrieval, 1,000 direct, 651 calculation and 494 lookup.
+- **Guide numbers:** the selection scores and q0005 probabilities equal `results/m3-5-full-a`. Five cited lecture pages were extracted again.
+- **PDF:** all 18 pages were inspected, every source word was found in the extracted text, and two exports were byte-identical.
+- **Sealed test:** not opened.
+
+Teaching trace for q0005, "A train ticket costs 45 kr. How much do three tickets cost?", an Altan-authored validation row labelled `calculation`. L3-C10 gives calculation 0.80. The depth-30 tree asks 18 questions, reaches a 3-row leaf of direct answers and gives direct answer 1.0. The forest splits 91 to 86 of 200 trees between direct answer and calculation. XGBoost gives direct answer 0.87. Jev returns calculation with probability 1 in both passes. One row ranks nothing; it shows how differently the families reach a decision.
+
+Practice prompts, unanswered (the guide's six; the first three carry over from the plan):
+1. Why must we rerun logistic regression on the expanded split before claiming Random Forest is better?
+2. How could 4,000 rows still contain too little independent evidence?
+3. Why does Jev need a different fairness and reproducibility discussion from a decision tree?
+4. Suppose Jev had scored 0.960 and every other family winner were unchanged. Apply the overall rule step by step. Which system is chosen, and which step decides?
+5. In the q0005 trace, why is the tree's 1.0 weaker evidence than it looks?
+6. A reader asks, "Is Jev's 0.975 agreement with human labels?" What do you answer?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged, and earlier M3.5 prompts remain open.
+
+## M3.5 and M4 practice answers, November 3, 2026
+
+Altan answered all nine open prompts without a worked answer: the six from the M3.5 guide and the three from the M4 integration. In the same message he wrote "I approve to send 628 tests to Jev." That approval covers `final-test --send-jev-test` for the 628 sealed-test queries. It does not by itself accept M3.5.
+
+Faithful summaries and feedback:
+
+1. **Rerun before comparing.** The comparison must use the same data, or a score gap could come from the larger dataset or the changed validation population. Correct. Feedback: the project shows it. M3 chose L1-C10, and on the expanded split the best local system is L3-C10.
+2. **4,000 rows, little evidence.** Paraphrases, number swaps and a few sources can cover few independent scenarios. Group-aware splitting stops related rows crossing partitions, but source and scenario coverage still matter. Correct. Feedback: lookup's 494 rows sit in only 223 groups.
+3. **Jev's fairness and reproducibility.** The tree learns from our rows. Jev brings unknown pretraining and written label instructions, so the gap compares systems. Refitting reproduces the tree; replaying Jev's log reproduces an artifact, fresh calls may change, and pretraining overlap is unknown. Correct and complete.
+4. **Rule with Jev at 0.960.** Cutoff 0.950; L3-C10 at 0.9524 qualifies; the family order puts L3 before Jev, so the order step decides and L3-C10 is chosen. Report Jev's higher validation score and that the frozen rule chose L3-C10, and say the tolerance is a project preference, not statistical equivalence. Correct, with the right reporting caveat.
+5. **The three tree scores.** The tree's 1 is three training rows in one leaf, weak evidence; the forest's 0.455 is the average over 200 trees, close to calculation's 0.430; XGBoost's 0.8656 is softmax over summed boosted scores. Check held-out calibration, bin counts, probability losses and similar errors before trusting it, and it is already confident and wrong here. Correct.
+6. **"Is 0.975 human agreement?"** No. It is macro-F1 against accepted reference labels made mostly by AI checks with Altan adjudicating disagreements. Agreement needs independent human judgments before reconciliation, a documented sample and a stated measure. Correct.
+7. **Sending test queries opens the test.** Jev processes the held-out inputs and produces predictions even before anyone sees a score, so it belongs after the freeze inside the recorded procedure. Correct. Feedback: the text also leaves our control once a vendor receives it.
+8. **Only one calibrated system.** Declared experiment; grouped training folds; Jev cannot be refit there, and calibrating it would need a separate experiment. Correct.
+9. **Failed request counted wrong.** It mixes service failure with classification error; resend only failed or invalid requests, never a valid wrong answer, and keep unresolved failures explicit. Correct; this is what `final-test --resume` does.
+
+Status changes from these answers:
+- **Model selection** (tolerance, family order, test exposure): **explained independently**, applied to the unfamiliar hypothetical in prompt 4.
+- **Tree families and their scores**: **explained independently** for the q0005 trace.
+- **Reproducibility of an API system**: **explained independently**.
+- **Leakage and grouping**: still **needs practice**. Group evidence and test exposure were explained; split-before-fitting and vocabulary leakage remain unattempted.
+- **Confidence and fallback**: calibration's purpose was explained; the reliability-bin and coverage exercise remains **not yet reviewed**.
+- **Metrics**: the difference between macro-F1 and an agreement rate was explained; the precision/recall exercise remains **not yet reviewed**.
+
+Next exercise: from a 2 × 2 slice of a confusion matrix, compute one class's precision and recall, then say what a reliability bin with 30 rows, mean confidence 0.9 and accuracy 0.8 means.
+
+## M3.5 acceptance and the M4 final test, November 3, 2026
+
+Altan wrote "Accept, run it" and named the file holding his TypeSafe key. The agent recorded the acceptance, kept the dated M3.5 snapshot, then ran `confidence`, `freeze` and one `final-test --send-jev-test`. The [M4 final-test record](evidence/m4-final-test.md) holds the numbers.
+
+What changed: no code. A new evidence note and status lines in the roadmap, README, plan, M3.5 plan and study-guide index. The test outputs, the interpretation ledger and the Jev test log stay in ignored `results/`.
+
+Relevant ML concepts:
+- **Optimism of selection:** Jev scored 0.975 on the validation rows that chose it and 0.964 on the sealed test. The gap is small here, but it is the reason the test exists.
+- **Ranking instability:** S1-C1 beat L3-C10 on test after trailing on validation. A 0.016 validation gap does not reliably rank two families, and the frozen choice is not revisited.
+- **Fallback threshold:** the calibrated logistic system already met the 0.90 target with every query accepted, so the frozen threshold is 0.0. It also held on test, at 0.932.
+
+Actual verification: freeze and final test each printed `PASS`; the receipt records one complete attempt; Jev answered 628 of 628 with no failure; the key appears in no output; the lead recomputed by-origin scores and error groups.
+
+Teaching trace: q0005 is a validation row, so it never reaches the test. For a test row, `final-test` reserved the split, opened it, sent `{"query": <text>}` to Jev with the frozen question, logged the answer, refit the nine local systems on training rows, applied the frozen threshold 0.0 to calibrated L3-C10, and scored every system against the accepted label once.
+
+Practice prompts, unanswered:
+1. Jev lost 0.011 macro-F1 from validation to test, and S1-C1 gained 0.009. Why can a system that was not selected rise on test?
+2. S1-C1 beat L3-C10 on test. Why must the report keep L3-C10 as the frozen local choice?
+3. Jev made no error on the 79 inherited M3 test rows. What can and can't you conclude from that?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses are unchanged by this run.

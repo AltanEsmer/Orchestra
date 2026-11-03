@@ -29,7 +29,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M1 | Labels, provenance, ambiguous examples, annotation review, class and group distribution. Supplies the data section. |
 | M2 | Validator, group splits, dummy and logistic baselines, fit versus transform, saved runs. Supplies methods and initial validation evidence. |
 | M3 | Classifier assumptions, count versus TF-IDF, regularization, controlled comparisons, selection. Supplies the main methods and comparison results. |
-| M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. Planned `M3.5-data-and-methods.pdf` under the [M3.5 plan](../m3-5-plan.md); no edition delivered yet. |
+| M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. |
 | M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. Supports Altan's own synthesis. |
 | M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
@@ -99,3 +99,19 @@ The [editable screening lesson](m3-5-data-screening.md) accompanies the first pu
 ## M3.5 interim group and quota audit, October 31, 2026
 
 The [editable audit lesson](m3-5-group-quota-audit.md) records the follow-up independent-group checks, source/type quotas and remaining diversity gaps. `M3.5-group-and-quota-audit.pdf` and its companion source/PDF hash manifest are in the external study folder. Both pages were rendered and visually checked. The lesson retains the verified Lecture 2 page 8 connection and explicitly separates project caps from course requirements. The earlier screening edition is preserved. This is interim evidence, with 400 accepted rows and all learning questions unanswered; the full methods edition remains future work.
+
+## M3.5 data and methods edition, November 3, 2026
+
+The edition is delivered. Altan answered its practice prompts and accepted M3.5 on November 3, 2026. The closure snapshot `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M3.5-data-and-methods-2026-11-03.pdf` has SHA-256 `ba8f3a95ab2edf6ebeda9ac85432adaa4fe9edab9a29bf2a47f23c9fd500b494`, identical to the edition.
+
+| Edition | Source | PDF, 18 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M3.5 | [M3.5 data and methods](m3-5-data-and-methods.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M3.5-data-and-methods.pdf` | `c6f3e77b49083226f70dc12b7776a562cb230ec716c89fefc67ce0a66694242b` | `ba8f3a95ab2edf6ebeda9ac85432adaa4fe9edab9a29bf2a47f23c9fd500b494` |
+
+- The sidecar `M3.5-data-and-methods.manifest.json` records the repository commit at export (`2a6baf5`) and the hash of every cited course PDF. All five cited course files are present, and their hashes equal the earlier editions' records.
+- Drafting: a Sonnet subagent drafted the source from the M3.5 evidence records, the code and the saved `m3-5-full-a` run, and extracted every lecture page it cites with `pdftotext`. The lead compared the selection scores, family winners and q0005 probabilities with `metrics.json` and `predictions.jsonl`, extracted five cited lecture pages again (Lecture 5 pp. 38 and 50, Lecture 7 pp. 11, 32 and 68), and corrected three statements: the figures dependency, pure forest leaves, and Lecture 7's course-source listing.
+- Trace check: the q0005 probabilities for L3-C10, DT-d30-leaf1, RF-dNone-leaf1 and XGB-d6-lr0.05 come from training-only refits that equal the saved values, with a maximum difference of 0.0. Jev's answer is read from the two validation logs.
+- Verification: the lead inspected all 18 rendered pages and removed a two-word overflow page. A scripted check found every source word in the extracted text, apart from the unrendered `pagebreak` marker. Two consecutive exports produced identical hashes.
+- Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
+- Data exposure: the guide quotes only q0005, the Altan-authored validation row that the M2 and M3 guides already quote. No sealed test text appears.
+- The edition first cites Lecture 7 pages 6, 10 to 12, 14, 18, 28, 29, 31, 32, 35, 36, 38, 39, 52, 54, 56, 57, 68, 69, 80 and 81, now listed in the [course sources](../course-sources.md).

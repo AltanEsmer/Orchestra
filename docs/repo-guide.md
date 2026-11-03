@@ -92,6 +92,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `docs/study-guides/m0-preparation.md` | Editable M0 lesson and technical appendix explaining the current script and its course connections. |
 | `docs/study-guides/m1-dataset.md` | Editable M1 lesson: labels, provenance, grouping v1 to v2, AI-assisted review, distributions and the source-label confound, traced through q0036. |
 | `docs/study-guides/m2-baselines.md` | Editable M2 lesson: readiness gate, grouped split, fit versus transform, B0 and L2 results, reproduction and error inspection, traced through q0005. |
+| `docs/study-guides/m3-5-data-and-methods.md` | Editable M3.5 lesson: the `m3-5-v1` release and its AI-labeled limits, decision trees, random forests, XGBoost and Jev, validation-only selection of Jev, results and limits, traced through q0005. |
 | `docs/study-guides/m3-comparison.md` | Editable M3 lesson: counts versus TF-IDF, naive Bayes, logistic regression and linear SVM, regularization C, bigrams, validation-only selection, results and limits, traced through q0005. |
 | `docs/data-and-evaluation.md` | Proposed first-action labels, row schema, annotation/split protocol, experiments, confidence, and reproducibility. |
 | `docs/course-sources.md` | Source locations, exact course page mapping, and requirement fingerprints. |
