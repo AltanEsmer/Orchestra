@@ -1256,3 +1256,36 @@ Practice prompts, unanswered:
 3. What would go wrong if a failed Jev request were treated as a wrong answer instead of being resent?
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged.
+
+## M3.5 study guide and status check, November 3, 2026
+
+Altan wrote "Complete m3.5 and report me when m4 is fully ready" and pointed to a handoff. The agent re-verified the inherited state, delivered the [M3.5 study guide](study-guides/m3-5-data-and-methods.md) and its PDF, and corrected stale status text. No code, data or result changed.
+
+What changed:
+- **Study guide:** a new lesson on the release, the four new families, the selection of Jev, results, limits and a q0005 trace. The 18-page PDF is in the external study folder ([edition evidence](study-guides/README.md#m35-data-and-methods-edition-november-3-2026)).
+- **Course sources:** Lecture 7 (ensembles and model evaluation) is now listed with its verified pages.
+- **Status:** the plan intro, roadmap, README and repo guide now describe the November 3 state. M3.5 is in review; M4 stays blocked.
+
+Relevant ML concepts:
+- **Single tree:** it chooses each split by the lowest weighted Gini impurity. Depth and leaf size limit it.
+- **Bagging and boosting:** a forest averages many trees trained on bootstrap samples, which lowers variance. Boosting adds shallow trees in sequence, each reducing the remaining loss.
+- **Jev:** a pretrained system that sees none of the training rows, so its gap to L3-C10 is a system comparison.
+
+Actual verification:
+- **Software checks:** `sh scripts/check.sh` exits 0, with smoke passing, 284 tests, and Ruff and `git diff --check` clean.
+- **Release:** `check-collection` on `m3-5-v1` prints `PASS: M3.5 collection checks`, and a separate count finds 3,145 rows: 1,000 retrieval, 1,000 direct, 651 calculation and 494 lookup.
+- **Guide numbers:** the selection scores and q0005 probabilities equal `results/m3-5-full-a`. Five cited lecture pages were extracted again.
+- **PDF:** all 18 pages were inspected, every source word was found in the extracted text, and two exports were byte-identical.
+- **Sealed test:** not opened.
+
+Teaching trace for q0005, "A train ticket costs 45 kr. How much do three tickets cost?", an Altan-authored validation row labelled `calculation`. L3-C10 gives calculation 0.80. The depth-30 tree asks 18 questions, reaches a 3-row leaf of direct answers and gives direct answer 1.0. The forest splits 91 to 86 of 200 trees between direct answer and calculation. XGBoost gives direct answer 0.87. Jev returns calculation with probability 1 in both passes. One row ranks nothing; it shows how differently the families reach a decision.
+
+Practice prompts, unanswered (the guide's six; the first three carry over from the plan):
+1. Why must we rerun logistic regression on the expanded split before claiming Random Forest is better?
+2. How could 4,000 rows still contain too little independent evidence?
+3. Why does Jev need a different fairness and reproducibility discussion from a decision tree?
+4. Suppose Jev had scored 0.960 and every other family winner were unchanged. Apply the overall rule step by step. Which system is chosen, and which step decides?
+5. In the q0005 trace, why is the tree's 1.0 weaker evidence than it looks?
+6. A reader asks, "Is Jev's 0.975 agreement with human labels?" What do you answer?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged, and earlier M3.5 prompts remain open.
