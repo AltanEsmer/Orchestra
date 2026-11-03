@@ -1289,3 +1289,29 @@ Practice prompts, unanswered (the guide's six; the first three carry over from t
 6. A reader asks, "Is Jev's 0.975 agreement with human labels?" What do you answer?
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses remain unchanged, and earlier M3.5 prompts remain open.
+
+## M3.5 and M4 practice answers, November 3, 2026
+
+Altan answered all nine open prompts without a worked answer: the six from the M3.5 guide and the three from the M4 integration. In the same message he wrote "I approve to send 628 tests to Jev." That approval covers `final-test --send-jev-test` for the 628 sealed-test queries. It does not by itself accept M3.5.
+
+Faithful summaries and feedback:
+
+1. **Rerun before comparing.** The comparison must use the same data, or a score gap could come from the larger dataset or the changed validation population. Correct. Feedback: the project shows it. M3 chose L1-C10, and on the expanded split the best local system is L3-C10.
+2. **4,000 rows, little evidence.** Paraphrases, number swaps and a few sources can cover few independent scenarios. Group-aware splitting stops related rows crossing partitions, but source and scenario coverage still matter. Correct. Feedback: lookup's 494 rows sit in only 223 groups.
+3. **Jev's fairness and reproducibility.** The tree learns from our rows. Jev brings unknown pretraining and written label instructions, so the gap compares systems. Refitting reproduces the tree; replaying Jev's log reproduces an artifact, fresh calls may change, and pretraining overlap is unknown. Correct and complete.
+4. **Rule with Jev at 0.960.** Cutoff 0.950; L3-C10 at 0.9524 qualifies; the family order puts L3 before Jev, so the order step decides and L3-C10 is chosen. Report Jev's higher validation score and that the frozen rule chose L3-C10, and say the tolerance is a project preference, not statistical equivalence. Correct, with the right reporting caveat.
+5. **The three tree scores.** The tree's 1 is three training rows in one leaf, weak evidence; the forest's 0.455 is the average over 200 trees, close to calculation's 0.430; XGBoost's 0.8656 is softmax over summed boosted scores. Check held-out calibration, bin counts, probability losses and similar errors before trusting it, and it is already confident and wrong here. Correct.
+6. **"Is 0.975 human agreement?"** No. It is macro-F1 against accepted reference labels made mostly by AI checks with Altan adjudicating disagreements. Agreement needs independent human judgments before reconciliation, a documented sample and a stated measure. Correct.
+7. **Sending test queries opens the test.** Jev processes the held-out inputs and produces predictions even before anyone sees a score, so it belongs after the freeze inside the recorded procedure. Correct. Feedback: the text also leaves our control once a vendor receives it.
+8. **Only one calibrated system.** Declared experiment; grouped training folds; Jev cannot be refit there, and calibrating it would need a separate experiment. Correct.
+9. **Failed request counted wrong.** It mixes service failure with classification error; resend only failed or invalid requests, never a valid wrong answer, and keep unresolved failures explicit. Correct; this is what `final-test --resume` does.
+
+Status changes from these answers:
+- **Model selection** (tolerance, family order, test exposure): **explained independently**, applied to the unfamiliar hypothetical in prompt 4.
+- **Tree families and their scores**: **explained independently** for the q0005 trace.
+- **Reproducibility of an API system**: **explained independently**.
+- **Leakage and grouping**: still **needs practice**. Group evidence and test exposure were explained; split-before-fitting and vocabulary leakage remain unattempted.
+- **Confidence and fallback**: calibration's purpose was explained; the reliability-bin and coverage exercise remains **not yet reviewed**.
+- **Metrics**: the difference between macro-F1 and an agreement rate was explained; the precision/recall exercise remains **not yet reviewed**.
+
+Next exercise: from a 2 × 2 slice of a confusion matrix, compute one class's precision and recall, then say what a reliability bin with 30 rows, mean confidence 0.9 and accuracy 0.8 means.
