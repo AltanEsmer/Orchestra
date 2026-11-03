@@ -1337,3 +1337,36 @@ Practice prompts, unanswered:
 3. Jev made no error on the 79 inherited M3 test rows. What can and can't you conclude from that?
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses are unchanged by this run.
+
+## M4 test mistakes and study guide, November 3, 2026
+
+Altan asked to start M4 from issue #7 on a fresh branch, in Poteto mode. The freeze and the one final test had already run, so the remaining agent work was the post-freeze review of test mistakes and the M4 study guide. The work is on branch `claude/m4-confidence-errors`.
+
+What changed:
+- **`test-review` command:** checks a test interpretation ledger against the final-test predictions with the freeze's coverage rule, and prints interpreted errors and category counts per system (`ffba6d4`, `ae5b6cf`). It reuses the validation ledger check and adds one test.
+- **Test mistakes:** a worker agent drafted a hypothesis for every Jev (26) and raw L3-C10 (41) test error. The lead read each against its text and corrected five. The ledger stays in ignored `results/`; the [M4 record](evidence/m4-final-test.md#test-mistakes-interpreted-after-the-freeze) holds the counts and examples (`55d22c0`). No label, selection or score changed.
+- **Correction:** the M4 record no longer calls Jev's 0.011 drop the expected optimism of selection. L1-C1, L3-C10 and XGBoost, none of them the overall pick, fell by 0.025 to 0.030, so a harder test split is also likely.
+- **Study guide:** the 16-page [M4 guide](study-guides/m4-confidence-errors.md) and its [edition evidence](study-guides/README.md#m4-confidence-and-errors-edition-november-3-2026) (`61b758e`). Lecture 8 was inspected and is not relevant.
+
+Relevant ML concepts:
+- **Margin, probability, calibrated probability:** an SVM margin is a distance, not a chance of being right. A probability can still be miscalibrated. Raw L3-C10 was underconfident on validation, and sigmoid calibration lowered its ECE from 0.100 to 0.061.
+- **Calibration builds a new model:** the calibrated system averages three L3-C10 copies fitted on two thirds of the training rows each, which is why its accuracy can differ from raw L3-C10's.
+- **Error analysis after the freeze:** test mistakes are read only after the one opening, as hypotheses, and cannot feed another selection. Missing passage context is the likely cause of about half of Jev's errors; vocabulary mismatch leads for L3-C10.
+
+Alternatives considered:
+- Interpreting only a sample of test mistakes. All 67 cost little and give category counts comparable with the validation ledger.
+- Binding `test-review` to the receipt in code. Deferred: the runbook says to compare the receipt's manifest hash, and the lead did so once.
+- Rendering the reliability and coverage figures now. Left to M5, where the report chooses its figures.
+
+Actual verification:
+- `sh scripts/check.sh` exits 0: smoke passes, 285 tests pass, and Ruff and `git diff --check` are clean.
+- `test-review` on the real ledger prints `Jev: 26/26 errors interpreted` and `L3-C10: 41/41 errors interpreted` and passes. Given the validation ledger instead, it refuses with an unknown query error.
+- The receipt's `result_manifest_sha256` equals the current final-test manifest hash.
+- An independent Opus reviewer recomputed the guide's tables, trace, reliability and threshold numbers and checked sixteen lecture pages. Its findings were fixed before export. Workers ran on Sonnet and the reviewer on Opus, one model family.
+- The PDF: all 16 pages inspected, every source word found in the extracted text, two exports identical.
+
+Teaching trace for q0005, "A train ticket costs 45 kr. How much do three tickets cost?", an Altan-authored validation row labelled `calculation`. Raw L3-C10 gives calculation 0.8045; calibrated L3-C10 gives 0.8853. Both fall in the top reliability bin [0.8, 1.0], whose 507 calibrated rows are 99.2% right at mean confidence 0.945. The frozen threshold 0.0 accepts it; a threshold of 0.9 would have withheld it. Its log loss falls from 0.218 to 0.122.
+
+Practice prompts, unanswered: the guide's nine questions. The first three are the M4 prompts from the previous entry. The new ones ask Altan to tell a margin from a probability, read a test reliability bin, compute L3-C10's lookup precision and recall, explain why a better test threshold cannot replace the frozen one, design an experiment for the missing-context hypothesis, and weigh calibration against its small accuracy loss.
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses are unchanged. Altan has not yet reviewed the flagged test labels (unit conversions, DataBench tables, q2225, q3014).

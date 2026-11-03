@@ -30,7 +30,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M2 | Validator, group splits, dummy and logistic baselines, fit versus transform, saved runs. Supplies methods and initial validation evidence. |
 | M3 | Classifier assumptions, count versus TF-IDF, regularization, controlled comparisons, selection. Supplies the main methods and comparison results. |
 | M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
-| M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. |
+| M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. [M4 confidence and errors](m4-confidence-errors.md), exported as `M4-confidence-errors.pdf` on November 3, 2026. |
 | M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. Supports Altan's own synthesis. |
 | M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
 | M7 | Frozen package, versions, checksums and evidence supporting final claims. Records what is ready for submission. |
@@ -115,3 +115,20 @@ The edition is delivered. Altan answered its practice prompts and accepted M3.5 
 - Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
 - Data exposure: the guide quotes only q0005, the Altan-authored validation row that the M2 and M3 guides already quote. No sealed test text appears.
 - The edition first cites Lecture 7 pages 6, 10 to 12, 14, 18, 28, 29, 31, 32, 35, 36, 38, 39, 52, 54, 56, 57, 68, 69, 80 and 81, now listed in the [course sources](../course-sources.md).
+
+## M4 confidence and errors edition, November 3, 2026
+
+The edition is delivered. Altan's attempt at its nine practice questions is pending, so it is not a closed-milestone snapshot yet.
+
+| Edition | Source | PDF, 16 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M4 | [M4 confidence and errors](m4-confidence-errors.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M4-confidence-errors.pdf` | `7e2f888c5b25d24ee1125aaf03b0aedf335a2a6eb7d3d9426f890d9f297a1b5c` | `943f3aff4d6e909aa9d4ea3ff2ad6622e2e5842ec2cef238bc057afa3526f77e` |
+
+- The sidecar `M4-confidence-errors.manifest.json` records the repository commit at export (`61b758e`) and the hash of every cited course PDF. All six cited course files are present; the five already cited by earlier editions keep their recorded hashes.
+- Drafting: a Sonnet subagent drafted the source from the M4 evidence record, `confidence.py` and the saved `m4-5-validation` and `final-test-m3-5` artifacts, extracting every cited lecture page with `pdftotext`. The lead filled the test-mistakes section from the reviewed [test ledger](../evidence/m4-final-test.md#test-mistakes-interpreted-after-the-freeze), checked the reliability bins, thresholds and fold claims against the files and the code, re-extracted five cited pages (CourseProjects p. 15, report instructions p. 1, Lecture 5 p. 56, Lecture 7 pp. 52 and 57), and corrected the calibration mechanism, Jev's replay and two practice questions whose answers were printed in the guide.
+- Review: an independent Opus reviewer recomputed the tables, confusion matrices, reliability and threshold numbers, q0005 trace, fold sizes and by-origin scores, checked sixteen cited lecture pages, and found no five-word sequence of test text in tracked files. Its findings led to these corrections: one overconfident bin, a selection-optimism claim the evidence cannot isolate, hypotheses stated as facts, and practice questions 3 and 6 to 9, whose answers the text still gave. Answer sentences were removed and questions 7 and 8 replaced with transfer questions.
+- Trace check: the q0005 raw and calibrated L3-C10 probabilities are read from `results/m4-5-validation/predictions.jsonl`; its losses were recomputed by hand and by the reviewer.
+- Verification: the lead inspected all 16 rendered pages and added two page breaks so no heading ends a page. A scripted check found every source word in the extracted text. Two consecutive exports produced identical hashes.
+- Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
+- Data exposure: the guide quotes only q0005, the Altan-authored validation row that earlier guides quote. Test mistakes are described by ID and paraphrase; no test text appears.
+- The edition first cites Lecture 5 p. 80, Lecture 7 pp. 47, 53 and 58 to 61, and Lecture 8, now listed in the [course sources](../course-sources.md).
