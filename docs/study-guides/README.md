@@ -102,7 +102,7 @@ The [editable audit lesson](m3-5-group-quota-audit.md) records the follow-up ind
 
 ## M3.5 data and methods edition, November 3, 2026
 
-The edition is delivered. Altan's learning attempt and his acceptance of M3.5 are pending, so it is not a closed-milestone snapshot yet. Keep `M3.5-data-and-methods-YYYY-MM-DD.pdf` when Altan accepts M3.5.
+The edition is delivered. Altan answered its practice prompts and accepted M3.5 on November 3, 2026. The closure snapshot `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M3.5-data-and-methods-2026-11-03.pdf` has SHA-256 `ba8f3a95ab2edf6ebeda9ac85432adaa4fe9edab9a29bf2a47f23c9fd500b494`, identical to the edition.
 
 | Edition | Source | PDF, 18 pages | Source SHA-256 | PDF SHA-256 |
 | --- | --- | --- | --- | --- |
