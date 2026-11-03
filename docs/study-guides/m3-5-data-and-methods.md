@@ -225,7 +225,7 @@ Course concepts support M3.5's design but do not show that Jev or any tree gener
 
 **Data quality and sampling.** `Lecture2-Data Preprocessing and Feature Engineering.pdf` p. 3 names duplicate records and inconsistent data from different sources as cleaning problems. Page 8 asks how the data were sampled. Page 18 lists resolving redundancy as a cleaning task. The project's choices are the group splits, the source and request-type caps, and the near-duplicate checks.
 
-**What the lectures do not cover.** None of the inspected pages teaches Jev, API-hosted decision models, TF-IDF, macro-F1, the 0.01 tolerance, the predeclared family order or a repeat pass on a vendor API. Those are project choices. The lecture's XGBoost pages are brief, so the multiclass softmax form and the library defaults are project and library details, not course content. `docs/course-sources.md` does not yet list Lecture 7, so the lead may need to add it there.
+**What the lectures do not cover.** None of the inspected pages teaches Jev, API-hosted decision models, TF-IDF, macro-F1, the 0.01 tolerance, the predeclared family order or a repeat pass on a vendor API. Those are project choices. The lecture's XGBoost pages are brief, so the multiclass softmax form and the library defaults are project and library details, not course content. Lecture 7 was added to `docs/course-sources.md` with this guide.
 
 | Course concept | Project choice |
 | --- | --- |
