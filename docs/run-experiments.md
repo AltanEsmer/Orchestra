@@ -217,6 +217,16 @@ The canonical research receipt lives under `results/test-receipts/` and is keyed
 
 `--fixture` on confidence is only for artificial software verification. It bypasses research evidence gates, marks artifacts as fixtures, and uses an isolated fixture receipt store. Never use it to bypass missing real review or permission.
 
+### Interpret test mistakes after the freeze
+
+Test mistakes are read only after `final-test` completes. Write their hypotheses to a separate ignored ledger in the validation ledger's format, then check it against the sealed test predictions:
+
+```sh
+uv run --locked python -m orchestra test-review --final-test results/final-test-m3-5 --interpretations results/test-interpretations-m3-5.jsonl
+```
+
+The command first verifies the final-test hashes. It then applies the freeze's coverage rule to every system named in the ledger: each row must name a real test prediction once, use an allowed category, and the ledger must cover at least min(20, all errors) plus a correct comparison. It prints the interpreted errors and category counts per system. It never changes the frozen selection or any final-test artifact.
+
 ## Render saved evidence
 
 ```sh
