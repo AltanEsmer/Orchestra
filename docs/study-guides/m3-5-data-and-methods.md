@@ -201,7 +201,7 @@ The forest averages 200 deep trees. Its calculation and direct answer scores are
 
 **Same query to Jev.** The request body is `{"query": <the text>}` with the fixed question and four options. The first pass returned choice calculation with probabilities 0, 0, 1 and 0, at 484 input tokens and 0.456 s. The repeat pass returned the same. Jev matches the label. The vendor's own `confidence` field also read 1.0, and the project does not use it.
 
-**What the trace shows.** First, one row cannot rank anything. L3-C10 and Jev are right, and all three tree families are wrong. Second, a probability of 1 is a statement of the model, not proof of calibration. The tree and Jev both output a 1, one wrong and one right. Third, the systems get here by different routes. L3-C10 weights words and word pairs from 1,888 rows. The tree asks 18 questions. Jev reads the written rules and sees none of your training rows. The trace does not say why Jev succeeded, and the saved artifacts do not show its reasoning.
+**What the trace shows.** First, one row cannot rank anything. L3-C10 and Jev are right, and all three tree families are wrong. Second, a probability of 1 is a statement of the model, not proof of calibration. The tree and Jev both output a 1, one wrong and one right. Third, the systems get here by different routes. L3-C10 weights words and word pairs from 1,888 rows. Jev reads the written rules and sees none of your training rows. The saved artifacts do not show why Jev succeeded.
 
 <!-- pagebreak -->
 
