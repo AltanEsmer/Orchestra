@@ -1315,3 +1315,25 @@ Status changes from these answers:
 - **Metrics**: the difference between macro-F1 and an agreement rate was explained; the precision/recall exercise remains **not yet reviewed**.
 
 Next exercise: from a 2 × 2 slice of a confusion matrix, compute one class's precision and recall, then say what a reliability bin with 30 rows, mean confidence 0.9 and accuracy 0.8 means.
+
+## M3.5 acceptance and the M4 final test, November 3, 2026
+
+Altan wrote "Accept, run it" and named the file holding his TypeSafe key. The agent recorded the acceptance, kept the dated M3.5 snapshot, then ran `confidence`, `freeze` and one `final-test --send-jev-test`. The [M4 final-test record](evidence/m4-final-test.md) holds the numbers.
+
+What changed: no code. A new evidence note and status lines in the roadmap, README, plan, M3.5 plan and study-guide index. The test outputs, the interpretation ledger and the Jev test log stay in ignored `results/`.
+
+Relevant ML concepts:
+- **Optimism of selection:** Jev scored 0.975 on the validation rows that chose it and 0.964 on the sealed test. The gap is small here, but it is the reason the test exists.
+- **Ranking instability:** S1-C1 beat L3-C10 on test after trailing on validation. A 0.016 validation gap does not reliably rank two families, and the frozen choice is not revisited.
+- **Fallback threshold:** the calibrated logistic system already met the 0.90 target with every query accepted, so the frozen threshold is 0.0. It also held on test, at 0.932.
+
+Actual verification: freeze and final test each printed `PASS`; the receipt records one complete attempt; Jev answered 628 of 628 with no failure; the key appears in no output; the lead recomputed by-origin scores and error groups.
+
+Teaching trace: q0005 is a validation row, so it never reaches the test. For a test row, `final-test` reserved the split, opened it, sent `{"query": <text>}` to Jev with the frozen question, logged the answer, refit the nine local systems on training rows, applied the frozen threshold 0.0 to calibrated L3-C10, and scored every system against the accepted label once.
+
+Practice prompts, unanswered:
+1. Jev lost 0.011 macro-F1 from validation to test, and S1-C1 gained 0.009. Why can a system that was not selected rise on test?
+2. S1-C1 beat L3-C10 on test. Why must the report keep L3-C10 as the frozen local choice?
+3. Jev made no error on the 79 inherited M3 test rows. What can and can't you conclude from that?
+
+Wait for Altan's attempt before supplying worked answers. Learning statuses are unchanged by this run.
