@@ -250,6 +250,68 @@ class LifecycleTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "interpret at least"):
             confidence._error_interpretations(path, run, systems)
 
+    def test_test_review_counts_only_sealed_final_test_predictions(self):
+        import json
+
+        from orchestra import confidence
+
+        out = confidence.analyze(
+            self.run, self.selection, self.root / "confidence", fixture=True
+        )
+        frozen = self.root / "freeze.json"
+        confidence.freeze(out, frozen)
+        final = confidence.final_test(frozen, self.root / "final")
+        b0 = [
+            json.loads(line)
+            for line in (final / "predictions.jsonl").read_text().splitlines()
+            if json.loads(line)["configuration"] == "B0"
+        ]
+        wrong = [p for p in b0 if p["label"] != p["prediction"]]
+        right = next(p for p in b0 if p["label"] == p["prediction"])
+        ledger = self.root / "test-interpretations.jsonl"
+
+        def write(rows):
+            ledger.write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+        rows = [
+            {
+                "configuration": "B0",
+                "query_id": p["query_id"],
+                "category": "missing_context",
+                "hypothesis": "Fixture hypothesis for contract verification.",
+            }
+            for p in [*wrong, right]
+        ]
+        write(rows)
+        self.assertEqual(
+            confidence.review_test(final, ledger),
+            {
+                "B0": {
+                    "errors": 6,
+                    "interpreted": 6,
+                    "correct": 1,
+                    "categories": {"missing_context": 6},
+                }
+            },
+        )
+        write(rows[1:])
+        with self.assertRaisesRegex(ValueError, "interpret at least"):
+            confidence.review_test(final, ledger)
+        write([{**rows[0], "category": "typo"}, *rows[1:]])
+        with self.assertRaisesRegex(ValueError, "allowed category"):
+            confidence.review_test(final, ledger)
+        write([])
+        with self.assertRaisesRegex(ValueError, "empty"):
+            confidence.review_test(final, ledger)
+        write([*rows, {**rows[0], "query_id": "q9999"}])
+        with self.assertRaisesRegex(ValueError, "unknown or duplicate"):
+            confidence.review_test(final, ledger)
+        write(rows)
+        sealed = final / "predictions.jsonl"
+        sealed.write_text(sealed.read_text().replace('"B0"', '"B0 "', 1))
+        with self.assertRaisesRegex(ValueError, "artifact hash mismatch"):
+            confidence.review_test(final, ledger)
+
     def test_research_evidence_checks_permissions_and_never_opens_dataset(self):
         import json
 

@@ -102,6 +102,44 @@ def _error_interpretations(path, run, systems):
     return {str(Path(path).resolve()): file_sha256(path)}
 
 
+def review_test(final_dir, path):
+    from orchestra.data import read_jsonl
+
+    final_dir = Path(final_dir)
+    load_artifacts(final_dir)
+    predictions, problems = read_jsonl(final_dir / "predictions.jsonl")
+    ledger, ledger_problems = read_jsonl(path)
+    if problems or ledger_problems:
+        raise ValueError("; ".join(problems + ledger_problems))
+    if not ledger:
+        raise ValueError("test interpretation ledger is empty")
+    systems = [{"id": c} for c in {row.get("configuration") for row in ledger}]
+    _error_interpretations(path, {"predictions.jsonl": predictions}, systems)
+    facts = {(p["configuration"], p["query_id"]): p for p in predictions}
+    summary = {
+        entry["id"]: {
+            "errors": sum(
+                p["configuration"] == entry["id"] and p["label"] != p["prediction"]
+                for p in predictions
+            ),
+            "interpreted": 0,
+            "correct": 0,
+            "categories": {},
+        }
+        for entry in systems
+    }
+    for row in ledger:
+        fact = facts[(row["configuration"], row["query_id"])]
+        entry = summary[row["configuration"]]
+        if fact["label"] == fact["prediction"]:
+            entry["correct"] += 1
+        else:
+            entry["interpreted"] += 1
+            categories = entry["categories"]
+            categories[row["category"]] = categories.get(row["category"], 0) + 1
+    return summary
+
+
 def _json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 

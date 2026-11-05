@@ -330,6 +330,22 @@ def final_test(args):
     return 0
 
 
+def review_test(args):
+    from orchestra.confidence import review_test
+
+    summary = review_test(args.final_test, args.interpretations)
+    for configuration, entry in sorted(summary.items()):
+        categories = ", ".join(
+            f"{name} {count}" for name, count in sorted(entry["categories"].items())
+        )
+        print(
+            f"{configuration}: {entry['interpreted']}/{entry['errors']} errors "
+            f"interpreted, {entry['correct']} correct comparison; {categories}"
+        )
+    print("PASS: test interpretations match the final-test predictions")
+    return 0
+
+
 def render_figures(args):
     from orchestra.figures import render
 
@@ -495,6 +511,12 @@ def main(argv=None):
         help="send the sealed test queries to TypeSafe Jev (needs TYPESAFE_API_KEY)",
     )
     final_parser.set_defaults(run=guarded(final_test))
+    test_review_parser = commands.add_parser(
+        "test-review", help="check post-freeze test error interpretations"
+    )
+    test_review_parser.add_argument("--final-test", required=True)
+    test_review_parser.add_argument("--interpretations", required=True)
+    test_review_parser.set_defaults(run=guarded(review_test))
     figures_parser = commands.add_parser(
         "figures", help="render figures from saved evidence"
     )

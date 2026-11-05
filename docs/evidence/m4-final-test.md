@@ -41,7 +41,7 @@ Sealed test, 628 rows: 200 retrieval, 98 lookup, 131 calculation, 199 direct ans
 | XGB-d6-lr0.05 | 0.871 | 0.882 | 0.901 | 0.165 | 0.022 |
 | **Jev (selected)** | **0.964** | **0.959** | **0.975** | 0.069 | 0.042 |
 
-**Selected system.** Jev scores 0.964 test macro-F1, 0.011 below its validation score. That drop is the expected optimism of a validation-selected system, and it is small here. Jev's per-class test F1 is retrieval 0.954, lookup 0.990, calculation 0.969 and direct answer 0.942.
+**Selected system.** Jev scores 0.964 test macro-F1, 0.011 below its validation score. Part of that drop may be the optimism of a validation-selected system. Most systems that were not selected fell more, L1-C1, L3-C10 and XGBoost by 0.025 to 0.030, so a test split that was harder for everyone is also likely. One split cannot separate the two. Jev's per-class test F1 is retrieval 0.954, lookup 0.990, calculation 0.969 and direct answer 0.942.
 
 **Local systems.** S1-C1 scores 0.945 on test, above L3-C10's 0.928, although L3-C10 led on validation. This is one test split, and the frozen rule is not revisited. It shows that a 0.016 validation gap between local families does not reliably rank them.
 
@@ -65,7 +65,52 @@ direct         3   0    0  196
 | Jev | 26 | retrieval predicted direct answer: 11 No Robots, 2 Dolly; calculation predicted direct answer: 6 CLINC150, 1 TheoremQA, 1 MASSIVE; direct answer predicted retrieval: 3 No Robots; lookup predicted retrieval: 2 DataBench |
 | L3-C10 | 41 | retrieval predicted direct answer: 5 No Robots; calculation predicted direct answer: 4 CLINC150; lookup predicted direct answer: 4 DataBench, 3 MASSIVE, 3 CLINC150 |
 
-Eight test rows are wrong for both. The validation pattern repeats on test: 13 of Jev's 26 errors are retrieval queries whose passage the router never sees. The validation hypothesis, missing context in the router input, is still a hypothesis. The test mistakes have not yet been read and interpreted.
+Eight test rows are wrong for both. The validation pattern repeats on test: 13 of Jev's 26 errors are retrieval queries whose passage the router never sees. The validation hypothesis, missing context in the router input, is still a hypothesis. The next section interprets every mistake of both systems.
+
+## Test mistakes interpreted after the freeze
+
+Every test mistake of Jev and raw L3-C10 now has a written hypothesis, in the same format as the validation ledger. A worker agent drafted the ledger from the sealed `error-review.jsonl` texts and the release's source fields. The lead read every row against its text and corrected five. Two inline-passage rows for Jev and one for L3-C10 moved from `multi_action_dependencies` to `vocabulary_mismatch`, because the passage is in the query and one action suffices. A reminder-list row moved from `annotation_ambiguity` to `vocabulary_mismatch`. One hypothesis that named the wrong predicted class was rewritten. Nothing in this section changes a label, the frozen selection or a reported score.
+
+```text
+$ uv run --locked python -m orchestra test-review --final-test results/final-test-m3-5 --interpretations results/test-interpretations-m3-5.jsonl
+Jev: 26/26 errors interpreted, 1 correct comparison; annotation_ambiguity 8, missing_context 13, vocabulary_mismatch 5
+L3-C10: 41/41 errors interpreted, 1 correct comparison; annotation_ambiguity 3, missing_context 9, multi_action_dependencies 1, other 5, vocabulary_mismatch 23
+PASS: test interpretations match the final-test predictions
+```
+
+The ledger has 69 rows: all 67 errors plus the correct comparisons q2291 (Jev) and q2308 (L3-C10), both No Robots retrieval rows that name the missing text explicitly. It stays in ignored `results/` because it paraphrases test text.
+
+Errors by category, validation ledger beside test ledger. Correct comparisons are excluded.
+
+| Category | Jev validation | Jev test | L3-C10 validation | L3-C10 test |
+| --- | ---: | ---: | ---: | ---: |
+| missing context | 8 | 13 | 2 | 9 |
+| annotation ambiguity | 4 | 8 | 6 | 3 |
+| vocabulary mismatch | 3 | 5 | 16 | 23 |
+| multi-action dependency | 1 | 0 | 2 | 1 |
+| other | 1 | 0 | 3 | 5 |
+| negation or out of scope | 0 | 0 | 0 | 0 |
+| **Errors** | **17** | **26** | **29** | **41** |
+
+Representative mistakes. Scores are the predicted class's probability; both systems output probabilities. The descriptions paraphrase; no test text is quoted.
+
+| Query | System | Source | Accepted, predicted | Score | Category | Hypothesis |
+| --- | --- | --- | --- | ---: | --- | --- |
+| q2361 | Jev and L3-C10 | No Robots | retrieval, direct answer | 0.57 and 0.57 | missing context | The query points to text "below" that the router never receives, so it reads as an ordinary question. |
+| q2814 | Jev | No Robots | retrieval, direct answer | 0.95 | missing context | A summary request names only a historical topic. Without the attached passage the topic looks answerable from knowledge. This is Jev's most confident retrieval error. |
+| q0605 | Jev | CLINC150 | calculation, direct answer | 0.99 | annotation ambiguity | A kitchen unit conversion. Calculation comes from the adopted conversion default, and a direct answer is arguable. Six of Jev's eight calculation errors are such conversions. |
+| q0549 | Jev | TheoremQA | calculation, direct answer | 0.99 | vocabulary mismatch | A well-known combinatorics result reads as recall. The calculation label itself is questionable. |
+| q1529 | Jev | No Robots | direct answer, retrieval | 0.89 | vocabulary mismatch | The passage is pasted inline, but wording about quoted information suggests a document to fetch. The accepted label looks sound. |
+| q2118 | L3-C10 | DataBench | lookup, direct answer | 0.76 | missing context | The question refers to an attached table the router never sees. |
+| q1961 | L3-C10 | CLINC150 | lookup, direct answer | 0.78 | vocabulary mismatch | A request for the user's reminders without the word reminder. A word-count model has no lookup cue to use. |
+| q0720 | L3-C10 | CLINC150 | calculation, direct answer | 0.86 | other | A bare sum of digits. Digits carry few of the word features the model learned. |
+
+What the interpretations suggest, as hypotheses:
+
+- **Jev's main failure is likely the router input, not the classifier.** About half of its errors on both validation (8 of 17) and test (13 of 26) are retrieval rows whose passage is withheld. The data contract keeps that passage out, so this is the likely cost of the contract. Only the confusion counts are measured; no run with the passage has tested the cause.
+- **Jev's mistakes are mostly uncertain.** Their median predicted-class probability is 0.60. Five of the 26 reach 0.9 or more (q0470, q0549, q0605, q0718, q2814): four are calculation rows with arguable labels, and q2814 is the topic summary above.
+- **L3-C10 fails on wording.** Its largest group is lookup predicted as direct answer, 14 rows: six personal-record requests (reminders, contacts, an appointment), four DataBench attached-table questions and four others. Vocabulary mismatch is the largest category on both splits, as expected from a bag-of-words model.
+- **Some accepted labels are arguable.** The CLINC150 unit conversions, the four DataBench rows that rest on the attached-table rule, q2225 (no named store) and q3014 (a bare request to summarize) are flags for Altan's review. The frozen test labels stay as they are.
 
 ## Checks
 
@@ -73,6 +118,7 @@ Eight test rows are wrong for both. The validation pattern repeats on test: 13 o
 - The Jev test log has 628 unique query IDs, 628 status-200 responses and no error.
 - `results/final-test-m3-5/warnings.json` is empty. Predictions cover 628 rows for each of the eleven evaluated systems.
 - The lead recomputed the by-origin scores and error groups from `predictions.jsonl` and the release file.
+- On November 3, after the test review, the receipt's `result_manifest_sha256` still equals the SHA-256 of `results/final-test-m3-5/manifest.json`, so the predictions that `test-review` checked are the sealed ones.
 
 ## Identities
 
@@ -80,6 +126,7 @@ Eight test rows are wrong for both. The validation pattern repeats on test: 13 o
 | --- | --- |
 | `results/frozen-study-m3-5.json` | `e71f5b80e1f85f3d548772a4e3b93ec2ed0af0e1cd0b35964669b729cd2a6284` |
 | `results/validation-interpretations-m3-5.jsonl` | `dd880262275515070f025d4a44fa8c73294f14832da950c32480a8b3df948b92` |
+| `results/test-interpretations-m3-5.jsonl`, written after the test | `c65a0b0b5ee6ce6dc3f246a1da5115e61bf0b94c938d67fdc358977b4b363f49` |
 | `results/jev/m3-5-test.jsonl` | `bcdb69f2db765309d2504ff5ee2c1bdcb3e85b035644c0988f10d11bc935a105` |
 | `results/final-test-m3-5/manifest.json` | `9b9b7f2103e325dabbfd53177f5bba2bba6da5e13ea488f3cb1ae1dee664b94a` |
 | `results/final-test-m3-5/metrics.json` | `ba9cfe06640485c9441a8d8c5442d534006cce7d8d43ab6a8a6590cc19428b6e` |
@@ -94,5 +141,5 @@ Eight test rows are wrong for both. The validation pattern repeats on test: 13 o
 
 ## Remaining M4 work
 
-- Read and interpret representative test mistakes, after this freeze and without changing the reported selection.
 - The M4 study guide and PDF, and Altan's M4 learning attempt.
+- Altan's review of the flagged test labels. A changed label could only be reported as a later correction beside the frozen result, never as a new selection.
