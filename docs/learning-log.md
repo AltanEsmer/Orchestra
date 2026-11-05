@@ -197,7 +197,7 @@ Next practice should start with the purpose of routing, one everyday query, and 
 
 ## Topic ledger and question bank
 
-The data-contract row remains **needs practice**. On October 25, Altan explained in his own words how related training/test variants can inflate a score: the grouping-related optimism mechanism is **explained independently** for that question after instruction. The broader leakage/grouping topic remains **needs practice** until split-before-fitting and other leakage controls are attempted. Every other row is **not yet reviewed**. Prioritize the first three rows for the next session.
+The data-contract row remains **needs practice**. On October 25, Altan explained in his own words how related training/test variants can inflate a score: the grouping-related optimism mechanism is **explained independently** for that question after instruction. The broader leakage/grouping topic remains **needs practice** until split-before-fitting and other leakage controls are attempted. Since then, model selection, the tree families, API reproducibility, metrics (precision and recall), confidence and fallback, and SVM margins have been **explained independently**; see the November 3 and 5 entries. Every other row is **not yet reviewed**.
 
 | Topic and course connection | Question or manual exercise | Follow-up milestone |
 | --- | --- | --- |
@@ -1370,3 +1370,31 @@ Teaching trace for q0005, "A train ticket costs 45 kr. How much do three tickets
 Practice prompts, unanswered: the guide's nine questions. The first three are the M4 prompts from the previous entry. The new ones ask Altan to tell a margin from a probability, read a test reliability bin, compute L3-C10's lookup precision and recall, explain why a better test threshold cannot replace the frozen one, design an experiment for the missing-context hypothesis, and weigh calibration against its small accuracy loss.
 
 Wait for Altan's attempt before supplying worked answers. Learning statuses are unchanged. Altan has not yet reviewed the flagged test labels (unit conversions, DataBench tables, q2225, q3014).
+
+## M4 practice answers, November 5, 2026
+
+Altan answered all nine questions in the [M4 guide](study-guides/m4-confidence-errors.md#your-m4-practice-questions) without a worked answer. The agent checked each against the guide and the result files. All nine are correct, and every number he computed matches.
+
+Faithful summaries and feedback:
+
+1. **A non-selected system can rise.** Validation and test are different samples, and S1-C1 may suit the test rows better. Jev's validation score may carry selection optimism. Correct. Feedback: S1-C1 was not the pick, so its validation score carries no selection bias that the test would remove.
+2. **Keep L3-C10.** It was chosen before the test, and switching on the test ranking would use the test for selection. Report both facts. Correct.
+3. **Zero errors on 79 inherited rows.** Perfect on that subset, not a zero underlying error rate or real-user performance. Small subset, label limits, unknown pretraining overlap. Correct. Feedback: zero errors in 79 still allows an error rate up to about 3/79, or 3.8%, at roughly 95% confidence (the rule of three). L3-C10 made 6 errors and S1-C1 made 3 on the same rows, so the rows are not trivially easy.
+4. **Margin against probability.** Only L3-C10's 0.8045 is a candidate chance of being right. Check calibration on enough independent, representative rows and whether real queries resemble the data. One row cannot show calibration. Correct. Feedback: raw L3-C10 was underconfident on validation, so 0.8045 likely understates its chance.
+5. **The [0.4, 0.6) test bin.** Underconfident by 6.8 points, about 27 of 46 right, and one outcome moves a three-row bin by 33.3 points. Correct.
+6. **Lookup precision and recall.** 80/83 = 96.4% precision, 80/98 = 81.6% recall. The weakness is recall, and 14 of the 18 misses become direct answers without the record. Correct.
+7. **Threshold 0.7.** That would tune the threshold on the test. Coverage must be reported beside accuracy. Choose it on development data under a predefined rule, freeze it, and test on fresh rows. Correct.
+8. **Missing-context experiment.** Fresh labelled retrieval requests with direct-answer controls, each query alone and with truthful attachment metadata, document text kept out, prompt and criterion frozen first. No meaningful improvement on enough rows counts against the hypothesis. Correct and well designed. Feedback: say what the controls must show. If they also flip to retrieval, the metadata works as a label cue, not as context.
+9. **Calibration's trade.** ECE, Brier and log loss improved, and accuracy and macro-F1 fell slightly. Whether that is worth it depends on the use. The calibrated system is a three-model average, so classes can change. Correct.
+
+Status changes from these answers:
+- **Metrics:** **explained independently** for precision and recall, computed from an unfamiliar matrix and interpreted for the user.
+- **Confidence and fallback:** **explained independently** for reading a reliability bin, bin size, the coverage trade and calibration's effect. The case where no query is accepted remains unattempted.
+- **SVM margins:** **explained independently** for why a margin is not a probability.
+- **Model selection:** already explained independently, and prompts 2 and 7 apply it to the test.
+- **Error analysis:** new evidence. Altan designed a falsifiable experiment for a post-freeze hypothesis.
+- **Leakage and grouping:** still **needs practice**. Split-before-fitting and vocabulary leakage remain unattempted.
+
+Still open for M4: Altan's review of the flagged test labels (unit conversions, DataBench tables, q2225, q3014), the PR merge and the dated PDF snapshot.
+
+Next exercise: what should a fallback report say when no threshold accepts any query, and why is "undefined" better than 0 for that accuracy?
