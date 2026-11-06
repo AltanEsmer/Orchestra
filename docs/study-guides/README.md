@@ -118,7 +118,7 @@ The edition is delivered. Altan answered its practice prompts and accepted M3.5 
 
 ## M4 confidence and errors edition, November 3, 2026
 
-The edition is delivered. Altan's attempt at its nine practice questions is pending, so it is not a closed-milestone snapshot yet.
+The edition is delivered. Altan answered its nine practice questions on November 5 and accepted M4 on November 6, 2026. The closure snapshot `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M4-confidence-errors-2026-11-06.pdf` has SHA-256 `943f3aff4d6e909aa9d4ea3ff2ad6622e2e5842ec2cef238bc057afa3526f77e`, identical to the edition. The guide's questions still read "Unanswered" because the edition is frozen; the answers are in the [learning log](../learning-log.md#m4-practice-answers-november-5-2026).
 
 | Edition | Source | PDF, 16 pages | Source SHA-256 | PDF SHA-256 |
 | --- | --- | --- | --- | --- |

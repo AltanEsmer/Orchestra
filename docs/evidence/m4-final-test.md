@@ -156,4 +156,4 @@ The lead checked the DataBench and q2225 reasons against the collection brief. T
 
 - Done November 5: the M4 study guide and PDF, and Altan's answers to its nine questions.
 - Done November 6: Altan reviewed the flagged test labels and kept all of them (see above).
-- Still open: Altan's acceptance of M4 and the dated PDF snapshot at closure.
+- Done November 6: Altan accepted M4. The dated snapshot `M4-confidence-errors-2026-11-06.pdf` is identical to the November 3 edition.

@@ -1409,4 +1409,4 @@ Feedback: the DataBench and q2225 reasons match the collection brief. The conver
 
 Status changes: none beyond the November 5 entry. This is annotation adjudication, which applies the data contract to real cases. It supports the **data contract and action boundaries** row but does not move it, because the open exercise there (a query needing retrieval before calculation) is still unattempted.
 
-Remaining for M4: Altan's acceptance, then the dated PDF snapshot.
+Altan then wrote "Accept M4". The roadmap marks M4 done, and the dated snapshot `M4-confidence-errors-2026-11-06.pdf` is identical to the November 3 edition. Carried into M5 unchanged: leakage and grouping (**needs practice**), the data-contract exercise, the no-accepted-query fallback case and the earlier unanswered M0 to M3 prompts.
