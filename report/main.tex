@@ -2,136 +2,213 @@
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{balance}
 \usepackage{url}
-\title{Orchestra: Learning to Route Queries in AI Systems}
-\author{\IEEEauthorblockN{Altan Esmer}%
-\IEEEauthorblockA{M5 working outline for the author's draft}}
+\usepackage[hidelinks]{hyperref}
+\title{Learning the First Action: A Comparison of Query Routers on Four English Request Types}
+\author{\IEEEauthorblockN{Altan Esmer}
+\IEEEauthorblockA{Orchestra project 13\\AI-assisted working draft for author revision, November 6, 2026}}
 \begin{document}
 \maketitle
 \begin{abstract}
-Write this last. Introduce the four-way routing question, name the dataset and
-comparison, give the selected system's held-out result, and identify one
-limitation that affects its interpretation. The page allocations below refer
-to the planned eight-page paper, including figures and references.
+A request to calculate a figure from an attached report begins with reading the report. A request that supplies the figures can go straight to a calculator. Orchestra treats this distinction as a four-class prediction problem. The study compares 26 local configurations and one pretrained decision service on a grouped release of 3,145 English queries. Validation selected TypeSafe Jev with macro-F1 of 0.975. On the 628-query test opened after selection, Jev scored 0.964, while the strongest local test result was 0.945 for a linear support vector machine. The effect of adding two-word features depended on regularization. Calibrating the leading logistic model reduced test log loss from 0.245 to 0.229. Thirteen of Jev's 26 test errors sent document requests to direct answering. In several cases a passage justified the reference label but the router could see only the instruction. The results measure agreement with accepted labels on this collection, much of which underwent AI-assisted annotation.
 \end{abstract}
 
-\section{Introduction and task (1 page)}
-What should an assistant do first when several tools are available?
-Define the four actions using one dependency: a request to calculate a change
-from an attached report requires reading the report before doing arithmetic.
-Distinguish document reading, structured-record lookup, calculation with
-available inputs, and direct answering. Frame the research question around how
-representations and classifiers affect routing quality, confidence, and errors
-for self-contained English queries. The outcome measured here is the first action.
+\section{Introduction}
 
-\section{Data and exploratory analysis (1.5 pages)}
-Describe how the 400-row M3 release grew to 3,145 accepted queries from authored,
-AI-drafted and public sources. Identify the source families and mapping rules,
-including passages held outside the router input. For the 2,745 added rows,
-describe the source-aware AI screen, blind AI check, and Altan's adjudication.
-Disclose the 142 source-ineligible rows skipped after screening, including
-19 held cases. Explain why agreement between the two checks measures consistency.
+Consider a user asking for the percentage change between two amounts. When the question includes both amounts, a calculator can start immediately. When the amounts are in an attached report, the assistant must first find and read them. In both cases the user wants the same kind of answer. The difference lies in what information the assistant has when the request arrives. A router that recognizes arithmetic language but overlooks the reference to the report can choose a plausible tool too early.
 
-Describe the group split. Related scenarios and source records travel
-together, familiar request types can recur, and each M3 row keeps its partition.
-Give achieved counts: 1,888 train, 629 validation, and 628 test. Across the release,
-retrieval and direct answer have 1,000 rows each, calculation 651 and lookup 494.
-Use Figs.~\ref{fig:balance} and \ref{fig:length} to explain what this distribution
-lets the reader infer about the task.
+This study asks how text representation and classifier choice affect first-action routing, how informative the resulting confidence scores are, and which requests remain difficult. The observation is a single English query. Its target is one of four actions. Document retrieval reads a referenced passage or file. Knowledge lookup reads a structured source, such as an inventory or calendar. Calculation computes a requested value from available inputs. Direct answering covers tasks such as an explanation or rewrite that can proceed from the prompt. For a request with several dependent steps the reference label is the earliest necessary action. Accuracy is measured at this decision point. Downstream answer quality would require executing the chosen action and evaluating its result.
 
-\begin{figure}[htbp]
+The design separates two questions. A controlled comparison varies word features and local classifiers while holding examples fixed. A second comparison gives a pretrained service the query and four written action definitions. That comparison describes what a user could obtain from two different kinds of routing system. The local experiments support narrower conclusions about the contributions of term weighting, short phrases and classifier family. The service comparison also incorporates outside training and access to the label descriptions.
+
+\section{Data and exploratory analysis}
+
+\subsection{Constructing a first-action dataset}
+The frozen release, \texttt{m3-5-v1}, combines 400 earlier queries with 2,745 additions~\cite{release}. The earlier collection mixed human-authored scenarios, AI-drafted requests about fictional records and examples adapted from public sources. The expansion drew on public instruction, intent, mathematical reasoning, table and tool-use collections. An upstream task supplied candidate text, but the routing guide determined the first action. For instance, a table question about the largest entry requires reading the structured records before comparing their values.
+
+Source choice matters for interpreting a classifier's score. Of 1,000 retrieval queries, 501 came from No Robots and 490 from Dolly~\cite{no-robots,dolly-15k}. Those two collections also supplied 865 of the 1,000 direct-answer requests. Thus one source could produce either label. In the calculation class, 255 of 651 examples came from GSM8K~\cite{gsm8k}. Shorter arithmetic and conversion requests from intent collections broadened that class. DataBench supplied 206 of 494 lookups~\cite{databench}. The remaining lookup sources included tool requests from BFCL, ToolACE and ToolAlpaca~\cite{bfcl-v3,toolace,toolalpaca}, intent examples from CLINC150 and MASSIVE~\cite{clinc150,massive-en-us}, and locally written or generated scenarios. TheoremQA, OpenAssistant and Glaive also contributed calculation examples~\cite{theoremqa,oasst2,glaive-fc-v2}. The project retains source-specific notices, including share-alike terms for Dolly and a noncommercial license for No Robots. The source manifest records the original datasets, revisions, licenses, attribution and transformations~\cite{sources}.
+
+The input boundary depends on how a request supplies its evidence. For newly added retrieval examples, the collection stores the referenced passage separately and presents the instruction to the router. A direct-answer query can contain the text to rewrite inline. For DataBench, a pinned table reference establishes the source for annotation. The router receives neither the table nor its identifier as extra metadata. A reference label can therefore be well supported during annotation while remaining difficult to infer from the model input. Section~\ref{sec:errors} examines the resulting mistakes.
+
+\subsection{Screening, adjudication and grouping}
+The expansion screened 7,206 candidates. A first AI reviewer saw the source, candidate stream and labeling guidance. A second AI reviewer received the query, a blind identifier and the attachment kind. Among 3,828 blind-checked candidates, the two reviewers assigned the same label to 3,676 (96.0\%). Both reviewers belonged to the same model family. The percentage describes agreement between these two procedures on candidates that reached the blind check.
+
+For disagreements and flagged cases, Altan adopted adjudication rules by theme. Among the additions, 2,471 entered through clear agreement and 274 through human adjudication. This distinction matters because one human reading and labeling every accepted example would provide different evidence about the stability of the reference labels. There was also a screening deviation: 142 candidates received a label for which their source was ineligible and skipped blind review. Nineteen had initially been held for adjudication. Excluding them at this step could remove difficult boundaries from the evaluation population~\cite{release}.
+
+A group contains related variants of a scenario, record or source item. The release capped groups at four examples and kept each group in one partition. An earlier grouping rule based on request templates was replaced by one based on shared scenario or source. Two independent appointment questions can therefore occur across partitions, while variants of the same record stay together. This choice tests transfer to other instances of familiar request types. It also means that recurring phrases learned from one corpus can remain useful on its held-out queries.
+
+The split preserved the 400 earlier partition assignments and distributed the new groups using seed 42. Training contained 1,888 queries in 1,628 groups, validation contained 629 in 545 groups, and test contained 628 in 546 groups. A request-type cap of 40\% within each class limited repetition. Lookup exhausted its eligible source pools. Calculation still had word problems available when its type cap bound. These constraints explain why the release stopped at 494 lookups and 651 calculations while retrieval and direct answering reached 1,000 each.
+
+\begin{figure}[tbp]
 \centering\includegraphics[width=\columnwidth]{figures/class-balance.png}
-\caption{Training and validation support by first action. Lookup has 296
-training and 100 validation examples. Macro-F1 gives it the same weight as
-each of the larger classes.}\label{fig:balance}
+\caption{Class counts before testing. Training and validation contain 296 and 100 lookup requests respectively. Both partitions give more examples to retrieval and direct answering. Source: \texttt{m3-5-full-a}.}
+\label{fig:balance}
 \end{figure}
-\begin{figure}[htbp]
+
+\subsection{What the distributions suggest}
+Figure~\ref{fig:balance} shows why overall accuracy alone can obscure failures in lookup. Guessing direct answer for every example gives credit on almost a third of the validation set. A system could improve on that baseline while continuing to miss most records requests. Giving each class equal weight in the primary metric makes that weakness visible. Per-class support still matters: two missed examples move recall more for lookup than for retrieval.
+
+\begin{figure}[tbp]
 \centering\includegraphics[width=\columnwidth]{figures/word-lengths.png}
-\caption{Training and validation query lengths. Most queries cluster at the
-short end, while a few extend into hundreds of words. Discuss how keeping some
-passages inline could create a length cue. Its effect on predictions is unmeasured.}
+\caption{Whitespace-separated words per query in training and validation. Most of the mass lies near the left edge. Keeping the full range shows the few unusually long inputs that the router must also handle. Source: \texttt{m3-5-full-a}.}
 \label{fig:length}
 \end{figure}
 
-\section{Methods and selection (1.5 pages)}
-Explain the 26 local configurations. Start with the majority baseline and
-multinomial naive Bayes on counts. Compare logistic regression on unigram counts
-(L1), unigram TF-IDF (L2), and unigram plus bigram TF-IDF (L3). Compare L2 to
-a linear SVM (S1) on the same features. Fit vocabulary and weights on training
-rows alone. Describe the unigram TF-IDF decision tree, random forest and
-XGBoost grids. Cite the frozen configuration for all settings.
-Treat the 27th configuration, TypeSafe Jev 1.14.0, separately: it receives the
-query and fixed action definitions and uses external pretraining.
+Figure~\ref{fig:length} shows a long right tail. Across the release, the median was 15 words for both retrieval and direct answer, but their maxima were 85 and 1,026 words respectively. The common median makes length a poor explanation for the distinction by itself. The extreme tail is consistent with the different treatment of attached and inline passages. A separate cue appears in the source audit: the three-word expression ``in the dataset'' occurred in 186 lookup examples and zero examples of the other classes. These observations identify shortcuts a model could learn. Measuring its reliance on them would require a controlled change to wording or attachment handling.
 
-Define macro-F1 as the unweighted mean of the four class F1 scores. Report
-accuracy, class support and per-class scores alongside it. Explain the inclusive
-0.01 validation macro-F1 tolerance and the predetermined within-family and
-overall tie rules. Freeze the selected systems, calibration procedure and
-threshold before describing the single test opening.
+\section{Models and evaluation}
 
-\section{Results (1.5 pages)}
-Use Table~\ref{tab:results} for the frozen family winners. Explain why validation
-selected Jev and why the local ordering changes on test. For a controlled feature
-comparison, hold logistic regression and $C$ fixed: at $C=10$ adding bigrams
-raises validation macro-F1 from 0.9324 to 0.9524, while at $C=0.1$ it lowers
-it from 0.7345 to 0.7043. Compare counts versus TF-IDF and logistic versus SVM
-at matched $C$ in the saved comparison. Separate API network timing from offline
-replay timing when discussing cost.
+\subsection{Local representations and classifiers}
+All text pipelines fitted their vocabulary on training queries. Tokenization lowercased words, retained single-character words and digits, and kept stop words. This preserves cues such as negation and short numbers, although punctuation and token order can still carry information that unigram features lose. The vocabulary was capped at 10,000 features. The count representation records how often each token occurs. TF-IDF additionally weights a term by its inverse document frequency, using smoothed training counts, and scales each query vector to unit Euclidean length. A new query uses the learned vocabulary and weights. Fitting those weights on all partitions would allow the test corpus to influence the representation.
 
-\begin{table}[htbp]
-\caption{Macro-F1 on 629 validation and 628 test queries. Selection used
-validation. The test column reports the frozen configurations.}
-\label{tab:results}\centering
-\begin{tabular}{lrr}\toprule
-System & Validation & Test \\ \midrule
-B0 majority & 0.121 & 0.120 \\
-B1 naive Bayes & 0.878 & 0.863 \\
-L1-C1 & 0.922 & 0.896 \\
-L2-C1 & 0.924 & 0.903 \\
-S1-C1 & 0.936 & 0.945 \\
-L3-C10 & 0.952 & 0.928 \\
-DT-d30-leaf1 & 0.818 & 0.806 \\
-RF-dNone-leaf1 & 0.913 & 0.900 \\
-XGB-d6-lr0.05 & 0.901 & 0.871 \\
-Jev (selected) & 0.975 & 0.964 \\ \bottomrule
+The 26 local configurations included two reference points. B0 predicts the most frequent training class. B1 fits multinomial naive Bayes to unigram counts with additive smoothing of one. B1 combines per-class token frequencies under a conditional independence assumption. It provides a test of how much routing information is already present in individual words. Logistic regression instead learns discriminative weights jointly across features. L1 uses unigram counts, L2 unigram TF-IDF and L3 unigram plus bigram TF-IDF. L1, L2 and L3 are experiment identifiers. Each logistic family ran at inverse regularization strengths \(C=0.1,1,10\). Larger \(C\) allows a closer fit to the training examples.
+
+S1 fits a linear support vector machine (SVM) to the same unigram TF-IDF vectors as L2, at the same three values of \(C\). Its decision margins rank actions, whereas the logistic model supplies a distribution across actions. A phrase feature lets the model distinguish a pair of adjacent words from the separate presence of both tokens. The larger vocabulary also spreads training evidence across more features. Comparing L2 and L3 at fixed \(C\) makes this trade-off observable. Comparing L2 and S1 at that same setting changes the classifier while preserving the input representation~\cite{sklearn}.
+
+Three tree families used unigram TF-IDF. A decision tree chose feature splits using Gini impurity, with maximum depth 10 or 30 and minimum leaf size 1 or 3. A random forest averaged 200 bootstrapped trees, sampling a square-root subset of features at each split. It combined maximum depth 30 or unlimited with the same two leaf sizes. XGBoost fitted 200 boosting rounds, combining depth 3 or 6 with learning rate 0.05 or 0.1~\cite{xgboost}. In its sparse input, an absent feature follows the split's learned missing-value direction. A tree can represent a conjunction of word tests, while the linear models accumulate evidence from many words. Which behavior helps is an empirical question on these short inputs.
+
+\subsection{Pretrained service and validation selection}
+The final condition used TypeSafe Jev, pinned to \texttt{jev-1.14.0}~\cite{jev}. Each request supplied the unchanged query and fixed descriptions of the four options. Jev returned a choice and four option probabilities. It received no training examples from Orchestra during this procedure. Corpus identity, reference labels, rationales and attachments were withheld. A stored response log allowed the experiment runner to replay the service condition alongside the local models.
+
+The primary metric was macro-F1. For each class, precision measures how many predictions of that class were correct and recall measures how many reference examples were found. Class F1 is their harmonic mean. Macro-F1 averages the four F1 scores with equal weight, assigning zero to undefined class scores. Accuracy measures the fraction of individual queries routed correctly. Reporting both distinguishes a system that serves the common actions well from one that also handles the smaller classes.
+
+Selection used only the 629 validation queries. Within each family, configurations within 0.01 macro-F1 of the best, inclusive, entered a tie set. Linear models preferred the smallest \(C\). Tree families preferred shallower trees, then larger leaves for trees and forests or lower learning rate for boosting. The same 0.01 tolerance applied across family winners with a predetermined preference order. For example, L2 at \(C=10\) scored 0.9324, but \(C=1\) at 0.9239 fell inside the tolerance and was selected. This distinction explains why a family winner in the results table can have a lower validation score than another member of the same grid~\cite{run}.
+
+The evaluation froze the ten family winners, the logistic calibration procedure and the fallback threshold before opening the test. On November 3, the final-test receipt recorded one completed attempt for the 628 test queries. Jev returned 628 valid answers. All frozen systems were scored on the same examples, including the additional calibrated version of the selected logistic model. Test performance estimates the outcome of these decisions on held-out groups~\cite{test}.
+
+\section{Results}
+
+\begin{table}[tbp]
+\centering\caption{Frozen family winners. Selection used validation macro-F1. Both test columns use the same 628 queries.}\label{tab:results}
+\begin{tabular}{lrrr}\toprule
+Configuration & Val. macro-F1 & Test macro-F1 & Test acc.\\ \midrule
+B0 majority & 0.121 & 0.120 & 0.317\\
+B1 naive Bayes & 0.878 & 0.863 & 0.858\\
+L1-C1 & 0.922 & 0.896 & 0.904\\
+L2-C1 & 0.924 & 0.903 & 0.914\\
+S1-C1 & 0.936 & 0.945 & 0.951\\
+L3-C10 & 0.952 & 0.928 & 0.935\\
+DT-d30-leaf1 & 0.818 & 0.806 & 0.822\\
+RF-dNone-leaf1 & 0.913 & 0.900 & 0.909\\
+XGB-d6-lr0.05 & 0.901 & 0.871 & 0.882\\
+Jev & 0.975 & 0.964 & 0.959\\ \bottomrule
 \end{tabular}
 \end{table}
 
-\section{Confidence and errors (1.5 pages)}
-Only L3-C10 received sigmoid calibration, fitted on three grouped training folds.
-Compare its raw and calibrated test log loss (0.245 to 0.229), Brier score
-(0.115 to 0.113) and five-bin ECE (0.087 to 0.055). Report bin sizes.
-S1 supplies margins. Jev supplies its own probabilities. Explain coverage and
-accuracy among accepted queries: at threshold 0.7 on validation, calibrated L3-C10
-accepts 87.9\% at 98.4\% accuracy. Threshold 0.0 already met the 90\%
-target at maximum coverage. Frozen on validation, it accepted all 628 test
-queries at 93.2\% accuracy.
+\subsection{What changed when the features changed?}
+The naive Bayes baseline reached 0.878 validation macro-F1 compared with 0.121 for the majority baseline (Table~\ref{tab:results}). Token frequencies alone therefore recover much of the distinction between the four actions. The matched comparisons in Table~\ref{tab:matched} reveal a qualification that the family winners conceal. At \(C=0.1\), switching logistic regression from counts to TF-IDF reduced macro-F1 by 0.1689. At \(C=10\), the same switch increased it by 0.0139. Normalization changes the scale of the input, so a fixed numerical penalty can have different effects across representations.
 
-\begin{figure}[htbp]
+\begin{table}[tbp]
+\centering\caption{Validation macro-F1, holding \(C\) fixed across columns. The paired contrast uses all 629 validation queries.}\label{tab:matched}
+\begin{tabular}{rrrrr}\toprule
+\(C\)&L1 counts&L2 TF-IDF&S1 TF-IDF&L3 + bigrams\\ \midrule
+0.1 & 0.9034 & 0.7345 & 0.9280 & 0.7043\\
+1 & 0.9216 & 0.9239 & 0.9358 & 0.9297\\
+10 & 0.9185 & 0.9324 & 0.9402 & 0.9524\\ \bottomrule
+\end{tabular}
+\end{table}
+
+Adding bigrams produced the strongest local validation configuration at \(C=10\), a gain of 0.0200 over unigram logistic regression. The same addition at \(C=0.1\) lowered the score by 0.0301. Thus the evidence for useful phrase information is strongest at the weakest regularization tested. The linear SVM exceeded unigram logistic regression at all three tested settings, with the largest gap at \(C=0.1\). Among trees, the forest's 0.913 validation macro-F1 exceeded the single tree's 0.818 and boosted trees' 0.901. Averaging many randomized trees worked well relative to a single tree here, though the experiment covers only the stated grids.
+
+\subsection{Selected system and held-out estimates}
+Jev's validation macro-F1 of 0.975 exceeded L3-C10 by 0.023, putting it outside the tolerance of every other family winner. On test, Jev reached 0.964 macro-F1 and 602 correct routes in 628 requests. The order among local systems changed. S1-C1 reached 0.945 on test and L3-C10 reached 0.928, reversing their validation order. Selecting the SVM retrospectively would use the same observations to make and evaluate a new choice. The reported selection therefore remains Jev, and the local reversal illustrates how a modest difference can vary across partitions.
+
+\begin{table}[tbp]
+\centering\caption{Jev by accepted action on the frozen test. Support is the number of reference examples.}\label{tab:class}
+\begin{tabular}{lrrrr}\toprule
+Action & Support & Precision & Recall & F1\\ \midrule
+Retrieval &200&0.974&0.935&0.954\\
+Lookup &98&1.000&0.980&0.990\\
+Calculation &131&1.000&0.939&0.969\\
+Direct answer &199&0.903&0.985&0.942\\ \bottomrule
+\end{tabular}
+\end{table}
+
+The per-class scores locate the asymmetry (Table~\ref{tab:class}). Jev found 196 of 199 direct-answer examples but also sent 21 queries from other actions to direct answer. Its direct-answer recall was consequently high and its precision lower. Every predicted lookup was correct on this split, although two actual lookups went to retrieval. Different questions about the same action lead to different denominators. A user asking whether a lookup prediction is trustworthy needs precision, while a user asking whether their record request will reach a store needs recall.
+
+Splitting the test by origin gives another view of generalization. Jev classified all 79 inherited M3 examples correctly. It scored 0.959 macro-F1 on the 549 newly added examples. L3-C10 made six errors on the inherited examples and scored 0.930 on the additions. The subsets differ simultaneously in size, source mix and annotation history. Their contrast cannot isolate the effect of AI-assisted labeling, and 79 successes provide limited evidence about future inherited-style examples.
+
+\section{Confidence and selective routing}
+
+A routing score is useful for fallback only if its relation to correctness is understood. For L3-C10, calibration fitted sigmoid mappings using three grouped folds of the training set. In each fold, the text pipeline learned from the other folds and the held-out predictions supplied calibration examples. The final calibrated probabilities average the three fitted classifier--calibrator pairs. The raw comparison uses one classifier fitted on the full training partition. A change in top-class accuracy can therefore accompany the change in probability estimates. The other systems retained their native probabilities where available. The SVM's margins were excluded from probability diagnostics.
+
+On the frozen test, calibrating L3-C10 lowered mean log loss from 0.245 to 0.229 and multiclass Brier score from 0.115 to 0.113. Log loss penalizes assigning little probability to the reference action. Brier score averages the sum of squared differences between the four reported probabilities and the one-hot reference label. Raw accuracy was 0.935 and calibrated accuracy 0.932. Better probability estimates and a larger count of correct top choices are thus distinct objectives.
+
+Five equal-width bins compared mean top-class confidence with observed accuracy. For calibrated L3-C10 the bin counts from lowest to highest were 0, 3, 46, 91 and 488. In the highest bin, mean confidence was 0.944 and observed accuracy 0.990. Weighting the absolute confidence--accuracy gap by the bin counts gives expected calibration error (ECE), which fell from 0.087 to 0.055. A large bin dominates that average, and three examples contribute very little evidence about behavior at low confidence. Jev's own probabilities yielded log loss 0.141, Brier score 0.069 and ECE 0.042. Its 25 test predictions in the 0.4--0.6 bin were correct only 48\% of the time.
+
+\begin{table}[tbp]
+\centering\caption{Validation trade-off for calibrated L3-C10. Accuracy is computed among accepted queries only.}\label{tab:coverage}
+\begin{tabular}{rrrrr}\toprule
+Threshold & Accepted & Correct & Coverage & Accuracy\\ \midrule
+0.0 &629&596&1.000&0.948\\
+0.5 &619&590&0.984&0.953\\
+0.6 &592&572&0.941&0.966\\
+0.7 &553&544&0.879&0.984\\
+0.8 &507&503&0.806&0.992\\
+0.9 &418&417&0.665&0.998\\ \bottomrule
+\end{tabular}
+\end{table}
+
+The fallback rule selected the widest validation coverage among thresholds reaching 90\% accepted accuracy. Table~\ref{tab:coverage} shows why it chose zero: the model already classified 596 of 629 correctly while accepting every request. Raising the threshold to 0.7 would have sent 76 to review and left nine incorrect among the 553 automatically routed. With the frozen threshold of zero, all 628 test queries were accepted and 585 were correct (93.2\%). The threshold study quantifies the trade-off. A deployment would also need the cost of unnecessary review and the cost of each kind of misroute before choosing a target.
+
+\section{Error analysis}\label{sec:errors}
+
+\begin{figure}[tbp]
 \centering\includegraphics[width=\columnwidth]{figures/final-confusion-Jev.png}
-\caption{Jev on the frozen test. Thirteen of its 26 errors sent a retrieval
-query to direct answer. The denominator for retrieval recall is the 200
-accepted retrieval labels in the first row.}\label{fig:errors}
+\caption{Jev test confusion counts. Rows are accepted labels and columns are predicted actions. Reading across retrieval gives 187 correct and 13 routed to direct answer. Source: \texttt{final-test-m3-5}.}
+\label{fig:error}
 \end{figure}
-Use Fig.~\ref{fig:errors} to move from a count to a competing explanation.
-Paraphrase q3014: the accepted label requires reading an attached passage, but
-the router sees only a short summary request. Altan checked the attachment and
-kept the label. Missing context is a hypothesis. Contrast a correct comparison
-from the saved review ledger and a local error such as q2118, where L3-C10
-predicted direct answer for a table lookup.
 
-\section{Discussion and conclusion (0.5 page)}
-Bound the findings to the release, its grouping rule and one test split.
-Discuss shared AI label bias, corpus-specific phrasing, possible length cues
-and unknown Jev pretraining overlap. Give the strongest supported conclusion
-and propose one follow-up that could distinguish two explanations, such as a
-future controlled comparison with and without an attachment indicator.
+The review covered all 17 validation errors and 26 test errors for Jev, all 29 validation errors and 41 test errors for raw L3-C10, and correct comparisons. Eight test examples were wrong for both systems. The confusion counts in Fig.~\ref{fig:error} are observations. An interpretation assigned to an individual error is a hypothesis based on the available query, reference label and source record~\cite{test}.
 
-\section*{Reproducibility, assistance and references (0.5 page)}
-Identify the dataset, split, run, freeze, receipt and archive using the evidence
-map accompanying this outline. Distinguish the local rerun and Jev cache replay
-from the two live validation passes, whose top choices differed on two rows.
-Disclose agent assistance in data preparation, review, implementation and this
-outline. In the draft, cite the dataset sources and licenses, methods and
-implementation references actually used. Write the final account in your own words.
+The clearest pattern is retrieval routed to direct answer. Thirteen such cases account for half of Jev's mistakes. In q3014 the request is a short summary instruction. The source contains a passage whose hash Altan verified during the label review. Reading that passage is necessary for the reference task, but the router sees neither the passage nor a signal that it is attached. Jev predicted direct answer. A correct comparison, q2308, includes wording that ties the question to events in the accompanying text. L3-C10 recognized retrieval there. The difference suggests a specific experiment: add an attachment-presence flag to the same input contract and evaluate prospectively on fresh groups. The current study cannot assign a causal effect to that flag.
+
+A second pattern runs in the opposite direction. In q1529 the relevant passage was already present inline, so direct answering was possible. Jev nevertheless chose retrieval with probability 0.89. Wording that draws attention to quoted material may resemble a request to fetch a document. Taken together, q3014 and q1529 illustrate why looking only for words associated with reading is insufficient. The routing decision depends on whether the information needed for the next action is already available.
+
+Some confident mistakes reflect a choice of labeling convention. Jev routed q0605, a kitchen-unit conversion, to direct answer with probability 0.99. The adopted rule places standard conversions under calculation, even when a familiar equivalence could be recalled. Six of its eight calculation-to-direct errors were conversions. For L3-C10, a different boundary was prominent: 14 lookup queries went to direct answer. In q2118 the accepted action required consulting a table, but the router lacked its attachment metadata. Altan's post-test review retained the flagged labels, including the conversions and attached-table queries. Their scores therefore evaluate adherence to the declared action definitions.
+
+\section{Limitations and reproducibility}
+
+\subsection{What transfers beyond this collection?}
+Class quotas and source caps deliberately shaped the dataset. A live assistant may see mostly one action, depend on conversation history, or receive requests for tools outside these four categories. In that setting, both class frequencies and the costs of mistakes could change. The lookup class in particular has 98 test examples and a high concentration of structured-source language. The observed precision of 1.000 rests on 96 predictions. Repeated request types across groups, the length of inline passages and the wording of adapted table questions all offer cues that could be weaker in a new corpus.
+
+Label quality also limits interpretation. The blind reviewer saw attachment kind, while the router saw only the text. This difference can make a reference label useful for annotators yet underdetermined for a classifier. Both AI reviewers shared a model lineage and the human adjudications adopted agent-proposed theme defaults. Their agreement therefore leaves open the rate at which independent human readers would apply the same convention. A follow-up could ask independent annotators to label a source-stratified sample twice, first with the router's input and then with attachment metadata. That design would distinguish uncertainty about what is present from uncertainty about which action definition applies.
+
+One grouped split and one test opening give paired observations of all systems, but the study computed no uncertainty interval or significance test. The local rank reversal is a practical reason for caution about small gaps. Jev's pretraining data are unknown, including possible overlap with the public source corpora. Written option definitions also transmit information beyond the 1,888 training labels available to local classifiers. Both factors belong to the measured service condition. Attributing the performance gap to architecture alone would require controlling them.
+
+\subsection{Execution and evidence trail}
+The local experiment ran on CPU with Python 3.12.13, locked packages, seed 42 and single-thread timing settings. Run \texttt{m3-5-full-a} records checkout \texttt{031e4e9} with a dirty working tree. Reproduction therefore relies on the archived inputs, configurations, code and lockfile as well as the recorded commit. A second run matched the first. A restore verified all 62 files in the validation archive byte for byte, and a run from that restore reproduced the saved results with cached Jev answers~\cite{run}. The data and split hashes begin \texttt{be747dda} and \texttt{7aacbc49}. The M4 freeze begins \texttt{e71f5b80}, and the final-result manifest begins \texttt{9b9b7f21}. The evidence records contain the full hashes and commands~\cite{release,run,test}.
+
+Replay and live collection answer different reproducibility questions. Two live validation passes on the same day changed the top choice on two of 629 requests, while the rounded macro-F1 stayed at 0.975. Replaying a stored response gives the same result by construction. On the single test pass, median network latency was 0.204 seconds per request and the 95th percentile was 0.367 seconds. Using the recorded rate of \$0.042 per million input tokens, the 314,757 test input tokens imply about \$0.013 in charges~\cite{jev,test}. This is an estimate. Local timing measures a different workload: L3-C10 took about 6.9 milliseconds to predict a batch of 629 validation queries. Treating a cached replay time or a batch time as a network response time would misstate the operational comparison.
+
+\section{Conclusion}
+On this grouped English dataset, a pretrained service selected on validation attained 0.964 test macro-F1, and a linear SVM using only unigram TF-IDF reached 0.945. The controlled comparisons qualify the result for word features: bigrams improved logistic regression at \(C=10\) and reduced its score at \(C=0.1\). Calibration modestly improved probability losses for the leading logistic system, while the declared fallback target allowed full coverage. The most frequent Jev error draws attention to a decision that precedes model choice. If an action label depends on a passage, the router needs enough evidence to tell whether that passage exists. Testing that change on fresh examples would directly address a measured failure mode.
+
+\section*{Assistance}
+AI agents helped draft candidate queries, screen and check labels, implement and verify the experiments, interpret errors and prepare this manuscript from saved evidence. Altan made the recorded collection and adjudication decisions and reviewed the flagged test labels. This draft is supplied for his review and rewriting.
+
+\balance
+\begin{thebibliography}{99}
+\raggedright
+\bibitem{release} A. Esmer, ``M3.5 dataset release,'' Orchestra project evidence, Nov. 2026. \url{https://github.com/AltanEsmer/Orchestra/blob/4ae92d9/docs/evidence/m3-5-dataset.md}
+\bibitem{no-robots} N. Rajani et al., ``No Robots.'' \url{https://huggingface.co/datasets/HuggingFaceH4/no_robots}
+\bibitem{dolly-15k} Databricks, ``Databricks Dolly 15k.'' \url{https://huggingface.co/datasets/databricks/databricks-dolly-15k}
+\bibitem{gsm8k} K. Cobbe et al., ``Grade School Math 8K (GSM8K).'' \url{https://huggingface.co/datasets/openai/gsm8k}
+\bibitem{databench} J. Os\'es Grijalba et al., ``DataBench.'' \url{https://huggingface.co/datasets/cardiffnlp/databench}
+\bibitem{bfcl-v3} F. Yan et al., ``Berkeley Function Calling Leaderboard.'' \url{https://huggingface.co/datasets/gorilla-llm/Berkeley-Function-Calling-Leaderboard}
+\bibitem{toolace} W. Liu et al., ``ToolACE.'' \url{https://huggingface.co/datasets/Team-ACE/ToolACE}
+\bibitem{toolalpaca} Q. Tang et al., ``ToolAlpaca.'' \url{https://github.com/tangqiaoyu/ToolAlpaca}
+\bibitem{clinc150} S. Larson et al., ``An evaluation dataset for intent classification and out-of-scope prediction.'' \url{https://aclanthology.org/D19-1131/}
+\bibitem{massive-en-us} J. FitzGerald et al., ``MASSIVE.'' \url{https://github.com/alexa/massive}
+\bibitem{theoremqa} W. Chen et al., ``TheoremQA.'' \url{https://huggingface.co/datasets/TIGER-Lab/TheoremQA}
+\bibitem{oasst2} LAION and Open-Assistant contributors, ``OpenAssistant Conversations (OASST2).'' \url{https://huggingface.co/datasets/OpenAssistant/oasst2}
+\bibitem{glaive-fc-v2} Glaive AI, ``Glaive Function Calling v2.'' \url{https://huggingface.co/datasets/glaiveai/glaive-function-calling-v2}
+\bibitem{sources} A. Esmer, ``Orchestra source manifest,'' dataset authors, upstream locations, revisions and source-specific licenses, 2026. \url{https://github.com/AltanEsmer/Orchestra/blob/4ae92d9/data/manifests/sources.json}
+\bibitem{sklearn} F. Pedregosa et al., ``Scikit-learn: Machine learning in Python,'' \emph{Journal of Machine Learning Research}, vol. 12, pp. 2825--2830, 2011.
+\bibitem{xgboost} T. Chen and C. Guestrin, ``XGBoost: A scalable tree boosting system,'' in \emph{Proc. KDD}, 2016. doi: 10.1145/2939672.2939785.
+\bibitem{jev} TypeSafe, ``Models,'' Jev 1.14 model specification and pricing. \url{https://docs.typesafe.ai/models}
+\bibitem{run} A. Esmer, ``M3.5 research run: all 27 configurations,'' Orchestra project evidence, Nov. 2026. \url{https://github.com/AltanEsmer/Orchestra/blob/4ae92d9/docs/evidence/m3-5-full-run.md}
+\bibitem{test} A. Esmer, ``M4 confidence, freeze and final test,'' Orchestra project evidence and post-test label review, Nov. 2026. \url{https://github.com/AltanEsmer/Orchestra/blob/4ae92d9/docs/evidence/m4-final-test.md}
+\end{thebibliography}
 \end{document}
