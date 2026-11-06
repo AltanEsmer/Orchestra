@@ -31,7 +31,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M3 | Classifier assumptions, count versus TF-IDF, regularization, controlled comparisons, selection. Supplies the main methods and comparison results. |
 | M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. [M4 confidence and errors](m4-confidence-errors.md), exported as `M4-confidence-errors.pdf` on November 3, 2026. |
-| M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. Supports Altan's own synthesis. |
+| M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. The [M5 writing guide](m5-report.md) accompanies the [IEEE outline](../../report/main.tex). |
 | M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
 | M7 | Frozen package, versions, checksums and evidence supporting final claims. Records what is ready for submission. |
 | M8 | Submitted artifact identities and receipts. Records exactly what was submitted. |
@@ -132,3 +132,7 @@ The edition is delivered. Altan answered its nine practice questions on November
 - Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
 - Data exposure: the guide quotes only q0005, the Altan-authored validation row that earlier guides quote. Test mistakes are described by ID and paraphrase; no test text appears.
 - The edition first cites Lecture 5 p. 80, Lecture 7 pp. 47, 53 and 58 to 61, and Lecture 8, now listed in the [course sources](../course-sources.md).
+
+## M5 outline edition, November 6, 2026
+
+The current two-page guide is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its [editable source](m5-report.md) is at commit `440f175`, SHA-256 `d70d6481b08098ba8697772fd80338b5defb5e93f8ddb87827532338b99c5deb`. PDF SHA-256 is `5ac1d1c35f20f102f61e9a8f8735d72d17b9cbe0672b9b4abae45e4f5478ec74`. The adjacent manifest identifies all three course PDFs inspected for this edition. Both rendered pages and the extracted text were checked. The M5 practice attempt and closure snapshot are pending.

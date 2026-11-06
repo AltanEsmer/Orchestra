@@ -1410,3 +1410,13 @@ Feedback: the DataBench and q2225 reasons match the collection brief. The conver
 Status changes: none beyond the November 5 entry. This is annotation adjudication, which applies the data contract to real cases. It supports the **data contract and action boundaries** row but does not move it, because the open exercise there (a query needing retrieval before calculation) is still unattempted.
 
 Altan then wrote "Accept M4". The roadmap marks M4 done, and the dated snapshot `M4-confidence-errors-2026-11-06.pdf` is identical to the November 3 edition. Carried into M5 unchanged: leakage and grouping (**needs practice**), the data-contract exercise, the no-accepted-query fallback case and the earlier unanswered M0 to M3 prompts.
+
+## M5 report outline, November 6, 2026
+
+Commit `440f175` replaces the preparation prompts with the [IEEE working outline](../report/main.tex), its [source map](../report/README.md), three research figures and an [M5 study guide](study-guides/m5-report.md). The two-page outline budgets eight pages for Altan’s manuscript. The class-balance and word-length figures introduce the population; the Jev test matrix lets a reader inspect errors behind the aggregate score. The comparison table shows validation selection alongside the single frozen test. It rounds directly from the saved metrics, including DT test macro-F1 0.806454 (0.806; the M4 summary shows 0.807).
+
+Trace for discussion: q3014 has an attached passage. Its accepted label is retrieval. Jev saw only the short instruction and predicted direct answer. This adds one to the retrieval-to-direct cell, which totals 13. Altan retained the label after checking the attachment. The missing-context interpretation is a hypothesis.
+
+The research figure export passed. All ten pairs of table scores matched the saved metrics to three decimals. The three PNGs and three sidecars matched the figure manifest. Tectonic compiled the IEEE outline and both pages were inspected. The two-page milestone guide and its provenance are recorded in the [edition index](study-guides/README.md). The software check passed the environment smoke, all 285 tests, Ruff lint and formatting (90 files), and whitespace checks. The existing final-test outputs supplied all test evidence.
+
+Next exercise: write two sentences interpreting the lookup row of the test matrix, naming the denominator and predicting action. Then choose a limitation that restricts the conclusion. M5 understanding is **not yet reviewed**. Carry forward the M4 closing list, including leakage and grouping (**needs practice**) and the no-accepted-query fallback case. Altan’s own-word draft, citations, final pagination and response are pending.

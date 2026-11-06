@@ -14,7 +14,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `scripts/check.sh` | Locked setup, smoke, complete unit tests, Ruff lint/format, and diff whitespace checks. |
 | `scripts/verify_workflow.py` | Runs the real command chain on 120/400 artificial rows, proves confidence works without the sealed file, checks final-test receipts, exports plots, and restores/reproduces M3 in a clean environment. Writes a transcript and acceptance record under ignored work. |
 | `.github/workflows/check.yml` | Runs both verification scripts on PRs and main pushes with pinned actions, uv, and Python. |
-| `report/main.tex`, `report/README.md` | Compilable IEEE conference template and editing instructions. Prompts and placeholders, with no invented research results. |
+| `report/main.tex`, `report/README.md` | M5 IEEE working outline and section-to-artifact map. Table I uses the saved validation and final-test metrics. The three PNGs and matching source sidecars in `report/figures/` let a clean checkout compile the outline. The [M5 guide](study-guides/m5-report.md) traces one matrix cell to an adjudicated example. |
 | `docs/automation-plan.md` | Accepted automation scope, design tradeoffs, dependencies, verification units, and boundaries. |
 | `docs/manual-steps.md` | Human work in order, beginning with one original query; commands remain agent-operated. |
 | `docs/collection-brief.md` | Expansion rules fixed before baseline-error inspection. Prepared study configs bind its hash. |
