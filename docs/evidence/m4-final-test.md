@@ -112,6 +112,19 @@ What the interpretations suggest, as hypotheses:
 - **L3-C10 fails on wording.** Its largest group is lookup predicted as direct answer, 14 rows: six personal-record requests (reminders, contacts, an appointment), four DataBench attached-table questions and four others. Vocabulary mismatch is the largest category on both splits, as expected from a bag-of-words model.
 - **Some accepted labels are arguable.** The CLINC150 unit conversions, the four DataBench rows that rest on the attached-table rule, q2225 (no named store) and q3014 (a bare request to summarize) are flags for Altan's review. The frozen test labels stay as they are.
 
+### Altan's review of the flagged labels, November 6, 2026
+
+Altan kept all four sets of labels. Nothing changed: no file, frozen label or score. Keeping a label does not make every disagreement a clean classifier failure.
+
+| Flagged case | Decision | Altan's reason |
+| --- | --- | --- |
+| CLINC150 unit conversions | Keep `calculation` | The adopted annotation default allows standard conversion factors, and it covers teaspoons and tablespoons, cups, pounds and kilos, and inches and centimeters consistently. Some one-unit questions resemble factual recall, so they stay boundary cases rather than clear reasoning failures. |
+| DataBench q2118, q2280, q2281, q2283 | Keep `knowledge_lookup` | All four have pinned table references, and "listed" refers to those records. Reading the table comes before checking existence, counting or picking the most common or largest value. This follows the attached-table rule in the [M3.5 collection brief](../collection-brief-m3-5.md#guide-v3-two-lookup-rules). |
+| q2225, company airplanes sorted by model | Keep `knowledge_lookup` | "Our company airplanes" names an organization's own inventory, and listing it requires reading records under the store-kind default. A database name is not needed. |
+| q3014, "Please summarize:" | Keep `document_retrieval`, flag router context | Altan checked that it has a nonempty attached passage with a matching hash, so reading it is necessary. The label fits the full request, but the router sees neither the passage nor attachment metadata, so its task is underspecified. This is an input limitation, not a label error. |
+
+The lead checked the DataBench and q2225 reasons against the collection brief. The conversion default is cited from the annotation decisions; the lead did not find it written in a tracked document, so its location is unverified here.
+
 ## Checks
 
 - The receipt `results/test-receipts/7aacbc49….json` records one attempt, status `complete`, freeze `e71f5b80…`, and Jev log `bcdb69f2…`.
@@ -139,7 +152,8 @@ What the interpretations suggest, as hypotheses:
 - **Jev.** Its test answers come from one pass on one day. Pretraining overlap with the public corpora is unknown, and the test text now sits with TypeSafe under its terms.
 - **Missing context.** Retrieval rows whose passage is withheld from the router remain the largest error group for Jev on both validation and test.
 
-## Remaining M4 work
+## M4 closing work
 
-- The M4 study guide and PDF, and Altan's M4 learning attempt.
-- Altan's review of the flagged test labels. A changed label could only be reported as a later correction beside the frozen result, never as a new selection.
+- Done November 5: the M4 study guide and PDF, and Altan's answers to its nine questions.
+- Done November 6: Altan reviewed the flagged test labels and kept all of them (see above).
+- Still open: Altan's acceptance of M4 and the dated PDF snapshot at closure.
