@@ -31,7 +31,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M3 | Classifier assumptions, count versus TF-IDF, regularization, controlled comparisons, selection. Supplies the main methods and comparison results. |
 | M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. [M4 confidence and errors](m4-confidence-errors.md), exported as `M4-confidence-errors.pdf` on November 3, 2026. |
-| M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. The [M5 writing guide](m5-report.md) accompanies the [IEEE outline](../../report/main.tex). |
+| M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. The [M5 writing guide](m5-report.md) accompanies the [IEEE manuscript](../../report/main.tex). |
 | M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
 | M7 | Frozen package, versions, checksums and evidence supporting final claims. Records what is ready for submission. |
 | M8 | Submitted artifact identities and receipts. Records exactly what was submitted. |
@@ -135,4 +135,8 @@ The edition is delivered. Altan answered its nine practice questions on November
 
 ## M5 outline edition, November 6, 2026
 
-The current two-page guide is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its [editable source](m5-report.md) is at commit `440f175`, SHA-256 `d70d6481b08098ba8697772fd80338b5defb5e93f8ddb87827532338b99c5deb`. PDF SHA-256 is `5ac1d1c35f20f102f61e9a8f8735d72d17b9cbe0672b9b4abae45e4f5478ec74`. The adjacent manifest identifies all three course PDFs inspected for this edition. Both rendered pages and the extracted text were checked. The M5 practice attempt and closure snapshot are pending.
+The original two-page outline edition was exported to `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its [editable source](m5-report.md) is at commit `440f175`, SHA-256 `d70d6481b08098ba8697772fd80338b5defb5e93f8ddb87827532338b99c5deb`. PDF SHA-256 is `5ac1d1c35f20f102f61e9a8f8735d72d17b9cbe0672b9b4abae45e4f5478ec74`. The adjacent manifest identifies all three course PDFs inspected for this edition. Both rendered pages and the extracted text were checked. The M5 practice attempt and closure snapshot are pending.
+
+## M5 manuscript edition, November 6, 2026
+
+The updated [writing guide](m5-report.md) accompanies the six-page draft at commit `360248a`. The current two-page PDF is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its SHA-256 is `9b5936e55eda6330ed489d95000bea33186c02e153cca0969b4f5a9eb5c9140b` and the source SHA-256 is `4baf8cb1536efe7bf10340576fdab25d5dbd8db7708c07171a9b3274536dd486`. Both rendered pages were inspected. The sidecar records the source commit and course file identities. Altan’s revision and practice attempt remain open.
