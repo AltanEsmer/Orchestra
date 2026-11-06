@@ -1398,3 +1398,15 @@ Status changes from these answers:
 Still open for M4: Altan's review of the flagged test labels (unit conversions, DataBench tables, q2225, q3014), the PR merge and the dated PDF snapshot.
 
 Next exercise: what should a fallback report say when no threshold accepts any query, and why is "undefined" better than 0 for that accuracy?
+
+## M4 flagged-label review, November 6, 2026
+
+Altan reviewed the four sets of flagged test labels and kept all of them. He also merged PR #32. The decisions and his reasons are in the [M4 record](evidence/m4-final-test.md#altans-review-of-the-flagged-labels-november-6-2026). No file, frozen label or score changed.
+
+Faithful summary: unit conversions stay `calculation` under the conversion default, with one-unit questions kept as boundary cases. The four DataBench rows and q2225 stay `knowledge_lookup` under the attached-table and store-kind rules. q3014 stays `document_retrieval`, and the missing passage is recorded as a limit of the router's input rather than a label error. He separated "the label is right" from "the router could have known", and that is the distinction the error categories need.
+
+Feedback: the DataBench and q2225 reasons match the collection brief. The conversion default is not written in any tracked document the agent found. If the report relies on it, cite where it was adopted.
+
+Status changes: none beyond the November 5 entry. This is annotation adjudication, which applies the data contract to real cases. It supports the **data contract and action boundaries** row but does not move it, because the open exercise there (a query needing retrieval before calculation) is still unattempted.
+
+Altan then wrote "Accept M4". The roadmap marks M4 done, and the dated snapshot `M4-confidence-errors-2026-11-06.pdf` is identical to the November 3 edition. Carried into M5 unchanged: leakage and grouping (**needs practice**), the data-contract exercise, the no-accepted-query fallback case and the earlier unanswered M0 to M3 prompts.
