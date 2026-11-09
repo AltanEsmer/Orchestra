@@ -1,6 +1,6 @@
 # M5 report review, November 9, 2026
 
-The review checked the manuscript against the local course instructions, frozen study artifacts and recorded decisions. The revised PDF has seven IEEE conference two-column pages, four figures, five tables and 20 cited references. Its source is [report/main.tex](../../report/main.tex), with the [evidence map](../../report/README.md) alongside it. The reading copy is `output/pdf/M5-report-draft.pdf` under the repository root, SHA-256 `325df1194d8a76670fa0f6ea467be53c10d0be49434aa7770617ffefd10f5426`.
+The review checked the manuscript against the local course instructions, frozen study artifacts and recorded decisions. The revised PDF has seven IEEE conference two-column pages, four figures, five tables and 20 cited references. Its source is [report/main.tex](../../report/main.tex), with the [evidence map](../../report/README.md) alongside it. The reading copy is `output/pdf/M5-report-draft.pdf` under the repository root, SHA-256 `50c73d36b7917f4252fe6bc8bc2fe8a7730825630c32eb87e11f3f2eeb6c065c`.
 
 ## Course requirements
 
@@ -11,7 +11,7 @@ The review checked the manuscript against the local course instructions, frozen 
 | IEEE conference format, two columns, 5–12 pages, report instructions p. 1 | The IEEEtran conference source compiles to seven US Letter pages. All seven rendered pages were inspected. |
 | Classifier and representation comparison, CourseProjects p. 15 | Tables I and II report the frozen winners and matched-C contrasts. |
 | Confidence and error analysis, CourseProjects p. 15 | Section V, Figure 3 and Table IV explain calibration and selective routing. Section VI, Figure 4 and Table V analyze errors. |
-| Own-word report, report instructions p. 1 | Altan’s rewriting and acceptance remain pending. The author line and assistance statement disclose the draft’s provenance. |
+| Own-word report, report instructions p. 1 | Altan’s rewriting and acceptance remain pending. The assistance statement records the draft’s provenance. |
 
 The inspected report-instructions PDF has SHA-256 `00ab8140f009f52fd9f552daa61ade6f628bdd1125096d62c54e07f06e1519a5`. CourseProjects has SHA-256 `d4e98da373cbdcd62f804d2cd0f957bbaa53294205762ba6d1dc04b26b74fdca`. Lecture 7 p. 53 was checked for the independence principle. Its revision remains the one recorded in the study guide. The course deadline is December 6, 2026, with report submission through itslearning.
 
