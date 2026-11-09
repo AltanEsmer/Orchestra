@@ -1,6 +1,6 @@
 # M5 report draft
 
-The [editable IEEE manuscript](main.tex) compiles to six pages, including three saved figures, four results tables and references. The local reading copy is `output/pdf/M5-report-draft.pdf` from the repository root. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
+The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The local reading copy is `output/pdf/M5-report-draft.pdf` from the repository root. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
 
 ## Evidence to use while writing
 
@@ -14,17 +14,20 @@ The [editable IEEE manuscript](main.tex) compiles to six pages, including three 
 
 Table I rounds directly from the metrics files. For DT-d30-leaf1 the test value is 0.8064543652, or **0.806** to three decimals. The earlier M4 summary prints 0.807.
 
+Table V was calculated on November 9 by joining the frozen release to saved test predictions on query ID, validating matching accepted labels, and matching each cue with a case-insensitive whole-word regular expression. These descriptive subsets overlap and differ in source and action mix. [Review record](../docs/evidence/m5-report-review.md)
+
 ## Figures in the draft
 
-The images in [figures/](figures/) are copies from the research export. Each named PNG has a matching source sidecar. The full local export retains SVGs, exact numeric inputs in `plot-data.json`, and a checksum for each output in `manifest.json`.
+Three images in [figures/](figures/) are copies from the research export. The reliability panels render three selected systems from the saved final-test bins. Each named PNG has a matching source sidecar. The full local export retains SVGs, exact numeric inputs in `plot-data.json`, and a checksum for each output in `manifest.json`.
 
 | PNG | Values in plot-data.json | Reading question |
 | --- | --- | --- |
 | `class-balance.png` | `class_balance`, in `class_order` | How much support does each action have on training and validation? |
 | `word-lengths.png` | `word_lengths.train` and `word_lengths.validation` | What might a long tail tell us about the way the router input was assembled? |
+| `test-reliability.png` | Saved test bins for L3-C10, calibrated L3-C10 and Jev in its sidecar | How do bin sizes limit the calibration claim? |
 | `final-confusion-Jev.png` | `final["confusion.json"]["Jev"]["counts"]` | Which accepted action accounts for the largest group of errors, and what did Jev predict instead? |
 
-From the repository root, reproduce the figures from saved outputs with the following command. Choose a fresh output directory for a repeat export. Only the three PNGs and their sidecars belong in the draft.
+From the repository root, reproduce the figures from saved outputs with the following command. Choose a fresh output directory for a repeat export. The draft uses three PNGs from this export. The additional reliability panel uses its retained numeric sidecar as described below.
 
 ```sh
 uv run --locked python -m orchestra figures \
@@ -35,3 +38,5 @@ uv run --locked python -m orchestra figures \
 ```
 
 Compile `main.tex` with IEEEtran in the report directory (for example, `tectonic main.tex`). The tracked images are sufficient for compilation. For practice, use the [M5 study guide](../docs/study-guides/m5-report.md).
+
+Rebuild the reliability panels from the tracked numeric sidecar with `uv run --locked python report/plot_reliability.py` from the repository root. The sidecar records exact bin values, source hashes, renderer hash and output hash.

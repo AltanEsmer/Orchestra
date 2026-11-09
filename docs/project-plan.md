@@ -68,7 +68,7 @@ Altan handles oral-exam arrangements, AI-use rules, disclosure, and submission m
 
 ## Report outline and evidence map
 
-The November 6 [full M5 draft](../report/main.tex) expands the outline into six IEEE two-column pages, within the required 5–12 pages. The [evidence map](../report/README.md) links the three research figures and four result tables to the frozen study. The initial eight-page budget served as a planning target. Altan now revises the account in his own words and checks the revised pagination.
+The November 6 [full M5 draft](../report/main.tex) expanded the outline into six IEEE two-column pages, within the required 5–12 pages. The [November 9 review](evidence/m5-report-review.md) adds the reliability figure and cue analysis, bringing the manuscript to seven pages. The [evidence map](../report/README.md) links four figures and five tables to the frozen study. The initial eight-page budget served as a planning target. Altan now revises the account in his own words and checks the revised pagination.
 
 | Report part | Question or requirement | Planned evidence | Limitations to discuss |
 | --- | --- | --- | --- |

@@ -1,0 +1,124 @@
+{
+  "fixture": false,
+  "run_id": "final-test-m3-5",
+  "sources": {
+    "results/final-test-m3-5/reliability.json": "16e54d3100ff04fe0c9fad1c038c543554b9326e9dd3b128be301db84b5ad76f",
+    "results/final-test-m3-5/manifest.json": "9b9b7f2103e325dabbfd53177f5bba2bba6da5e13ea488f3cb1ae1dee664b94a"
+  },
+  "bins": {
+    "L3-C10": [
+      {
+        "lower": 0.0,
+        "upper": 0.2,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.4,
+        "count": 7,
+        "mean_confidence": 0.35041965457155705,
+        "accuracy": 0.14285714285714285
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.6,
+        "count": 64,
+        "mean_confidence": 0.5103882806482083,
+        "accuracy": 0.671875
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.8,
+        "count": 107,
+        "mean_confidence": 0.717157073250991,
+        "accuracy": 0.8878504672897196
+      },
+      {
+        "lower": 0.8,
+        "upper": 1.0,
+        "count": 450,
+        "mean_confidence": 0.9410853613979323,
+        "accuracy": 0.9955555555555555
+      }
+    ],
+    "calibrated": [
+      {
+        "lower": 0.0,
+        "upper": 0.2,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.4,
+        "count": 3,
+        "mean_confidence": 0.3695395421896242,
+        "accuracy": 0.3333333333333333
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.6,
+        "count": 46,
+        "mean_confidence": 0.5187186119793299,
+        "accuracy": 0.5869565217391305
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.8,
+        "count": 91,
+        "mean_confidence": 0.7158392144530211,
+        "accuracy": 0.8131868131868132
+      },
+      {
+        "lower": 0.8,
+        "upper": 1.0,
+        "count": 488,
+        "mean_confidence": 0.9438952175388151,
+        "accuracy": 0.9897540983606558
+      }
+    ],
+    "Jev": [
+      {
+        "lower": 0.0,
+        "upper": 0.2,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.4,
+        "count": 0,
+        "mean_confidence": null,
+        "accuracy": null
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.6,
+        "count": 25,
+        "mean_confidence": 0.5568,
+        "accuracy": 0.48
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.8,
+        "count": 54,
+        "mean_confidence": 0.708703703703704,
+        "accuracy": 0.8703703703703703
+      },
+      {
+        "lower": 0.8,
+        "upper": 1.0,
+        "count": 549,
+        "mean_confidence": 0.959872495446266,
+        "accuracy": 0.9890710382513661
+      }
+    ]
+  },
+  "figure_sha256": "5e6f70b1e14e94abd9799dd2c820f87cfb43c5e742d1938cf12d51441be58d32",
+  "renderer_sha256": "d94885397d45ebe0d239f57020d52b0d85ac50825f7898f44f20f6b5c07e6334",
+  "matplotlib_version": "3.11.2"
+}
