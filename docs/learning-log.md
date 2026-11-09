@@ -1410,3 +1410,33 @@ Feedback: the DataBench and q2225 reasons match the collection brief. The conver
 Status changes: none beyond the November 5 entry. This is annotation adjudication, which applies the data contract to real cases. It supports the **data contract and action boundaries** row but does not move it, because the open exercise there (a query needing retrieval before calculation) is still unattempted.
 
 Altan then wrote "Accept M4". The roadmap marks M4 done, and the dated snapshot `M4-confidence-errors-2026-11-06.pdf` is identical to the November 3 edition. Carried into M5 unchanged: leakage and grouping (**needs practice**), the data-contract exercise, the no-accepted-query fallback case and the earlier unanswered M0 to M3 prompts.
+
+## M5 report outline, November 6, 2026
+
+Commit `440f175` replaces the preparation prompts with the [IEEE working outline](../report/main.tex), its [source map](../report/README.md), three research figures and an [M5 study guide](study-guides/m5-report.md). The two-page outline budgets eight pages for Altan’s manuscript. The class-balance and word-length figures introduce the population; the Jev test matrix lets a reader inspect errors behind the aggregate score. The comparison table shows validation selection alongside the single frozen test. It rounds directly from the saved metrics, including DT test macro-F1 0.806454 (0.806; the M4 summary shows 0.807).
+
+Trace for discussion: q3014 has an attached passage. Its accepted label is retrieval. Jev saw only the short instruction and predicted direct answer. This adds one to the retrieval-to-direct cell, which totals 13. Altan retained the label after checking the attachment. The missing-context interpretation is a hypothesis.
+
+The research figure export passed. All ten pairs of table scores matched the saved metrics to three decimals. The three PNGs and three sidecars matched the figure manifest. Tectonic compiled the IEEE outline and both pages were inspected. The two-page milestone guide and its provenance are recorded in the [edition index](study-guides/README.md). The software check passed the environment smoke, all 285 tests, Ruff lint and formatting (90 files), and whitespace checks. The existing final-test outputs supplied all test evidence.
+
+Next exercise: write two sentences interpreting the lookup row of the test matrix, naming the denominator and predicting action. Then choose a limitation that restricts the conclusion. M5 understanding is **not yet reviewed**. Carry forward the M4 closing list, including leakage and grouping (**needs practice**) and the no-accepted-query fallback case. Altan’s own-word draft, citations, final pagination and response are pending.
+
+## M5 manuscript for revision, November 6, 2026
+
+Commit `360248a` expands the outline into the [full IEEE manuscript](../report/main.tex) with three research figures, four result tables and 19 cited references. The [evidence map](../report/README.md) identifies the saved runs for each section. The author line and assistance statement identify this as an AI-assisted draft for Altan to revise.
+
+A concrete example runs through the error analysis. For q3014, the annotator could verify a passage, while Jev received only a summary instruction and predicted direct answer. The count is measured. Whether an attachment flag would change the decision requires a future experiment. For the next exercise, rewrite the explanation of q1529 in your own words and use Figure 3 to distinguish its error direction from q3014. The M5 learning checkpoint remains **not yet reviewed**.
+
+Four tables were compared to the saved validation, final-test and threshold records. Each tracked figure and sidecar matched the research export, and all 19 bibliography entries were cited. Tectonic compiled six US Letter pages in IEEE conference two-column format. All six rendered pages were inspected, including the three figures and the references. The PDF SHA-256 is `4cf56c6815926b8beef38235acd4c9bee5cd54daa9722f387aaf00d5de567251`. The smoke check passed, 285 tests passed in 31.245 seconds, Ruff lint and formatting passed, and diff whitespace was clean. The current study guide and its hashes are in the [edition index](study-guides/README.md). This writing step used the existing one-time test results. M5 stays open for Altan’s own-word revision and actual response.
+
+## M5 report review, November 9, 2026
+
+Commit `c1d38ec` corrects the draft against the course instructions and frozen evidence. The [review record](evidence/m5-report-review.md) maps requirements, findings and verification. The report now has seven IEEE two-column pages, four figures and five tables. The added reliability panels preserve exact saved bins. The cue analysis counts errors on overlapping subsets of the existing test predictions.
+
+The review removed an unsupported inference from equal medians, made the L3-C10 fallback scope explicit, specified model settings and tied the reproduction claim to the validation archive. For q3014, Jev predicted direct answer but L3-C10 predicted retrieval. That concrete comparison limits the missing-context explanation. Altan can practice by explaining what evidence would distinguish a useful attachment signal from a learned wording cue, then rewrite the paragraph in his own words. M5 understanding remains **not yet reviewed**, with the earlier gaps carried forward.
+
+All 27 validation and 11 test configurations’ accuracy, macro-F1 and confusion counts were recomputed from their saved predictions. The five tables, four images and provenance were checked. All seven report pages and both guide pages were inspected. The smoke check, 285 tests (30.992 seconds), Ruff lint and format (92 files), and whitespace checks passed. The report PDF SHA-256 is `325df1194d8a76670fa0f6ea467be53c10d0be49434aa7770617ffefd10f5426`. Own-word revision remains with Altan, and complete-package reproduction remains M6 work.
+
+## M5 author block, November 9, 2026
+
+At Altan’s request, removed the dated working-draft subtitle from the report author block. The PDF recompiles to seven pages, all inspected after the layout reflow. The requested sentence is absent from the source and extracted PDF text. Current PDF SHA-256 is `50c73d36b7917f4252fe6bc8bc2fe8a7730825630c32eb87e11f3f2eeb6c065c`. The PR includes this presentation change.
