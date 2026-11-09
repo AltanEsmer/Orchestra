@@ -140,3 +140,7 @@ The original two-page outline edition was exported to `/Users/altanesmer/Desktop
 ## M5 manuscript edition, November 6, 2026
 
 The updated [writing guide](m5-report.md) accompanies the six-page draft at commit `360248a`. The current two-page PDF is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its SHA-256 is `9b5936e55eda6330ed489d95000bea33186c02e153cca0969b4f5a9eb5c9140b` and the source SHA-256 is `4baf8cb1536efe7bf10340576fdab25d5dbd8db7708c07171a9b3274536dd486`. Both rendered pages were inspected. The sidecar records the source commit and course file identities. Altan’s revision and practice attempt remain open.
+
+## M5 reviewed manuscript edition, November 9, 2026
+
+The [current guide](m5-report.md) accompanies the reviewed seven-page report at commit `c1d38ec`. The two-page guide PDF remains `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its SHA-256 is `bc69b50be061c3df102247df0f2bb37ede2e1044c89144c24afa6ab9051d8b8d`; source SHA-256 is `2e3c047bf69eb4b8967c824c5960be88a86066ebe72aa3074ae2214d12ab3616`. Its sidecar records the source commit and course hashes. Both rendered pages and all extracted source paragraphs were checked. This replaces the current November 6 edition. M5 acceptance and Altan’s learning attempt are pending.
