@@ -728,10 +728,14 @@ def _evaluate_frozen(
         "split_sha256": split_digest,
         "fixture": config["fixture"],
     }
+    if jev_replay:
+        # Receipts written before replays existed lack this key; a resume
+        # may not switch between replaying and sending.
+        request["jev_replay"] = True
     history = []
     if receipt_path.exists():
         receipt = _json(receipt_path)
-        if any(receipt.get(k) != v for k, v in request.items()):
+        if any(receipt.get(k) != request.get(k) for k in {*request, "jev_replay"}):
             raise ValueError(
                 "split test already reserved/opened; changed evaluation refused"
             )
@@ -811,7 +815,11 @@ def _evaluate_frozen(
             if summary["missing"]:
                 raise ValueError(
                     f"{len(summary['missing'])} test queries have no valid Jev "
-                    "answer; rerun the identical command with --resume"
+                    + (
+                        "answer in the archived log"
+                        if jev_replay
+                        else "answer; rerun the identical command with --resume"
+                    )
                 )
             jev_record |= {
                 "jev_test_log_sha256": file_sha256(jev_log),

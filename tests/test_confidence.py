@@ -769,6 +769,10 @@ class M35LifecycleTest(unittest.TestCase):
             code, output = cli(*replay, "--out", str(self.root / "partial"))
             self.assertEqual(code, 1)
             self.assertIn("1 test queries have no valid Jev answer", output)
+            with self.assertRaisesRegex(ValueError, "changed evaluation refused"):
+                confidence.final_test(
+                    frozen, self.root / "partial", resume=True, jev_send=jev_answer
+                )
 
             for name in self.store.iterdir():
                 name.unlink()
