@@ -1440,3 +1440,13 @@ All 27 validation and 11 test configurations’ accuracy, macro-F1 and confusion
 ## M5 author block, November 9, 2026
 
 At Altan’s request, removed the dated working-draft subtitle from the report author block. The PDF recompiles to seven pages, all inspected after the layout reflow. The requested sentence is absent from the source and extracted PDF text. Current PDF SHA-256 is `50c73d36b7917f4252fe6bc8bc2fe8a7730825630c32eb87e11f3f2eeb6c065c`. The PR includes this presentation change.
+
+## M5 trade-off columns, November 10, 2026
+
+At Altan’s request, Table I of the [report](../report/main.tex) gained test Brier score and ECE for each frozen system, and Table III gained class F1 for S1-C1 and L3-C10 beside Jev's. The prose is unchanged. The [review record](evidence/m5-report-review.md#trade-off-columns-november-10-2026) lists the values and the further additions it suggested but did not make.
+
+Trace for discussion: q1961 asks for the user's reminders without using the word "reminder". Its accepted label is lookup. Jev chose lookup with probability 0.68, while S1-C1 and L3-C10 both chose direct answer. Then compare q3014, the bare request to summarize: Jev chose direct answer (0.53 against 0.47 for retrieval), while both local systems chose retrieval. Queries like these, in opposite directions, explain why Table III now shows Jev ahead on lookup and behind on retrieval.
+
+Exercise, to attempt before reading the review record: using only Tables I and III, decide which local system you would deploy if uncertain requests had to go to a person, and name the one number that rules out S1-C1 for that job without extra work. M5 understanding remains **not yet reviewed** for these tables. The earlier gaps carry forward.
+
+Every new table row was recomputed from the saved validation and final-test metrics and matched the source. Tectonic compiled seven pages, and the two pages carrying the tables were inspected. The reading copy's SHA-256 is `7dd141822ccd4ef0c0bbb08884a460932d853b5c766b556e6b1522907f43217b`.
