@@ -32,7 +32,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. [M4 confidence and errors](m4-confidence-errors.md), exported as `M4-confidence-errors.pdf` on November 3, 2026. |
 | M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. The [M5 writing guide](m5-report.md) accompanies the [IEEE manuscript](../../report/main.tex). |
-| M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
+| M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. [M6 reproduction](m6-reproduction.md), exported as `M6-reproduction.pdf` on November 10, 2026. |
 | M7 | Frozen package, versions, checksums and evidence supporting final claims. Records what is ready for submission. |
 | M8 | Submitted artifact identities and receipts. Records exactly what was submitted. |
 
