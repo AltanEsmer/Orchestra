@@ -96,19 +96,18 @@ The local systems took the harder path. L3-C10 and S1-C1 were refit from the tra
 
 `scripts/route_query.py` routes any new text through the frozen logistic system, L3-C10. It refits the frozen configuration and its calibration exactly as the final test did. To check that claim, route q0005, "A train ticket costs 45 kr. How much do three tickets cost?" It returns raw calculation 0.8045 and calibrated 0.8853, the values saved in the M4 confidence analysis. The tool cannot route Jev, because that would send your query to TypeSafe.
 
-Here is a query written for this guide. It is not in the dataset.
+Here is a query written for this guide. It is not in the dataset. Route it with `uv run --locked python scripts/route_query.py "What is 15 percent of the total on the invoice I uploaded?"`. The output, with shortened class names, is below.
 
 ```text
-uv run --locked python scripts/route_query.py "What is 15 percent of the total on the invoice I uploaded?"
-
-              document_retrieval    knowledge_lookup         calculation       direct_answer
-raw                       0.0583              0.0860              0.8183              0.0374
-calibrated                0.0181              0.0883              0.8887              0.0048
-Fallback threshold 0.0: top calibrated 0.8887, route it
-Strongest n-grams for calculation (TF-IDF x weight):
-  '15': +0.6515   'percent': +0.4338   'is 15': +0.4267
-  'total': +0.3576   'of': +0.2640   'percent of': +0.2334
-Words never seen in training: invoice, uploaded
+             retrieval    lookup   calculation    direct
+raw             0.0583    0.0860        0.8183    0.0374
+calibrated      0.0181    0.0883        0.8887    0.0048
+prediction: calculation, raw and calibrated
+fallback threshold 0.0: top calibrated 0.8887, route it
+strongest n-grams for calculation (TF-IDF x weight):
+  '15' +0.6515, 'percent' +0.4338, 'is 15' +0.4267,
+  'total' +0.3576, 'of' +0.2640, 'percent of' +0.2334
+words never seen in training: invoice, uploaded
 ```
 
 **The label.** The total is on a supplied document, so the router must read it before any arithmetic. Annotation guide rule 4 gives `document_retrieval` when a document must be read before calculating from its figures. This is my application of the rule to an invented query, not a reviewed dataset row.
@@ -167,11 +166,12 @@ The lectures cover how to separate data for training, tuning and testing, and ho
 Build the archive from the checkout that holds the data, then reproduce in a fresh clone.
 
 ```sh
-scripts/archive_study.sh /Users/altanesmer/Desktop/SM1/AI/Orchestra \
-  /Users/altanesmer/Desktop/SM1/AI/Orchestra/work/m6-reproduction/orchestra-study-m6.zip
+DATA=/Users/altanesmer/Desktop/SM1/AI/Orchestra
+ZIP=$DATA/work/m6-reproduction/orchestra-study-m6.zip
+scripts/archive_study.sh "$DATA" "$ZIP"
 git clone https://github.com/AltanEsmer/Orchestra.git clean
 cd clean && git checkout ad651696206b3d573dc5607061c2e8b389786725
-scripts/reproduce_study.sh /Users/altanesmer/Desktop/SM1/AI/Orchestra/work/m6-reproduction/orchestra-study-m6.zip
+scripts/reproduce_study.sh "$ZIP"
 ```
 
 The evidence run set `UV_CACHE_DIR` and `UV_PYTHON_INSTALL_DIR` to new empty folders, so the 21 packages and Python 3.12.13 were downloaded again. The log is `work/m6-reproduction/clean/work/m6-reproduction/reproduce.log`.
@@ -209,7 +209,7 @@ Answer out loud or in writing before reading any worked explanation. Use the rea
 
 ## Inspected sources
 
-All course files were read on November 10, 2026 from `/Users/altanesmer/Desktop/SM1/AI/`. Page numbers are one-based PDF pages. Every cited page was extracted with `pdftotext`; Lecture 7 pp. 54 and 56 were also rendered and viewed.
+All course files were read on November 10, 2026 from `/Users/altanesmer/Desktop/SM1/AI/`. Page numbers are one-based PDF pages. Every cited page was extracted with `pdftotext`; Lecture 7 pp. 54 and 56 were also rendered and viewed. Lectures 1, 2, 3, 4 and 8 were searched for reproducibility, seeds, calibration, TF-IDF and macro-averaging; no page covers them.
 
 | File | Pages cited | SHA-256 |
 | --- | --- | --- |
@@ -218,5 +218,3 @@ All course files were read on November 10, 2026 from `/Users/altanesmer/Desktop/
 | `Lecture5-FundamentalClassificationAlgorithms.pdf` | 2, 5, 86 | `c2995d1963da118c5b8f599a641a15b2c8ec8102aa61a66fee13a29eeb67980d` |
 | `Lecture6-ArtificialNeuralNetworks.pdf` | 57, 79 | `4096ea75c917389ad65c0322bb1e045fcba82154ecde673f7221da3440b7d94d` |
 | `UTF-8''Lecture7-Ensemble%20Methods%20and%20Model%20Evaluations.pdf` | 14, 52, 53, 54, 56, 57, 68 | `918f33dc045f3fbbaaae8a33b1a779e9eb7785e8625f1008aa5fc144b49813fd` |
-
-Lectures 1, 2, 3, 4 and 8 were searched for reproducibility, seeds, calibration, TF-IDF and macro-averaging. No page covers them. Lecture 2 p. 68 mentions pipelines only as a share of the workload.
