@@ -791,6 +791,36 @@ class M35LifecycleTest(unittest.TestCase):
             before["provenance.json"]["jev_test_log_sha256"],
         )
 
+    def test_routing_a_saved_test_text_reproduces_its_frozen_probabilities(self):
+        from orchestra import confidence
+        from scripts.route_query import route
+
+        _, frozen = self.frozen()
+        final = confidence.final_test(frozen, self.root / "final", jev_send=jev_answer)
+        saved = [
+            json.loads(line)
+            for line in (final / "predictions.jsonl").read_text().splitlines()
+        ]
+        row = json.loads((self.root / "test.jsonl").read_text().splitlines()[0])
+        logistic = json_file(frozen)["config"]["logistic"]["id"]
+
+        routed = route(frozen, row["text"])
+
+        for name, key in ((logistic, "raw"), ("calibrated", "calibrated")):
+            (expected,) = [
+                r
+                for r in saved
+                if r["configuration"] == name and r["query_id"] == row["query_id"]
+            ]
+            self.assertEqual(routed[key]["prediction"], expected["prediction"])
+            self.assertEqual(routed[key]["probabilities"], expected["scores"])
+        self.assertEqual(routed["system"], logistic)
+        self.assertEqual(routed["unseen"], [])
+        self.assertEqual(route(frozen, row["text"] + " Zqxwv")["unseen"], ["zqxwv"])
+        self.assertEqual(
+            routed["evidence"][0][0], max(routed["evidence"], key=lambda e: e[1])[0]
+        )
+
     def test_set_without_jev_refuses_a_jev_test_log(self):
         from orchestra import confidence, experiment
 
