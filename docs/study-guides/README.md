@@ -144,3 +144,17 @@ The updated [writing guide](m5-report.md) accompanies the six-page draft at comm
 ## M5 reviewed manuscript edition, November 9, 2026
 
 The [current guide](m5-report.md) accompanies the reviewed seven-page report at commit `c1d38ec`. The two-page guide PDF remains `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its SHA-256 is `bc69b50be061c3df102247df0f2bb37ede2e1044c89144c24afa6ab9051d8b8d`; source SHA-256 is `2e3c047bf69eb4b8967c824c5960be88a86066ebe72aa3074ae2214d12ab3616`. Its sidecar records the source commit and course hashes. Both rendered pages and all extracted source paragraphs were checked. This replaces the current November 6 edition. M5 acceptance and Altan’s learning attempt are pending.
+
+## M6 reproduction edition, November 10, 2026
+
+The [M6 guide](m6-reproduction.md) explains the clean reproduction recorded in the [M6 record](../evidence/m6-reproduction.md) and holds eight unanswered rehearsal prompts. It is not a closed-milestone snapshot; Altan's rehearsal responses are pending.
+
+| Edition | Source | PDF, 8 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M6 | [M6 reproduction](m6-reproduction.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M6-reproduction.pdf` | `9733bf22ad2a1bd971b60a72c15c55577753e8b62b376c24ba24690864225722` | `00fd92403b7d3909aa8f616d8f84156c9e0ec77c9d1265c57f297aeae8392ddd` |
+
+- The sidecar `M6-reproduction.manifest.json` records the source commit `afcfea0` and the hashes of the five cited course PDFs, all present.
+- Drafting: a Sonnet subagent extracted candidate lecture pages with `pdftotext` and recorded hashes. The lead re-extracted Lecture 7 pp. 52, 53 and 57 and Lecture 6 p. 57, rendered and viewed Lecture 7 p. 54, recomputed the cited hashes, and wrote the guide. Every number in the guide was read from the clean run's files or its log; one wrong figure (Jev's unrounded macro-F1) was caught against `metrics.json` and corrected before export.
+- Verification: all eight rendered pages were inspected. Two layout faults were fixed before this edition: a code block split by a blank line and a command line past the margin. A scripted check found every source word in the extracted text; long hashes and filenames wrap inside table cells and were confirmed with line breaks removed. Two consecutive exports produced identical hashes.
+- Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
+- Data exposure: the guide quotes q0005, the Altan-authored validation row earlier guides quote, and one invented query. No test text appears.
