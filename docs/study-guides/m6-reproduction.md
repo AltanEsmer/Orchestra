@@ -112,7 +112,7 @@ words never seen in training: invoice, uploaded
 
 **The label.** The total is on a supplied document, so the router must read it before any arithmetic. Annotation guide rule 4 gives `document_retrieval` when a document must be read before calculating from its figures. This is my application of the rule to an invented query, not a reviewed dataset row.
 
-**What the model did.** L3-C10 chose calculation with raw probability 0.818. It turns the query into TF-IDF values for its unigrams and bigrams, multiplies each by a learned weight per class, adds an intercept, and turns the four sums into probabilities with softmax. The strongest pushes toward calculation came from "15", "percent" and "total". Those are exactly the cues of arithmetic questions in training.
+**What the model did.** L3-C10 chose calculation with raw probability 0.818. It turns the query into TF-IDF values for its unigrams and bigrams, multiplies each by a learned weight per class, adds an intercept, and turns the four sums into probabilities with softmax. The strongest pushes toward calculation came from "15", "percent" and "total". A positive weight means the feature was associated with calculation in the training rows.
 
 **Why it failed.** The two words that signal a document, "invoice" and "uploaded", never occur in the 1,888 training rows. They have no feature, so they add nothing. The model cannot see the attachment cue at all. In M4 terms this is vocabulary mismatch on a multi-action query.
 
