@@ -325,7 +325,13 @@ def final_test(args):
         def send(body):
             return jev.post(body, key)
 
-    out = final_test(args.freeze, args.out, resume=args.resume, jev_send=send)
+    out = final_test(
+        args.freeze,
+        args.out,
+        resume=args.resume,
+        jev_send=send,
+        jev_replay=args.replay_jev_test,
+    )
     print(f"PASS: frozen final-test evidence at {out}")
     return 0
 
@@ -505,10 +511,17 @@ def main(argv=None):
         action="store_true",
         help="retry the identical failed frozen request",
     )
-    final_parser.add_argument(
+    jev_test = final_parser.add_mutually_exclusive_group()
+    jev_test.add_argument(
         "--send-jev-test",
         action="store_true",
         help="send the sealed test queries to TypeSafe Jev (needs TYPESAFE_API_KEY)",
+    )
+    jev_test.add_argument(
+        "--replay-jev-test",
+        action="store_true",
+        help="reproduce from an archived Jev test log at the frozen path; "
+        "sends nothing",
     )
     final_parser.set_defaults(run=guarded(final_test))
     test_review_parser = commands.add_parser(

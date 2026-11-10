@@ -740,6 +740,57 @@ class M35LifecycleTest(unittest.TestCase):
             self.assertIn("--send-jev-test", output)
         self.assertFalse(self.receipts())
 
+    def test_clean_copy_replays_archived_jev_test_answers_without_sending(self):
+        import contextlib
+        import io
+        from unittest import mock
+
+        from orchestra import confidence, jev
+        from orchestra.__main__ import main
+
+        def cli(*argv):
+            with contextlib.redirect_stdout(io.StringIO()) as output:
+                code = main(list(argv))
+            return code, output.getvalue()
+
+        _, frozen = self.frozen()
+        original = confidence.final_test(
+            frozen, self.root / "final", jev_send=jev_answer
+        )
+        archived_log = self.test_log.read_bytes()
+        replay = ("final-test", "--freeze", str(frozen), "--replay-jev-test")
+        with mock.patch.object(jev, "post", side_effect=AssertionError("network")):
+            code, output = cli(*replay, "--out", str(self.root / "again"))
+            self.assertEqual(code, 1)
+            self.assertIn("changed evaluation refused", output)
+
+            self.store.rename(self.root / "original-receipts")
+            self.test_log.write_bytes(b"".join(archived_log.splitlines(True)[:-1]))
+            code, output = cli(*replay, "--out", str(self.root / "partial"))
+            self.assertEqual(code, 1)
+            self.assertIn("1 test queries have no valid Jev answer", output)
+
+            for name in self.store.iterdir():
+                name.unlink()
+            self.test_log.write_bytes(archived_log)
+            code, output = cli(*replay, "--out", str(self.root / "replayed"))
+        self.assertEqual(code, 0, output)
+        self.assertEqual(self.test_log.read_bytes(), archived_log)
+        replayed = confidence.load_artifacts(self.root / "replayed")
+        before = confidence.load_artifacts(original)
+        for name in ("metrics.json", "confusion.json"):
+            self.assertEqual(replayed[name], before[name], name)
+        self.assertEqual(
+            (self.root / "replayed" / "predictions.jsonl").read_bytes(),
+            (original / "predictions.jsonl").read_bytes(),
+        )
+        provenance = replayed["provenance.json"]
+        self.assertTrue(provenance["jev_test_replayed"])
+        self.assertEqual(
+            provenance["jev_test_log_sha256"],
+            before["provenance.json"]["jev_test_log_sha256"],
+        )
+
     def test_set_without_jev_refuses_a_jev_test_log(self):
         from orchestra import confidence, experiment
 
