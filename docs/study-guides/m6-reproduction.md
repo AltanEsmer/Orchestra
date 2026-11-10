@@ -161,6 +161,8 @@ The lectures cover how to separate data for training, tuning and testing, and ho
 | Project 13 asks for classifiers, representations, confidence and errors | `CourseProjects.pdf` p. 15 | The whole study. Reproduction is not required by the brief. |
 | Own-words IEEE report and code due December 6, 2026 | `ProjectRreportInstructions.pdf` p. 1 | The archive and scripts support the code deliverable. No code-submission format is stated. |
 
+<!-- pagebreak -->
+
 ## Technical appendix: commands
 
 Build the archive from the checkout that holds the data, then reproduce in a fresh clone.
