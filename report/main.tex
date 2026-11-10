@@ -80,19 +80,21 @@ The evaluation froze the ten family winners, the logistic calibration procedure 
 \section{Results}
 
 \begin{table}[tbp]
-\centering\caption{Frozen family winners. Selection used validation macro-F1. Both test columns use the same 628 queries.}\label{tab:results}
-\begin{tabular}{lrrr}\toprule
-Configuration & Val. macro-F1 & Test macro-F1 & Test acc.\\ \midrule
-B0 majority & 0.121 & 0.120 & 0.317\\
-B1 naive Bayes & 0.878 & 0.863 & 0.858\\
-L1-C1 & 0.922 & 0.896 & 0.904\\
-L2-C1 & 0.924 & 0.903 & 0.914\\
-S1-C1 & 0.936 & 0.945 & 0.951\\
-L3-C10 & 0.952 & 0.928 & 0.935\\
-DT-d30-leaf1 & 0.818 & 0.806 & 0.822\\
-RF-dNone-leaf1 & 0.913 & 0.900 & 0.909\\
-XGB-d6-lr0.05 & 0.901 & 0.871 & 0.882\\
-Jev & 0.975 & 0.964 & 0.959\\ \bottomrule
+\centering\caption{Frozen family winners. Selection used validation macro-F1. All four test columns use the same 628 queries. Brier score and five-bin ECE use each system's own probabilities, without added calibration; lower is better. S1 outputs margins rather than probabilities.}\label{tab:results}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}\toprule
+&Val.&\multicolumn{4}{c}{Test}\\ \cmidrule(lr){2-2}\cmidrule(lr){3-6}
+Configuration & F1 & F1 & Acc. & Brier & ECE\\ \midrule
+B0 majority & 0.121 & 0.120 & 0.317 & 1.366 & 0.683\\
+B1 naive Bayes & 0.878 & 0.863 & 0.858 & 0.212 & 0.072\\
+L1-C1 & 0.922 & 0.896 & 0.904 & 0.147 & 0.026\\
+L2-C1 & 0.924 & 0.903 & 0.914 & 0.210 & 0.219\\
+S1-C1 & 0.936 & 0.945 & 0.951 & -- & --\\
+L3-C10 & 0.952 & 0.928 & 0.935 & 0.115 & 0.087\\
+DT-d30-leaf1 & 0.818 & 0.806 & 0.822 & 0.329 & 0.119\\
+RF-dNone-leaf1 & 0.913 & 0.900 & 0.909 & 0.219 & 0.231\\
+XGB-d6-lr0.05 & 0.901 & 0.871 & 0.882 & 0.165 & 0.022\\
+Jev & 0.975 & 0.964 & 0.959 & 0.069 & 0.042\\ \bottomrule
 \end{tabular}
 \end{table}
 
@@ -115,13 +117,15 @@ Adding bigrams produced the strongest local validation configuration at \(C=10\)
 Jev's validation macro-F1 of 0.975 exceeded L3-C10 by 0.023, putting it outside the tolerance of every other family winner. On test, Jev reached 0.964 macro-F1 and 602 correct routes in 628 requests. The order among local systems changed. S1-C1 reached 0.945 on test and L3-C10 reached 0.928, reversing their validation order. Selecting the SVM retrospectively would use the same observations to make and evaluate a new choice. The reported selection therefore remains Jev, and the local reversal illustrates how a modest difference can vary across partitions.
 
 \begin{table}[tbp]
-\centering\caption{Jev by accepted action on the frozen test. Support is the number of reference examples.}\label{tab:class}
-\begin{tabular}{lrrrr}\toprule
-Action & Support & Precision & Recall & F1\\ \midrule
-Retrieval &200&0.974&0.935&0.954\\
-Lookup &98&1.000&0.980&0.990\\
-Calculation &131&1.000&0.939&0.969\\
-Direct answer &199&0.903&0.985&0.942\\ \bottomrule
+\centering\caption{Jev by accepted action on the frozen test. Support is the number of reference examples. For comparison, the last two columns give class F1 for S1-C1, the highest local test score, and L3-C10, the validation-selected logistic model.}\label{tab:class}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrr}\toprule
+&&\multicolumn{3}{c}{Jev}&S1-C1&L3-C10\\ \cmidrule(lr){3-5}\cmidrule(lr){6-6}\cmidrule(lr){7-7}
+Action & Support & Prec. & Recall & F1 & F1 & F1\\ \midrule
+Retrieval &200&0.974&0.935&0.954&0.983&0.975\\
+Lookup &98&1.000&0.980&0.990&0.909&0.884\\
+Calculation &131&1.000&0.939&0.969&0.953&0.934\\
+Direct answer &199&0.903&0.985&0.942&0.937&0.919\\ \bottomrule
 \end{tabular}
 \end{table}
 

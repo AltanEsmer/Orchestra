@@ -33,3 +33,14 @@ The hashes in all three source manifests matched their files. Accuracy, macro-F1
 Tectonic compiled the final manuscript without missing glyphs, unresolved citations/references or overfull boxes. Its ordinary underfull spacing warnings were checked visually. All seven pages were inspected, including the final rerender of the changed limitations page. The smoke check passed, 285 tests passed in 30.992 seconds, Ruff lint and formatting passed (92 files), and the diff whitespace check passed. The local verification transcript is in `work/m5-review/`.
 
 The paper is ready for Altan’s revision. M5 acceptance still needs his own account and learning attempt. Complete-package reproduction and archival are assigned to M6. The review used existing predictions and the existing one-time final-test record.
+
+## Trade-off columns, November 10, 2026
+
+A trade-off review found that the tables reported each system's score without showing what a reader gains or loses by choosing it. At Altan’s request, two tables gained columns. The prose was not changed and remains his to revise.
+
+- **Table I** adds test Brier score and five-bin ECE for the ten frozen family winners, from each system's own probabilities. S1-C1 shows a dash because it outputs margins. The values show, for example, that L1-C1 (ECE 0.026) and XGB-d6-lr0.05 (0.022) are closer to calibration than Jev (0.042) without any calibration step. RF-dNone-leaf1 (0.231) and L2-C1 (0.219) are far from it.
+- **Table III** adds class F1 for S1-C1 and L3-C10 beside Jev's. Jev leads on lookup (0.990 against 0.909 and 0.884), while both local systems lead on retrieval (0.983 and 0.975 against 0.954).
+
+Verification: a script rebuilt every new row from `results/m3-5-full-a/metrics.json` and `results/final-test-m3-5/metrics.json` and matched all 14 rows in the source. Jev's stored ECE equals the count-weighted gap over its five saved bins. Tectonic 0.17.0 from cached resources compiled seven US Letter pages, with the same underfull and font-shape warnings as the November 9 build. Pages 3 and 4, which carry both tables, were inspected at full size and the other pages as thumbnails. Both tables fit within one column. The reading copy `output/pdf/M5-report-draft.pdf` now has SHA-256 `7dd141822ccd4ef0c0bbb08884a460932d853b5c766b556e6b1522907f43217b`.
+
+The same review suggested further additions that this change does not make. They include the paired Jev and S1-C1 test disagreement (27 against 22 queries), a validation-only threshold table for Jev, the bigram vocabulary cap and the unshown tree settings. Any analysis computed after the test opening must be labelled exploratory if it enters the paper.
