@@ -260,6 +260,6 @@ scripts/reproduce_study.sh /path/to/orchestra-study.zip
 
 `--replay-jev-test` is for reproduction only. In the checkout that opened the test, the completed receipt refuses any replay to a new output path.
 
-To trace a new query through the frozen logistic system for oral practice, run `uv run --locked python scripts/route_query.py "your query"`. It refits the frozen configuration and calibration as the final test did, then prints both probability rows, the fallback decision, the strongest n-grams and words unseen in training. Jev is not routed.
+To trace a new query through the frozen logistic system for oral practice, run `uv run --locked python scripts/route_query.py "your query"`. It refits the frozen configuration and calibration as the final test did, then prints both probability rows, the fallback decision, the strongest n-grams, and each word outside the model's capped vocabulary with the number of training rows that contain it. Jev is not routed.
 
 The committed `scripts/verify_workflow.py` demonstrates this entire sequence with artificial rows and a clean restored environment. It is a software acceptance check, not the real study or a substitute for its archive.

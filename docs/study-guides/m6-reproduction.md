@@ -1,6 +1,6 @@
 # M6: clean reproduction and oral rehearsal
 
-Study guide edition: November 10, 2026. The evidence is the [M6 reproduction record](../evidence/m6-reproduction.md). A fresh clone of commit `ad65169` from GitHub restored the study archive `orchestra-study-m6.zip` (SHA-256 `38a3ab56…`) and reran the study from the frozen release to the report figures. Every split, prediction, metric and figure matched the saved originals. The project is course project 13, Learning to Route Queries in AI Systems. This guide follows on from the [M4 guide](m4-confidence-errors.md) and the [M5 writing guide](m5-report.md).
+Study guide edition: November 10, 2026. The evidence is the [M6 reproduction record](../evidence/m6-reproduction.md). A fresh clone of commit `8749e06` from GitHub restored the study archive `orchestra-study-m6.zip` (SHA-256 `38a3ab56…`) and reran the study from the frozen release to the report figures. Every split, prediction, metric and figure matched the saved originals. The project is course project 13, Learning to Route Queries in AI Systems. This guide follows on from the [M4 guide](m4-confidence-errors.md) and the [M5 writing guide](m5-report.md).
 
 ## What you need to defend
 
@@ -49,7 +49,7 @@ The archive tool refuses PDFs, `.env` files and private keys, so no course slide
 | 10 | `report/plot_reliability.py` | The report's reliability panel redrawn from its sidecar. |
 | 11 | `compare_study.py` | Every result file against the archived original. |
 
-The whole run took 96.5 seconds of wall time on one CPU thread per process.
+The whole run took 96.4 seconds of wall time on one CPU thread per process.
 
 ## What matched, and what was allowed to differ
 
@@ -78,7 +78,7 @@ Jev runs on TypeSafe's servers. Asking it the 628 test questions again would sen
 
 So the reproduction separates two questions. Can the project's computation be rebuilt? Yes. The clean run reads Jev's archived answers, parses them, and recomputes every Jev prediction, metric and confusion count. Would Jev give the same answers today? That is not tested. The replay proves the pipeline from answers to results, not the answers themselves.
 
-`final-test --replay-jev-test` reads the archived log at the path the freeze recorded and allows zero requests. If any test answer were missing, the command would fail instead of sending a query. The result records `jev_test_replayed: true`, so nobody can mistake a replay for a new opening. In your original checkout the receipt for this split is already complete, so a replay there with a different output path is refused. The test cannot be opened a second time by accident.
+`final-test --replay-jev-test` reads the archived log at the path the freeze recorded and allows zero requests. If any test answer were missing, the command would fail instead of sending a query. The result records `jev_test_replayed: true`, and the receipt records the replay too, so a failed replay cannot later be resumed as a send. The clean run still read the 628 sealed test rows. It did so in a separate copy with its own receipt, after rebuilding the freeze from validation alone, and that freeze made the same decisions as the original. In your original checkout the receipt for this split is complete, so a replay there with a different output path is refused.
 
 ## Trace one artifact: Jev's 0.9636
 
@@ -107,14 +107,15 @@ fallback threshold 0.0: top calibrated 0.8887, route it
 strongest n-grams for calculation (TF-IDF x weight):
   '15' +0.6515, 'percent' +0.4338, 'is 15' +0.4267,
   'total' +0.3576, 'of' +0.2640, 'percent of' +0.2334
-words never seen in training: invoice, uploaded
+outside the vocabulary: invoice (in 1 training row,
+  dropped by the feature cap), uploaded (never in training)
 ```
 
 **The label.** The total is on a supplied document, so the router must read it before any arithmetic. Annotation guide rule 4 gives `document_retrieval` when a document must be read before calculating from its figures. This is my application of the rule to an invented query, not a reviewed dataset row.
 
 **What the model did.** L3-C10 chose calculation with raw probability 0.818. It turns the query into TF-IDF values for its unigrams and bigrams, multiplies each by a learned weight per class, adds an intercept, and turns the four sums into probabilities with softmax. The strongest pushes toward calculation came from "15", "percent" and "total". A positive weight means the feature was associated with calculation in the training rows.
 
-**Why it failed.** The two words that signal a document, "invoice" and "uploaded", never occur in the 1,888 training rows. They have no feature, so they add nothing. The model cannot see the attachment cue at all. In M4 terms this is vocabulary mismatch on a multi-action query.
+**Why it failed.** Neither word that signals a document has a feature. "uploaded" never occurs in the 1,888 training rows. "invoice" occurs in one, but L3-C10 keeps only the 10,000 most frequent unigrams and bigrams, and "invoice" is not among them. So the attachment cue adds nothing, and the model cannot see it at all. In M4 terms this is vocabulary mismatch on a multi-action query. The feature cap is a project setting, so a larger vocabulary is one thing to test, but one training row would still give "invoice" very little weight.
 
 **What confidence did.** Calibration raised the wrong answer to 0.889. The frozen fallback threshold is 0.0, so nothing would be held back anyway. A confident mistake on an unseen cue is the case no threshold catches.
 
@@ -130,7 +131,7 @@ words never seen in training: invoice, uploaded
 
 - **Same machine.** The clean run used the same Mac (Apple M4 Pro, macOS 27.0). Another operating system or CPU could change the last digits of some probabilities, especially XGBoost. Not tested.
 - **Jev's answers are not re-derived.** See the replay section.
-- **Newer code, older results.** The runs being reproduced were made at earlier commits. The clean run used commit `ad65169`. This shows the code you will hand in still produces the reported results. It does not rerun the exact original code.
+- **Newer code, older results.** The runs being reproduced were made at earlier commits. The clean run used commit `8749e06`. This shows the code you will hand in still produces the reported results. It does not rerun the exact original code.
 - **Inputs are trusted.** The labels, the review ledger and the interpretation ledgers are inputs. Reproduction checks the computation built on them, not whether a label is right.
 - **Timing is not compared.** Latency columns depend on the machine's load. They are excluded from every comparison.
 - **The report PDF.** The report compiled from the clean clone to seven pages with text identical to the current reading copy. Its bytes differ because the PDF embeds a build date and identifier. Tectonic sits outside the locked environment.
@@ -172,7 +173,7 @@ DATA=/Users/altanesmer/Desktop/SM1/AI/Orchestra
 ZIP=$DATA/work/m6-reproduction/orchestra-study-m6.zip
 scripts/archive_study.sh "$DATA" "$ZIP"
 git clone https://github.com/AltanEsmer/Orchestra.git clean
-cd clean && git checkout ad651696206b3d573dc5607061c2e8b389786725
+cd clean && git checkout 8749e06f6b8c201707fae275b46f507e5ccd7cc8
 scripts/reproduce_study.sh "$ZIP"
 ```
 
@@ -182,15 +183,15 @@ The evidence run set `UV_CACHE_DIR` and `UV_PYTHON_INSTALL_DIR` to new empty fol
 
 | Item | Identity |
 | --- | --- |
-| Clean clone | GitHub `AltanEsmer/Orchestra` at `ad651696206b3d573dc5607061c2e8b389786725`, no changes |
+| Clean clone | GitHub `AltanEsmer/Orchestra` at `8749e06f6b8c201707fae275b46f507e5ccd7cc8`, no changes or ignored files |
 | Archive | `work/m6-reproduction/orchestra-study-m6.zip`, 171 files, SHA-256 `38a3ab56a2641f313cc21394afd02afdce87bdbebf99a9ebecdca410272bdc6b` |
 | Environment | uv 0.11.7, Python 3.12.13, `uv.lock` `13bdff21…`, scikit-learn 1.9.1, NumPy 2.5.3, SciPy 1.18.1, XGBoost 3.4.1, Matplotlib 3.11.2 |
 | Machine | macOS 27.0 arm64, Apple M4 Pro, 12 cores; four BLAS and OpenMP thread variables set to 1 |
 | Data release | `m3-5-v1.jsonl` `be747dda…`; config `configs/m3-5.json` `2b016c63…`; seed 42 |
 | Split | manifest `7aacbc49…`; train `dd3308af…`; validation `0e9dc934…`; test `baab0310…` |
 | Jev logs | validation `1f68d2f3…`; test `bcdb69f2…`, 628 requests |
-| Freeze | original `e71f5b80…`; reproduced `d48f4605…` (time, commit and code hashes differ) |
-| Final test manifest | original `9b9b7f21…`; reproduced `68dce2b2…` (provenance times differ) |
+| Freeze | original `e71f5b80…`; reproduced `736c8664…` (time, commit and code hashes differ) |
+| Final test manifest | original `9b9b7f21…`; reproduced `9c3de520…` (provenance times differ) |
 
 Full values are in the [M6 record](../evidence/m6-reproduction.md).
 
@@ -201,12 +202,12 @@ Full values are in the [M6 record](../evidence/m6-reproduction.md).
 Answer out loud or in writing before reading any worked explanation. Use the real files and commands. The answers will be recorded in the learning log as you give them.
 
 1. **An unfamiliar query.** Write a query of your own that is not in this guide or the dataset. Before running anything, say its first action, whether L3-C10 will get it right, and roughly how confident it will be. Then run `scripts/route_query.py` on it and compare.
-2. **Features and a model.** Using the output from question 1, explain how the TF-IDF values and class weights become the four raw probabilities. Then say what calibration changed and what it did not.
+2. **Features and a model.** Using the output from question 1, pick the n-gram that pushed hardest toward the predicted class. Predict how the raw probabilities change if you reword the query without it. Then route the reworded query and explain the change with TF-IDF values, class weights and softmax.
 3. **A confusion matrix.** Open `results/m5-figures/final-confusion-L3-C10.png`. Name the class with the lowest recall, the class it is most often confused with, and one kind of query that could cause that.
 4. **A confidence result.** The frozen fallback threshold is 0.0. Explain what that means for a deployed router. Then propose a different threshold and say which of your own routed queries it would hold back, and at what cost.
-5. **A design choice.** Explain why the final test refuses a second evaluation in your checkout, and why the clean-clone replay is not a second opening. Name the rejected alternative and how it could fail.
+5. **A design choice.** A classmate reruns `final-test` in your original checkout with a new output folder to try another threshold. Say what happens and why. Then say what would stop them doing the same in a fresh clone with the archive, and whether code or discipline does the stopping.
 6. **Reproduce a run.** Walk through what `scripts/reproduce_study.sh` does in order. Say which step would fail first if someone changed one label in the archived release, and why.
-7. **An error or limitation.** Name one thing this reproduction cannot prove about Jev and one experiment that would test it.
+7. **An error or limitation.** Name one difference between your clean run and a run on a classmate's Windows laptop that could make `compare_study.py` fail. Say which check you expect to fail first, and whether that failure would mean the study is wrong.
 8. **A course connection.** Lecture 7 p. 52 says the validation error gives an unbiased estimate. Using p. 54, explain why the validation score of the selected system in this project is likely optimistic.
 
 ## Inspected sources
