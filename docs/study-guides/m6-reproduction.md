@@ -140,8 +140,6 @@ outside the vocabulary: invoice (in 1 training row,
 
 The report's reproducibility paragraph can now say this. A fresh checkout of the submitted code, with the study archive, reran every step from the frozen data release to the figures. All splits, predictions, metrics and figures matched. Jev's answers were replayed from the archived logs and not re-requested. Cite the [M6 record](../evidence/m6-reproduction.md) for the commit, archive hash and command. Write that paragraph in your own words. Do not claim replication, or that Jev would answer the same today.
 
-<!-- pagebreak -->
-
 ## Course connections
 
 The lectures cover how to separate data for training, tuning and testing, and how to measure classifiers. They do not cover reproducibility, seeds, locked environments or calibration. Those are project engineering choices. Say so at the exam instead of stretching a slide.
@@ -194,8 +192,6 @@ The evidence run set `UV_CACHE_DIR` and `UV_PYTHON_INSTALL_DIR` to new empty fol
 | Final test manifest | original `9b9b7f21…`; reproduced `9c3de520…` (provenance times differ) |
 
 Full values are in the [M6 record](../evidence/m6-reproduction.md).
-
-<!-- pagebreak -->
 
 ## Your M6 rehearsal
 
