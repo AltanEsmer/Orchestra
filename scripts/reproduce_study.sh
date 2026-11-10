@@ -8,10 +8,11 @@
 set -eu
 [ $# -eq 1 ] || { echo "usage: $0 ARCHIVE.zip" >&2; exit 2; }
 ARCHIVE="$(CDPATH= cd -- "$(dirname -- "$1")" && pwd)/$(basename -- "$1")"
-cd "$(dirname -- "$0")/.."
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 OUT=work/m6-reproduction
 ORIGINAL="$OUT/original"
-test -z "$(git status --porcelain)" || { echo "ERROR: checkout is not clean" >&2; exit 1; }
+test -z "$(git status --porcelain --ignored | grep -v '^!! \.venv/$')" ||
+  { echo "ERROR: checkout has changes or ignored files; use a fresh clone" >&2; exit 1; }
 test ! -e "$OUT" || { echo "ERROR: $OUT exists; use a fresh clone" >&2; exit 1; }
 test ! -e results/m3-5-full-a || { echo "ERROR: saved results present" >&2; exit 1; }
 mkdir -p "$OUT"
@@ -22,8 +23,9 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 VECLIB_MAXIMUM
 
 git rev-parse HEAD
 uv --version
-shasum -a 256 "$ARCHIVE" uv.lock
 uv sync --locked
+uv run --locked python -c 'import sys; from orchestra.data import file_sha256
+for path in sys.argv[1:]: print(file_sha256(path), path)' "$ARCHIVE" uv.lock
 uv run --locked python scripts/smoke.py
 uv run --locked python -m orchestra restore --archive "$ARCHIVE" --out "$ORIGINAL" \
   > "$OUT/restore.json"

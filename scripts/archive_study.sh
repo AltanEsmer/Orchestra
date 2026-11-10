@@ -5,7 +5,8 @@
 set -eu
 [ $# -eq 2 ] || { echo "usage: $0 STUDY_ROOT OUT.zip" >&2; exit 2; }
 ROOT="$(CDPATH= cd -- "$1" && pwd)"
-OUT="$2"
+mkdir -p "$(dirname -- "$2")"
+OUT="$(CDPATH= cd -- "$(dirname -- "$2")" && pwd)/$(basename -- "$2")"
 REPO="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 LIST="${OUT%.zip}.files.json"
 
@@ -36,4 +37,5 @@ cd "$REPO"
 uv run --locked python -m orchestra archive --root "$ROOT" --files "$LIST" --out "$OUT" \
   > "${OUT%.zip}.manifest.json"
 echo "PASS: $(python3 -c 'import json, sys; print(len(json.load(open(sys.argv[1]))))' "$LIST") files archived"
-shasum -a 256 "$OUT"
+uv run --locked python -c 'import sys; from orchestra.data import file_sha256
+print(file_sha256(sys.argv[1]), sys.argv[1])' "$OUT"

@@ -24,7 +24,8 @@ FREEZE_EXPECTED = (
     ("/confidence_manifest_sha256", TIMED),
     ("/config/hashes/*/results/{run}/manifest.json", TIMED),
     ("/config/hashes/*/results/{run}-selection.json", TIMED),
-    ("/config/code_hashes/*", "code changed after the November 3 freeze"),
+    ("/config/code_hashes/*/src/orchestra/__main__.py", "changed after the freeze"),
+    ("/config/code_hashes/*/src/orchestra/confidence.py", "changed after the freeze"),
 )
 FIGURE_SOURCE_EXPECTED = tuple(
     (f"/sources/{name}", TIMED)
@@ -218,10 +219,13 @@ def main(argv=None):
             print(f"DIFF: {name}: {problem}")
         print(f"{'FAIL' if problems else 'PASS'}: {name}, {len(paths)} files")
         failed += bool(problems)
-    problems = report_figures(reproduced)
+    names = {p.name for p in (original / FIGURES).iterdir()}
+    extra = sorted({p.name for p in (reproduced / FIGURES).iterdir()} - names)
+    problems = [f"{FIGURES}/{name}: not in the original" for name in extra]
+    problems += report_figures(reproduced)
     for problem in problems:
         print(f"DIFF: report figures: {problem}")
-    print(f"{'FAIL' if problems else 'PASS'}: report figures, 4 files")
+    print(f"{'FAIL' if problems else 'PASS'}: report figures and figure set")
     failed += bool(problems)
     print("FAIL: reproduction differs" if failed else "PASS: study reproduces")
     return 1 if failed else 0
