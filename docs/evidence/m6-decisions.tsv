@@ -1,0 +1,13 @@
+ts	phase	decision	why	evidence	result
+2026-11-10	frame	reproduce the reported M3.5 and M4 study, not M1 to M3	the report's results come from the M3.5 release and the M4 test; earlier milestones have archive records	docs/evidence/m6-reproduction.md	scope set
+2026-11-10	design	work in a separate worktree from origin/main	a peer session is idle in the main checkout with uncommitted M5 learning-log notes	git worktree list	main checkout untouched
+2026-11-10	design	replay Jev's archived test answers instead of sending the test again	resending exposes the sealed text, needs Altan's approval and mixes model drift into a reproduction check	commit b2bc633, tests/test_confidence.py	tests green
+2026-11-10	harness	archive only ignored inputs and saved outputs; code comes from a Git clone	a clean checkout plus one archive is the claim to prove	scripts/archive_study.sh; archive 38a3ab56	171 files
+2026-11-10	harness	first trial run in a local clone, comparing whole files strictly	learn which differences are real before writing allowed-difference rules	scratchpad trial clone	all results matched; freeze differed in 7 fields
+2026-11-10	harness	declared six freeze and five figure-provenance difference rules, each with a reason; fixed NaN equality in the comparer	every remaining difference was a time, commit, code hash or hash of a timed file; nan != nan was a comparer bug	scripts/compare_study.py	PASS with EXPECTED lines
+2026-11-10	harness	tampered one test prediction and one figure byte in the trial copy	a gate that cannot fail proves nothing	trial clone	FAIL on both files
+2026-11-10	evidence	clean run from a GitHub clone at ad65169 with empty uv cache and fresh Python	rules out hidden local files and cached packages	work/m6-reproduction/clean/work/m6-reproduction/reproduce.log; run provenance started_utc 2026-11-10T10:31:18Z	PASS: study reproduces
+2026-11-10	evidence	compiled the report from the clean clone	the issue asks for report figures; the PDF is the reader's artifact	pdftotext diff against output/pdf/M5-report-draft.pdf	7 pages, text identical, bytes differ
+2026-11-10	rehearsal	added route_query.py instead of an ad hoc scratch script	the rehearsal needs an unfamiliar query through the actual frozen model, and Altan can keep practising with it through January	commit b6e0024; q0005 gives 0.8045 and 0.8853	tests green
+2026-11-10	rehearsal	used an invented invoice query as the worked error example	it shows a confident calibrated mistake caused by words unseen in training	docs/study-guides/m6-reproduction.md	worked trace written
+2026-11-10	rehearsal	left the eight rehearsal prompts unanswered in the guide	Altan attempts first; the learning log records only his actual responses	docs/study-guides/m6-reproduction.md	open

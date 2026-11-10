@@ -53,6 +53,7 @@ After December submission, use the frozen project, saved results, and guide coll
 | Use one local CPU and no paid APIs. | The planned sparse models suit a course-sized dataset. | Measured limits justify a documented resource change. |
 | Add M3.5 before confidence and final testing. | Larger, reviewed public-data coverage and three tree families plus Jev broaden the research. Preserve M3 and rerun its baselines on the new split. | Capacity or review evidence shows the minimum cannot be met before the deadline. |
 | Treat Jev as a separate pretrained API condition. | It takes query text and label instructions instead of fitting the same TF-IDF features. Record access, costs, model/prompt versions, data handling and pretraining-overlap limits. | Concrete API feasibility and budget decision before execution. |
+| Reproduce the study by replaying Jev's archived answers, not by asking Jev again (M6, November 10). | Resending the 628 test queries would expose the sealed text a second time, need Altan's approval and mix model drift into a reproduction check. The replay proves the computation from answers to results, not that Jev would answer the same today. | Altan approves a fresh Jev run to measure answer drift, or the Jev model version changes before submission. |
 
 ## Risks and unresolved decisions
 
