@@ -21,11 +21,13 @@ def route(freeze_path, text, top=6):
     )
     if entry != config["logistic"]:
         raise ValueError("frozen logistic system changed")
+    folds = confidence.calibration_folds(train)
+    held = [[train[i]["query_id"] for i in fold] for _, fold in folds]
+    if held != [fold["held_ids"] for fold in frozen["folds"]]:
+        raise ValueError("frozen calibration folds changed")
     rows = [{"text": text}]
     raw = confidence._fit(entry, train, rows)
-    calibrated = confidence._calibrate(
-        entry, train, rows, confidence.calibration_folds(train)
-    )
+    calibrated = confidence._calibrate(entry, train, rows, folds)
     vectorizer = raw["pipeline"].named_steps["vec"]
     classifier = raw["pipeline"].named_steps["clf"]
     weights = classifier.coef_[list(classifier.classes_).index(raw["predictions"][0])]
@@ -38,6 +40,11 @@ def route(freeze_path, text, top=6):
         ),
         key=lambda item: -item[1],
     )
+    analyzer = vectorizer.build_analyzer()
+    outside = [
+        t for t in analyzer(text) if " " not in t and t not in vectorizer.vocabulary_
+    ]
+    training_tokens = [set(analyzer(row["text"])) for row in train]
     return {
         "system": entry["id"],
         "training_rows": len(train),
@@ -48,10 +55,10 @@ def route(freeze_path, text, top=6):
             "probabilities": calibrated["scores"][0],
         },
         "evidence": evidence[:top],
-        "unseen": [
-            token
-            for token in vectorizer.build_analyzer()(text)
-            if " " not in token and token not in vectorizer.vocabulary_
+        # A word can be in training yet outside the capped vocabulary.
+        "outside_vocabulary": [
+            (token, sum(token in tokens for tokens in training_tokens))
+            for token in outside
         ],
     }
 
@@ -82,7 +89,11 @@ def main(argv=None):
     print(f"Strongest n-grams for {result['raw']['prediction']} (TF-IDF x weight):")
     for name, value in result["evidence"]:
         print(f"  {name!r}: {value:+.4f}")
-    print(f"Words never seen in training: {', '.join(result['unseen']) or 'none'}")
+    outside = [
+        f"{token} ({f'in {n} training rows, dropped by the feature cap' if n else 'never in training'})"
+        for token, n in result["outside_vocabulary"]
+    ]
+    print(f"Words outside the model's vocabulary: {', '.join(outside) or 'none'}")
     return 0
 
 

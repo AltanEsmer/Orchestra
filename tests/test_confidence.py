@@ -819,8 +819,11 @@ class M35LifecycleTest(unittest.TestCase):
             self.assertEqual(routed[key]["prediction"], expected["prediction"])
             self.assertEqual(routed[key]["probabilities"], expected["scores"])
         self.assertEqual(routed["system"], logistic)
-        self.assertEqual(routed["unseen"], [])
-        self.assertEqual(route(frozen, row["text"] + " Zqxwv")["unseen"], ["zqxwv"])
+        self.assertEqual(routed["outside_vocabulary"], [])
+        self.assertEqual(
+            route(frozen, row["text"] + " Zqxwv")["outside_vocabulary"],
+            [("zqxwv", 0)],
+        )
         self.assertEqual(
             routed["evidence"][0][0], max(routed["evidence"], key=lambda e: e[1])[0]
         )
