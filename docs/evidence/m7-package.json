@@ -1,0 +1,106 @@
+{
+  "path": "/Users/altanesmer/Desktop/SM1/AI/Orchestra-submission/Orchestra-M7-2026-11-13.zip",
+  "sha256": "8f0576edb96411f419ae1ba66e698a83df230c767303d0064fcae1d755e6108f",
+  "bytes": 7899146,
+  "manifest": {
+    "edition": "2026-11-13-m7",
+    "status": "technical package verified; author review pending",
+    "source_commit": "49074f8534c376b2168563e806d1f277e0df7043",
+    "bundle_branch": "codex/m7-freeze",
+    "m6_merge_commit": "4a5b17c7343f065c429b9c13ec1af3ce94438d6a",
+    "study_archive_payload_files": 171,
+    "source_zip_files": 127,
+    "python": "3.12.13",
+    "uv": "uv 0.11.7 (Homebrew 2026-04-15 aarch64-apple-darwin)",
+    "report_compiler": "Tectonic 0.17.0",
+    "report_pages": 7,
+    "guide_pages": 5,
+    "verification": {
+      "software_tests": 287,
+      "fixture_commands": 24,
+      "full_reproduction": "PASS: study reproduces",
+      "replay_only": true,
+      "new_cache_and_python": true,
+      "same_host": true,
+      "report_rebuild_text_identical": true
+    },
+    "files": {
+      "M7-freeze.manifest.json": {
+        "sha256": "edc276b645e46b2f08cb68133481f90caee6779aa3f2368706b9230a91099e0f",
+        "bytes": 920
+      },
+      "M7-freeze.pdf": {
+        "sha256": "f324d51a7c15e00895c70785d07af07ef97a220f74c1f7bffd61749efb2bc4eb",
+        "bytes": 12812
+      },
+      "Orchestra-report.pdf": {
+        "sha256": "4fb5b1c0e747af8db6b0df522f3671d39bc1da1c32edf1dabec10a69cc52db40",
+        "bytes": 296391
+      },
+      "README.md": {
+        "sha256": "50df93891252d7189ad5697bfdf497117b967a09d308137a2251c13e32e27605",
+        "bytes": 3027
+      },
+      "orchestra-code.bundle": {
+        "sha256": "0e6fb962198b997f8288ac07ad4937cac34ffac7ef26e973785131147f33ce93",
+        "bytes": 1227760
+      },
+      "orchestra-source.zip": {
+        "sha256": "a44609f3a974f45403f50e68b5eeb829f19e6603168f6610ebc7049df4e829b8",
+        "bytes": 1049052
+      },
+      "orchestra-study-m6.files.json": {
+        "sha256": "a1e4c5426847792e0c400b72edce1585fb30f8d1beb4b015532d91e36f6a4431",
+        "bytes": 8539
+      },
+      "orchestra-study-m6.manifest.json": {
+        "sha256": "ebf32fc7c102e4e9e6c0a84e2ca70fd441d3048a0226008ffd04003aa1e2eab9",
+        "bytes": 31656
+      },
+      "orchestra-study-m6.zip": {
+        "sha256": "38a3ab56a2641f313cc21394afd02afdce87bdbebf99a9ebecdca410272bdc6b",
+        "bytes": 5382029
+      },
+      "verification/README.md": {
+        "sha256": "f71561136a554ec50d11d69778faa800648dc2ed19323c12670cbba8e31e1be6",
+        "bytes": 632
+      },
+      "verification/check.log": {
+        "sha256": "e8422f2ea82fce0ccea021ef984173d6ebdc01951d3caad2a4824205cfdf100c",
+        "bytes": 3182
+      },
+      "verification/citation-audit.md": {
+        "sha256": "2439a5cab5f14fe4749fdbeb65c4743da02e6adc6079de57cc067fedca2d7da8",
+        "bytes": 5282
+      },
+      "verification/fixture.log": {
+        "sha256": "d23d44607f1bf6426e601ea9b429b649a855fb4f11831fe482059af4930d210a",
+        "bytes": 127
+      },
+      "verification/numeric.log": {
+        "sha256": "f23d556ed912265c37d0219adcf53862114b7b9b36bb2a28cf54e86782e295ea",
+        "bytes": 670
+      },
+      "verification/project-citations.log": {
+        "sha256": "5577262b464658ed5e826af2aad2f5ef7b0a8f5aec2275a374214f56e58506a7",
+        "bytes": 531
+      },
+      "verification/reproduce.log": {
+        "sha256": "4dd72f81a78b85a4c8cd2bec36081e9e2c1617b8b30567df90c8418094877582",
+        "bytes": 14624
+      },
+      "verification/source-check.json": {
+        "sha256": "28b4a4cf2fb7ed43b0e45ae0c300fe27dfdf7afaf3d66f8e0d4d8a3b4a18a566",
+        "bytes": 356
+      },
+      "verification/verify_project_citations.py": {
+        "sha256": "d95a033cedcfb2e1c2b66aaa36035703c34292c87f0cf2fe80711d4f5cf0d5dd",
+        "bytes": 1237
+      },
+      "verification/verify_report.py": {
+        "sha256": "c1bc18483e70b9789563fea770931bd78d8ccac0b935f74f3b558d5d9a7ea932",
+        "bytes": 8473
+      }
+    }
+  }
+}
