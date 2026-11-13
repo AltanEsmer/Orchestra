@@ -25,6 +25,8 @@ Altan will add lecture slides to `/Users/altanesmer/Desktop/SM1/AI/`. During eac
 
 On November 3, 2026, the M4 guide added Lecture 5 p. 80 (soft margin), Lecture 7 p. 47 (cross-validation against overfitting) and p. 53 (an independent test set), and noted Lecture 7 pp. 58 to 61 (ROC and AUC) as seen but unused. `UTF-8''Lecture8-Hadoop%20Fundamentals%20and%20MapReduce.pdf`, SHA-256 `997b6d2d5e9114951b0d05713f49d79c98e4f2a074fe2e8dc73bf2f5f31d3098`, was new since November 2. A text search of all 106 pages found no confidence, calibration or error-analysis content, so it is not relevant to M4. Its pages were not rendered to look for image-only content.
 
+On November 10, 2026, the M6 guide re-extracted its cited pages and recomputed the hashes of the course files in the folder. The cited files match the hashes recorded in earlier guide manifests, and no lecture file is newer than Lecture 8. The guide cites Lecture 7 p. 54 (the leakage diagram, image only, rendered and viewed) for the three-set structure. Its validation arm reads "biased towards the test set", which looks like a slip, so it is not cited for that wording. Lecture 7 p. 52 calls the validation error an unbiased estimate; the guide treats that as a contrast with the project's optimistic selected validation score. A text search of Lectures 1 to 8 found no page on reproducibility, seeds, locked environments, calibration, TF-IDF or macro-averaging. These remain project choices or external methods.
+
 The supplied download `UTF-8''Project%20Rreport%20Instructions.pdf` was checked on October 8 and is byte-identical to the report-instructions copy below. January 2027 is Altan's oral-preparation target; the supplied instructions contain no oral date.
 
 ## Source fingerprints

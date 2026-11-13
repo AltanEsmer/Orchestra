@@ -32,7 +32,7 @@ The [roadmap](../../ROADMAP.md) owns dates and statuses. Each milestone's existi
 | M3.5 | Public-data scale and source quality; single trees, bagged forests, boosted trees and Jev; matched-split comparison, costs and reproducibility. [M3.5 data and methods](m3-5-data-and-methods.md), exported as `M3.5-data-and-methods.pdf` on November 3, 2026. |
 | M4 | Confidence, calibration, errors, test freeze, uncertainty and limitations. Supplies confidence analysis and final findings. [M4 confidence and errors](m4-confidence-errors.md), exported as `M4-confidence-errors.pdf` on November 3, 2026. |
 | M5 | Claim-to-evidence map, figures, sources, methods and limitations in the report. The [M5 writing guide](m5-report.md) accompanies the [IEEE manuscript](../../report/main.tex). |
-| M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. |
+| M6 | Clean reproduction and recorded oral attempts using real project artifacts. Explains reproducibility and remaining gaps. [M6 reproduction](m6-reproduction.md), exported as `M6-reproduction.pdf` on November 10, 2026. |
 | M7 | Frozen package, versions, checksums and evidence supporting final claims. Records what is ready for submission. |
 | M8 | Submitted artifact identities and receipts. Records exactly what was submitted. |
 
@@ -144,3 +144,18 @@ The updated [writing guide](m5-report.md) accompanies the six-page draft at comm
 ## M5 reviewed manuscript edition, November 9, 2026
 
 The [current guide](m5-report.md) accompanies the reviewed seven-page report at commit `c1d38ec`. The two-page guide PDF remains `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M5-report.pdf`. Its SHA-256 is `bc69b50be061c3df102247df0f2bb37ede2e1044c89144c24afa6ab9051d8b8d`; source SHA-256 is `2e3c047bf69eb4b8967c824c5960be88a86066ebe72aa3074ae2214d12ab3616`. Its sidecar records the source commit and course hashes. Both rendered pages and all extracted source paragraphs were checked. This replaces the current November 6 edition. M5 acceptance and Altan’s learning attempt are pending.
+
+## M6 reproduction edition, November 10, 2026
+
+The [M6 guide](m6-reproduction.md) explains the clean reproduction recorded in the [M6 record](../evidence/m6-reproduction.md) and holds eight unanswered rehearsal prompts. It is not a closed-milestone snapshot; Altan's rehearsal responses are pending.
+
+| Edition | Source | PDF, 8 pages | Source SHA-256 | PDF SHA-256 |
+| --- | --- | --- | --- | --- |
+| M6 | [M6 reproduction](m6-reproduction.md) | `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M6-reproduction.pdf` | `95de137d01a2d15ba857e8a1e57efce3075a6bc52e4be8f1615909cb91c66d93` | `672cf28362f41aeb6c2ff13fe0d8446f70d51a28e8768460e6e190ad952a4dae` |
+
+- The sidecar `M6-reproduction.manifest.json` records the source commit `02659ae` and the hashes of the five cited course PDFs, all present.
+- Correction: an earlier same-day edition (`00fd9240…`, source commit `afcfea0`) said "invoice" never occurs in training. An independent review found it occurs once and is cut by L3-C10's 10,000-feature cap. That edition also overstated what the replay rules out and printed three rehearsal prompts whose answers the guide already gave. It was replaced before any practice; this edition corrects all three and uses the identities of the final rerun at `8749e06`.
+- Drafting: a Sonnet subagent extracted candidate lecture pages with `pdftotext` and recorded hashes. The lead re-extracted Lecture 7 pp. 52, 53 and 57 and Lecture 6 p. 57, rendered and viewed Lecture 7 p. 54, recomputed the cited hashes, and wrote the guide. Every number in the guide was read from the clean run's files or its log; one wrong figure (Jev's unrounded macro-F1) was caught against `metrics.json` and corrected before export.
+- Verification: all eight rendered pages were inspected. Layout faults fixed on the way: a code block split by a blank line, a command line past the margin, and two near-empty pages after the correction. A scripted check found every source word in the extracted text; long hashes and filenames wrap inside table cells and were confirmed with line breaks removed. Two consecutive exports produced identical hashes.
+- Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
+- Data exposure: the guide quotes q0005, the Altan-authored validation row earlier guides quote, and one invented query. No test text appears.

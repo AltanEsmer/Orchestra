@@ -246,4 +246,20 @@ uv run --locked python -m orchestra restore --archive work/study-backup.zip --ou
 
 The restore verifies member hashes and safe paths before writing a new directory, and preserves executable modes. Save the printed archive checksum. Reproduction also requires execution. In the restored directory, run `uv sync --locked`, create a new run config with relocated paths, and rerun training with a fresh ID. Compare the new run to the saved original. Keep content and lineage hashes unchanged. Do not use live test data for another selection. The agent handles the path relocation.
 
+### Reproduce the reported study from a clean clone
+
+The M3.5 and M4 study behind the report has committed scripts for this sequence. Build the archive from the checkout that holds the data, then run the reproduction inside a fresh clone:
+
+```sh
+scripts/archive_study.sh /path/to/data-checkout /path/to/orchestra-study.zip
+git clone https://github.com/AltanEsmer/Orchestra.git clean && cd clean
+scripts/reproduce_study.sh /path/to/orchestra-study.zip
+```
+
+`archive_study.sh` packs the ignored release, review evidence, Jev logs, interpretation ledgers and every saved output, and prints the archive SHA-256. `reproduce_study.sh` refuses a checkout with changes or saved results. It restores the archive into `work/m6-reproduction/original`, copies only the inputs into place, and runs the commands of this runbook from `validate_dataset.py --ready` to `figures` with run ID `m6-repro`. The final test uses `--replay-jev-test`: it reads Jev's archived test answers at the frozen log path and never sends a query. `scripts/compare_study.py` then compares splits, predictions, metrics, confidence, the freeze, the final test and all figures with the originals, and prints each expected difference with its reason. The log is `work/m6-reproduction/reproduce.log`. The November 10 run is recorded in the [M6 reproduction record](evidence/m6-reproduction.md).
+
+`--replay-jev-test` is for reproduction only. In the checkout that opened the test, the completed receipt refuses any replay to a new output path.
+
+To trace a new query through the frozen logistic system for oral practice, run `uv run --locked python scripts/route_query.py "your query"`. It refits the frozen configuration and calibration as the final test did, then prints both probability rows, the fallback decision, the strongest n-grams, and each word outside the model's capped vocabulary with the number of training rows that contain it. Jev is not routed.
+
 The committed `scripts/verify_workflow.py` demonstrates this entire sequence with artificial rows and a clean restored environment. It is a software acceptance check, not the real study or a substitute for its archive.

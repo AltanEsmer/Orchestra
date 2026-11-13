@@ -619,7 +619,7 @@ def freeze(confidence_dir, out_path, error_review=None, jev_test_log=None):
     return frozen
 
 
-def final_test(freeze_path, out_dir, resume=False, jev_send=None):
+def final_test(freeze_path, out_dir, resume=False, jev_send=None, jev_replay=False):
     started = ex.now()
     frozen = _json(freeze_path)
     config = frozen["config"]
@@ -646,12 +646,15 @@ def final_test(freeze_path, out_dir, resume=False, jev_send=None):
     ):
         raise ValueError("frozen systems changed")
     jev_log = _jev_test_log(systems, frozen.get("jev_test_log"))
-    if jev_log is None and jev_send is not None:
-        raise ValueError("no Jev system in the decision set; omit --send-jev-test")
-    if jev_log is not None and jev_send is None:
+    if jev_send is not None and jev_replay:
+        raise ValueError("a replay sends nothing; omit --send-jev-test")
+    if jev_log is None and (jev_send is not None or jev_replay):
+        raise ValueError("no Jev system in the decision set; omit the Jev test option")
+    if jev_log is not None and jev_send is None and not jev_replay:
         raise ValueError(
             "the decision set includes Jev: final-test needs --send-jev-test "
-            "and TYPESAFE_API_KEY, which send the test queries to TypeSafe"
+            "and TYPESAFE_API_KEY, which send the test queries to TypeSafe, "
+            "or --replay-jev-test with an archived log at the frozen path"
         )
     split_digest = file_sha256(inputs["split_manifest"])
     store = (
@@ -673,6 +676,7 @@ def final_test(freeze_path, out_dir, resume=False, jev_send=None):
             store,
             jev_log,
             jev_send,
+            jev_replay,
         )
 
 
@@ -713,6 +717,7 @@ def _evaluate_frozen(
     store,
     jev_log,
     jev_send,
+    jev_replay,
 ):
     config = frozen["config"]
     receipt_path = store / f"{split_digest}.json"
@@ -723,10 +728,14 @@ def _evaluate_frozen(
         "split_sha256": split_digest,
         "fixture": config["fixture"],
     }
+    if jev_replay:
+        # Receipts written before replays existed lack this key; a resume
+        # may not switch between replaying and sending.
+        request["jev_replay"] = True
     history = []
     if receipt_path.exists():
         receipt = _json(receipt_path)
-        if any(receipt.get(k) != v for k, v in request.items()):
+        if any(receipt.get(k) != request.get(k) for k in {*request, "jev_replay"}):
             raise ValueError(
                 "split test already reserved/opened; changed evaluation refused"
             )
@@ -760,8 +769,12 @@ def _evaluate_frozen(
             out.rename(partial)
     elif out.exists():
         raise ValueError("final output already exists; choose an unused path")
-    elif jev_log is not None and jev_log.exists():
-        raise ValueError(f"Jev test log {jev_log} exists before the test was reserved")
+    elif jev_log is not None and jev_log.exists() != jev_replay:
+        raise ValueError(
+            f"replay needs the archived Jev test log at {jev_log}"
+            if jev_replay
+            else f"Jev test log {jev_log} exists before the test was reserved"
+        )
     out.parent.mkdir(parents=True, exist_ok=True)
     if not receipt_path.exists():
         _write_receipt(receipt_path, {**request, "status": "reserved", "attempts": []})
@@ -789,16 +802,26 @@ def _evaluate_frozen(
         ]
         if actual_folds != frozen["folds"]:
             raise ValueError("frozen calibration folds changed")
-        jev_record = {"jev_test_log_sha256": None, "jev_test_requests": None}
+        jev_record = {
+            "jev_test_log_sha256": None,
+            "jev_test_requests": None,
+            "jev_test_replayed": jev_replay,
+        }
         if jev_log is not None:
-            # Each attempt sends every unanswered test query at most once.
-            summary = jev.collect(test, jev_log, len(test), jev_send)
+            # Each attempt sends every unanswered test query at most once;
+            # a replay of an archived log may send none.
+            budget = 0 if jev_replay else len(test)
+            summary = jev.collect(test, jev_log, budget, jev_send)
             if summary["missing"]:
                 raise ValueError(
                     f"{len(summary['missing'])} test queries have no valid Jev "
-                    "answer; rerun the identical command with --resume"
+                    + (
+                        "answer in the archived log"
+                        if jev_replay
+                        else "answer; rerun the identical command with --resume"
+                    )
                 )
-            jev_record = {
+            jev_record |= {
                 "jev_test_log_sha256": file_sha256(jev_log),
                 # Every request of every attempt is one log line.
                 "jev_test_requests": len(jev.read_log(jev_log)),
