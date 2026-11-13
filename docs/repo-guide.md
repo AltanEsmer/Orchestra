@@ -1,6 +1,6 @@
 # Repository walkthrough
 
-This guide distinguishes verified tooling from research work that still needs accepted data. Start with the [README commands](../README.md), then read the script alongside this explanation.
+This guide describes the verified tooling and the frozen M3.5/M4 research study. Earlier preparation descriptions below are retained as historical context. Start with the [README commands](../README.md), then read the script alongside this explanation.
 
 ## Authored files and their roles
 
@@ -19,6 +19,7 @@ This guide distinguishes verified tooling from research work that still needs ac
 | `scripts/route_query.py` | Oral-practice tool. Refits the frozen logistic system and its calibration as `final-test` did, after checking the freeze's input hashes, and prints raw and calibrated probabilities, the fallback decision, the strongest n-gram contributions, and each word outside the 10,000-feature vocabulary with its training-row count, for one new query. |
 | `.github/workflows/check.yml` | Runs both verification scripts on PRs and main pushes with pinned actions, uv, and Python. |
 | `report/main.tex`, `report/README.md` | Seven-page M5 IEEE working manuscript and section-to-artifact map. Table I uses the saved validation and final-test metrics, including each frozen system's test Brier score and ECE. Table III sets S1-C1 and L3-C10 class F1 beside Jev's per-class scores. The four PNGs and matching source sidecars in `report/figures/` let a clean checkout compile the manuscript. `report/plot_reliability.py` rebuilds the confidence panels from their retained numeric sidecar. The [M5 guide](study-guides/m5-report.md) traces one matrix cell to an adjudicated example. |
+| `docs/study-guides/m7-freeze.md` | M7 lesson and technical appendix on the source bundle, report, study archive, verification, correction procedure and remaining oral practice. |
 | `docs/automation-plan.md` | Accepted automation scope, design tradeoffs, dependencies, verification units, and boundaries. |
 | `docs/manual-steps.md` | Human work in order, beginning with one original query; commands remain agent-operated. |
 | `docs/collection-brief.md` | Expansion rules fixed before baseline-error inspection. Prepared study configs bind its hash. |

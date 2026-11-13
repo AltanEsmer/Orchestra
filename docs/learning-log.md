@@ -197,7 +197,7 @@ Next practice should start with the purpose of routing, one everyday query, and 
 
 ## Topic ledger and question bank
 
-The data-contract row remains **needs practice**. On October 25, Altan explained in his own words how related training/test variants can inflate a score: the grouping-related optimism mechanism is **explained independently** for that question after instruction. The broader leakage/grouping topic remains **needs practice** until split-before-fitting and other leakage controls are attempted. Since then, model selection, the tree families, API reproducibility, metrics (precision and recall), confidence and fallback, and SVM margins have been **explained independently**; see the November 3 and 5 entries. Every other row is **not yet reviewed**.
+The data-contract row remains **needs practice**. On October 25, Altan explained in his own words how related training/test variants can inflate a score: the grouping-related optimism mechanism is **explained independently** for that question after instruction. Leakage and grouping are **explained independently** for the checked cases of group integrity and training-only feature fitting. See the November 10 M5 teach-backs. Since then, model selection, the tree families, API reproducibility, metrics (precision and recall), confidence and fallback, and SVM margins have been **explained independently**; see the November 3 and 5 entries. Every other row is **not yet reviewed**.
 
 | Topic and course connection | Question or manual exercise | Follow-up milestone |
 | --- | --- | --- |
@@ -1464,3 +1464,47 @@ Every new table row was recomputed from the saved validation and final-test metr
 **Trace.** "What is 15 percent of the total on the invoice I uploaded?" is invented for the guide. Its first action under annotation rule 4 is document retrieval. Frozen L3-C10 chose calculation, raw 0.818 and calibrated 0.889, pushed by "15", "percent" and "total". "uploaded" never occurs in training. "invoice" occurs in one training row but is not among the 10,000 most frequent n-grams L3-C10 keeps. Neither has a feature, so the attachment cue contributes nothing. An earlier version of this entry and of the guide said both words never occur in training; the review found the feature cap, and both were corrected before merge.
 
 **Rehearsal, not yet attempted.** The guide's eight prompts cover an unfamiliar query of Altan's own through `scripts/route_query.py`, rewording it without its strongest n-gram, the L3-C10 test confusion matrix, the 0.0 threshold, what stops a second test evaluation in a checkout and in a fresh clone, reproducing a run, a platform difference that could fail the comparer, and Lecture 7 pp. 52 and 54. Worked answers wait for his attempt. No learning status changes from this entry. The prioritized knowledge-gap backlog will be written from his actual rehearsal responses.
+
+## M5 abstract teach-back, November 10, 2026
+
+Altan explained that Jev predicted the first action for each query, that validation selected it, and that 0.964 was macro-F1 across the four actions on the held-out test. This correctly separates the routing task, the selection decision and the reported metric. The walkthrough continues with Section I and a new exercise on choosing the earliest necessary action. The broader M5 checkpoint remains open.
+
+## M5 Introduction teach-back, November 10, 2026
+
+Altan independently assigned knowledge lookup to a new order-database request because both totals must be read before subtraction. He changed the label to calculation when both totals were supplied inline. This demonstrates transfer for the lookup-to-calculation boundary. The walkthrough continues with Section II and a grouped-split exercise. The separate retrieval-to-calculation exercise and the broader M5 checkpoint remain open.
+
+## M5 Data and exploratory analysis teach-back, November 10, 2026
+
+Altan independently grouped two phrasings of the same fictional order, explained that an unrelated order may go in a different split, and identified inflated test scores as a risk of seeing a near-duplicate in training. This confirms the grouping mechanism on a fresh example. The broader leakage topic remains **needs practice** until he explains training-only feature fitting. Section III supplies that exercise.
+
+## M5 Models and evaluation teach-back, November 10, 2026
+
+Altan correctly paired L2-C10 and L3-C10 on validation to measure the effect of adding bigrams at the same numerical setting. He independently explained that fitting TF-IDF before splitting would let test texts influence the vocabulary and IDF weights even if the labels were hidden. Together with the previous grouping example, this closes the recorded split-before-fitting and vocabulary leakage gaps. Section IV asks him to turn a matched contrast into a qualified results claim.
+
+## M7 package preparation, November 13, 2026
+
+Altan requested the M6 merge and M7 completion. M6 PR #36 merged as `4a5b17c`. The report's future-tense M6 claim now cites the completed clean reproduction. A local package will bind the report, source code and archived research inputs to one source revision. The M7 lesson explains the package and its verification. Existing scripts provide the reproduction contract, so no new framework or study dependency is needed.
+
+The four November 10 teach-back entries above were preserved from Altan's existing uncommitted learning log in the original checkout. That checkout and its edits remain untouched. These are prior recorded responses, not new answers supplied by this task. The latest entry establishes group integrity and training-only feature fitting for the checked examples. Altan subsequently answered the M7 result-and-replay question in this chat; the response is recorded below.
+
+Trace q0005 through the existing evidence. The query asks, "A train ticket costs 45 kr. How much do three tickets cost?" Its first action is calculation. M4's L3-C10 raw probability is 0.8045 for calculation; the grouped training-fold calibration gives 0.8853. The saved threshold is zero, so the policy accepts it. M7 binds the files that produced that trace; it does not refit a new policy or execute a calculator.
+
+### Prioritized remaining practice
+
+| Priority | Evidence and next attempt | Status |
+| --- | --- | --- |
+| High | Defend the 0.964 test macro-F1 claim, give a limitation, and distinguish replay from a new service response. Altan answered these three points accurately on November 13, as recorded below. | Explained independently for this question; full artifact-tracing rehearsal pending. |
+| High | Revise and defend the manuscript in Altan's own words, including the matched-C contrast and local test rank reversal. Issue #8 was closed November 10; closure is not proof of authorship or comprehension. | Author revision and full report defense remain unverified. |
+| High | Work a retrieval-before-calculation query and explain when query-only input is insufficient. Lookup-before-calculation was explained November 10. | Remaining action-boundary practice. |
+| Medium | Explain a small TF-IDF example, coefficient, regularization choice and naive-Bayes smoothing. | No complete independent attempts recorded for these topics. |
+| Medium | Revisit confidence under a zero-accepted-query case and distinguish Brier score from ECE. Earlier fallback and reliability attempts are recorded; this extension is unanswered. | Fresh transfer check pending. |
+
+Fresh exercise, before a worked answer: choose one sentence in the report's conclusion, locate its saved metric and configuration, and explain one condition under which it would not transfer. Then explain which package file identifies the exact code and which file proves the research inputs have not changed.
+
+## M7 result and replay teach-back, November 13, 2026
+
+Altan explained that validation selected Jev and that 0.964 macro-F1 measures strong agreement with the accepted first-action labels on 628 held-out queries. He explicitly distinguished equal averaging of the four class F1 scores from 96.4 percent accuracy. He limited the claim to one grouped English dataset with substantial AI-assisted annotation, rather than real-world user performance. He explained that replay uses saved replies to reproduce scoring and never queries today's service. Service changes or nondeterminism could change fresh answers, as two of 629 top choices changed between the original validation passes.
+
+Feedback: each point is accurate and appropriately scoped. The result, metric distinction, dataset limitation and replay boundary are **explained independently** for this question. This response satisfies the M7 result-and-replay checkpoint; it does not establish the remaining M6 unfamiliar-query trace, mastery of all models, or an own-word manuscript revision. Next practice is the guide's attachment-flag evaluation question, before a worked explanation.
+
+Altan explicitly chose "Keep author review pending" on November 13. M7's technical package can be verified, but the milestone remains **in review** until his author step is complete. The assistance paragraph remains intact. Independent citation review also found MASSIVE's request to cite its English seed corpus, SLURP. The report now includes the verified EMNLP 2020 reference. No research result changed.
