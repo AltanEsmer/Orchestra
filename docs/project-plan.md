@@ -101,3 +101,11 @@ The October 26 [AI candidate supplement](evidence/template-expansion-draft.md) p
 ## Source authority
 
 See [course sources](course-sources.md) for file locations and page-level course mappings. The course PDFs take precedence over this project plan if a discrepancy appears. Confirm later staff announcements separately and record their date and source.
+
+## M7 package decision, November 13, 2026
+
+Altan requested merging M6 PR #36 and finishing M7. PR #36 merged as `4a5b17c7343f065c429b9c13ec1af3ce94438d6a` after an independent exact-head review. M7 packages the existing frozen study and corrects the report's obsolete reproduction paragraph. It adds no model, data, metric, calibration rule, or experiment.
+
+The local package pairs a self-contained Git bundle and a source ZIP with the report PDF, the unchanged M6 study ZIP, source-specific license records, checksums, and reproduction instructions. The bundle preserves the Git metadata required by `reproduce_study.sh`; the source ZIP is convenient for inspection. A manifest names the exact source commit. The final evidence commit can follow that source commit without changing the frozen scientific files. Verify the bundle by cloning it into an empty directory and running the complete reproduction with archived Jev replies. Never resend queries for this check.
+
+The package remains local because the study ZIP includes query text. M8 submission remains Altan's task. The report retains its assistance disclosure and own-word revision requirement. Unanswered rehearsal questions stay visible; producing the package does not count as a student answer. The [M7 guide](study-guides/m7-freeze.md) explains the freeze and later correction procedure.

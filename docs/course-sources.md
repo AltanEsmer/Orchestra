@@ -48,3 +48,9 @@ The following official references were checked on October 7, 2026. Library behav
 - [scikit-learn calibration](https://scikit-learn.org/stable/modules/calibration.html) distinguishes classifier outputs from calibrated confidence.
 
 These references support implementation choices. They do not create additional course requirements.
+
+## M7 source review, November 13, 2026
+
+The course folder still contains Lectures 1 through 8, with no newer lecture. The agent re-extracted `CourseProjects.pdf` p. 15 and `ProjectRreportInstructions.pdf` p. 1 and inspected both rendered pages. The requirements remain classification, classifier/feature comparison, confidence/error analysis, and an own-word IEEE two-column report of 5–12 pages, due December 6. Tool integration remains optional.
+
+For the M7 guide, the agent re-extracted Lecture 7 pp. 52–54 and 56–57 and Lecture 6 pp. 57–58. It inspected the image-only leakage diagram on Lecture 7 p. 54 and the confusion matrix on p. 56. The earlier caveat about p. 54's validation caption remains. M7 cites p. 53 for independent testing and p. 57 for precision, recall and F1, and Lecture 6 pp. 57–58 for lost word order. Checksums, bundles, replay and package freezing are project engineering choices. The M7 guide records full source hashes. No course PDF enters the package or Git.

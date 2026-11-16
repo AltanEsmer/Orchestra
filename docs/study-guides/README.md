@@ -159,3 +159,9 @@ The [M6 guide](m6-reproduction.md) explains the clean reproduction recorded in t
 - Verification: all eight rendered pages were inspected. Layout faults fixed on the way: a code block split by a blank line, a command line past the margin, and two near-empty pages after the correction. A scripted check found every source word in the extracted text; long hashes and filenames wrap inside table cells and were confirmed with line breaks removed. Two consecutive exports produced identical hashes.
 - Authoring: ReportLab 5.1.0 and pypdf 6.21.3 in a throwaway `uv run --no-project` environment, through the ignored exporter `work/study-pdf/export.py`.
 - Data exposure: the guide quotes q0005, the Altan-authored validation row earlier guides quote, and one invented query. No test text appears.
+
+## M7 freeze review edition, November 13, 2026
+
+The [five-page M7 guide](m7-freeze.md) accompanies the [verified package](../evidence/m7-freeze.md). Source commit is `49074f8534c376b2168563e806d1f277e0df7043`; source SHA-256 is `d698ceaf7d00bbbc23a529d3332aba01f631c8ed5a5bce2de95999cd847de8f7`. The stable PDF is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-study/M7-freeze.pdf`, SHA-256 `f324d51a7c15e00895c70785d07af07ef97a220f74c1f7bffd61749efb2bc4eb`. Its `.manifest.json` sidecar records source and course identities.
+
+All five pages were inspected, and every source line/table cell was found in extracted text after markup and whitespace normalization. Export used the bundled authoring runtime through the existing scratch exporter, separate from `uv.lock`. The dated snapshot `M7-freeze-2026-11-13-review.pdf` has identical bytes. It is a review snapshot, not a milestone-closure claim. Altan answered the bounded result-and-replay checkpoint accurately and explicitly kept author review pending. M7 remains in review.
