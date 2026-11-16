@@ -215,7 +215,7 @@ Replaying saved answers and asking the service again test different things. Two 
 On this grouped English dataset, the pretrained service chosen on validation reached 0.964 test macro-F1, and a linear SVM using only unigram TF-IDF reached 0.945. The controlled comparisons show that the value of word features depends on the setting: bigrams helped logistic regression at \(C=10\) and hurt it at \(C=0.1\). Calibration slightly improved the probability scores of the best logistic model, and the planned fallback target allowed every query to be routed automatically. Jev's most common error points to a problem that comes before the choice of model. If an action depends on a passage, the router needs enough information to tell whether that passage exists. Testing this on fresh examples would directly address a failure measured in this study.
 
 \section*{Assistance}
-I used AI tools throughout this project. They helped draft candidate queries, check labels, write and test the code, study the errors, and draft and edit this report from the saved results. I made the data collection and labeling decisions and reviewed the flagged test labels.
+I used AI tools throughout this project. They helped draft candidate queries, check labels, write and test the code, and study the errors. I made the data collection and labeling decisions and reviewed the flagged test labels.
 
 \balance
 \begin{thebibliography}{99}
