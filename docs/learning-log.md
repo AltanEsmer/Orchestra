@@ -1521,10 +1521,18 @@ Two content issues were fixed. The data limitation said "the collection lead"; t
 
 Trace q3014: the query is a short instruction to summarize, and its passage is stored as an attachment the router never sees. The accepted label is document retrieval. Jev predicted direct answer; L3-C10, from the same words, predicted retrieval. The report uses this case to argue that a router needs a signal that a passage exists.
 
-Checks: a script compared every number, citation key, label, table body and the bibliography between the old and new source; all match. Tectonic built seven pages with no undefined references, and every page was viewed. `sh scripts/check.sh` exited 0 with 287 tests, Ruff lint and format passing. The reading copy is `output/pdf/Orchestra-report-2026-11-16.pdf`, SHA-256 `48e53fdd0447db9124548bb673ec3105081ed649ad8aeb6692873a579cc8b55d`. The November 13 package still holds the older report text, so a new dated package is needed before M8.
+Checks: a script compared every number, citation key, label, table body and the bibliography between the old and new source; all match. Tectonic built seven pages with no undefined references, and every page was viewed. `sh scripts/check.sh` exited 0 with 287 tests, Ruff lint and format passing. The reading copy is `output/pdf/Orchestra-report-2026-11-16.pdf`, SHA-256 `48e53fdd0447db9124548bb673ec3105081ed649ad8aeb6692873a579cc8b55d`. The November 13 package still holds the older report text; the November 16 package below replaces it.
 
 This is an agent edit, not Altan's own-word revision, and no learning status changes. Questions to try before reading any answer:
 
 1. Jev got q3014 wrong and L3-C10 got it right from the same words. Why does that not make L3-C10 the better router?
 2. The calibrated L3-C10 bins held 0, 3, 46, 91 and 488 test queries. Which bin decides most of the ECE, and what can that hide?
 3. Exercise: rewrite the Assistance section in your own words, saying exactly which parts you did yourself.
+
+## M7 November 16 package, November 16, 2026
+
+At Altan's request the agent built a new dated package from merged source `f635044`. It is `Orchestra-submission/Orchestra-M7-2026-11-16.zip`, SHA-256 `598ab01625ccbb13b7aa1de8b3a3d1cb384e6ee2598f43b746054f9ec5b3614d`. The November 13 package is kept unchanged. A fresh bundle clone with a new uv cache reproduced the study, and the report rebuilt to seven pages with text identical to the local build. The checks, numeric audit, citation checks and checksums all passed; the [M7 record](evidence/m7-freeze.md#november-16-edition) lists them.
+
+Practice question: the code and study archive did not change, so why rerun the whole reproduction for a text-only report change? Name what the new bundle could get wrong that the old run would not catch.
+
+No learning status changes. M8 submission and receipts remain Altan's task.
