@@ -51,6 +51,24 @@ The lead rechecked the course requirement pages and relevant Lecture 6/7 pages, 
 - The result/replay answer is recorded evidence of understanding for that question. It does not complete the unfamiliar-query M6 rehearsal or establish every model concept. The prioritized backlog is in the learning log.
 - Reproduction used the same Mac and cached Jev replies. It does not establish live service stability, cross-platform equality, label correctness or real-user transfer.
 - Preserve this package. A correction requires a new commit, affected checks, rebuilt artifacts and a new dated package with new hashes. Do not silently replace this edition.
-- November 16, 2026: at Altan's request the report prose was rewritten in plainer words and the Assistance section shortened. Numbers, tables, figures, citations and results did not change; a script compared every number, citation key, label, table body and the bibliography against source `49074f8`. The rebuilt report is seven pages, SHA-256 `48e53fdd0447db9124548bb673ec3105081ed649ad8aeb6692873a579cc8b55d`. This package's `Orchestra-report.pdf` therefore holds the older text. A new dated package has not been built yet.
+- November 16, 2026: at Altan's request the report prose was rewritten in plainer words and the Assistance section shortened. Numbers, tables, figures, citations and results did not change; a script compared every number, citation key, label, table body and the bibliography against source `49074f8`. The rebuilt report is seven pages, SHA-256 `48e53fdd0447db9124548bb673ec3105081ed649ad8aeb6692873a579cc8b55d`. This package's `Orchestra-report.pdf` therefore holds the older text. This package's report therefore holds the older text and is kept unchanged.
+
+## November 16 edition
+
+The replacement package is `/Users/altanesmer/Desktop/SM1/AI/Orchestra-submission/Orchestra-M7-2026-11-16.zip`, 7,980,465 bytes, SHA-256 `598ab01625ccbb13b7aa1de8b3a3d1cb384e6ee2598f43b746054f9ec5b3614d`. Its source commit is `f635044e3e4400ac1ed7dd8e33564abc04e66a16`, the merge of [PR #38](https://github.com/AltanEsmer/Orchestra/pull/38), on bundle branch `submission/2026-11-16`. The [identity record](m7-package-2026-11-16.json) lists every file. The study ZIP and M7 guide are byte-identical to the November 13 edition.
+
+| Check | Observed result |
+| --- | --- |
+| Bundle | `git bundle verify` reported complete history; a fresh clone had HEAD `f635044` and a clean tree. |
+| Source ZIP | All 129 files equal the commit's bytes; no extra files. |
+| `scripts/reproduce_study.sh` from a bundle clone, new uv cache and Python 3.12.13 | `PASS: study reproduces`. Jev replies replayed; no service request. |
+| `sh scripts/check.sh` in a bundle clone | 287 tests passed; Ruff lint and format passed. |
+| `verify_workflow.py` | `PASS: artificial workflow, 24 commands`. |
+| Report | Tectonic 0.17.0 built seven pages from the bundle clone; extracted text equals the local build. Final page viewed. Report SHA-256 `1b43205f499eee0b1a8bd15d1c91991f90b4c6b550726a053ce9dceb09189e63`. |
+| Numeric audit | All five tables, four figure sidecars and 22 citations passed against the restored study archive. |
+| Project citations | Five pinned private-repository objects matched through authenticated GitHub. External-source audit carried over; the bibliography is unchanged. |
+| Checksums | All 20 `SHA256SUMS` entries and the outer ZIP checksum passed. The November 13 package still verifies unchanged. |
+
+The report's Assistance section no longer mentions AI help drafting and editing the report, at Altan's request; this record and the package README state that AI agents did draft and edit it. Own-word author review is not recorded as complete. Nothing has been submitted.
 
 Poteto's **Prove It Works** principle led to a clone from the actual delivered bundle and a complete research rerun. **Sequence Work into Verifiable Units** led to the independent M6 merge verdict, the source freeze, then this evidence-only follow-up. Review used gpt-6.1-sol at high reasoning, with implementation assistance from the same model family at low reasoning. No cross-family review is claimed.
