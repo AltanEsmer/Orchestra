@@ -1512,3 +1512,19 @@ Altan explicitly chose "Keep author review pending" on November 13. M7's technic
 ### M7 verified delivery
 
 The [M7 record](evidence/m7-freeze.md) and [package identities](evidence/m7-package.json) bind source `49074f8` to the local review ZIP. A new clone from the delivered bundle, with fresh Python/cache folders, reproduced all frozen outputs under the existing rules. The report rebuilt to identical extracted text; seven report pages and five guide pages were inspected. All five tables, four figure sidecars, 22 references, 287 tests and 24 fixture commands passed. The report and guide are agent-assisted. Altan's actual answer is the understanding evidence; the checks establish software and artifact evidence. Author review stays pending as requested. The final evidence commit is recorded in the PR handoff.
+
+## M7 plain-language report pass, November 16, 2026
+
+After M7 PR #37 merged, Altan asked to finalize the report, find AI-sounding passages and issues, shorten the Assistance section and use plainer words. The agent rewrote the prose in [report/main.tex](../report/main.tex). Long words became short ones ("attained" to "reached", "underdetermined" to "does not follow from the text alone"). Repeated sentence shapes were removed, such as the "X would require Y" closer that ended many paragraphs. Altan's own actions now use "I" instead of "Altan". The Assistance section is now three short sentences. At Altan's later request the same day, it no longer says that AI tools helped draft and edit the report; it lists help with queries, labels, code and errors. The report text was nevertheless drafted and edited by AI agents, and Altan owns the course's AI-use rules.
+
+Two content issues were fixed. The data limitation said "the collection lead"; the release record shows this was the lead AI agent, and the report now says so. The q3014 example said L3-C10 "also" predicted retrieval. The saved test predictions show that Jev chose direct answer and L3-C10 chose retrieval, so the word "also" was misleading.
+
+Trace q3014: the query is a short instruction to summarize, and its passage is stored as an attachment the router never sees. The accepted label is document retrieval. Jev predicted direct answer; L3-C10, from the same words, predicted retrieval. The report uses this case to argue that a router needs a signal that a passage exists.
+
+Checks: a script compared every number, citation key, label, table body and the bibliography between the old and new source; all match. Tectonic built seven pages with no undefined references, and every page was viewed. `sh scripts/check.sh` exited 0 with 287 tests, Ruff lint and format passing. The reading copy is `output/pdf/Orchestra-report-2026-11-16.pdf`, SHA-256 `48e53fdd0447db9124548bb673ec3105081ed649ad8aeb6692873a579cc8b55d`. The November 13 package still holds the older report text, so a new dated package is needed before M8.
+
+This is an agent edit, not Altan's own-word revision, and no learning status changes. Questions to try before reading any answer:
+
+1. Jev got q3014 wrong and L3-C10 got it right from the same words. Why does that not make L3-C10 the better router?
+2. The calibrated L3-C10 bins held 0, 3, 46, 91 and 488 test queries. Which bin decides most of the ECE, and what can that hide?
+3. Exercise: rewrite the Assistance section in your own words, saying exactly which parts you did yourself.
