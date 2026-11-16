@@ -1,6 +1,6 @@
 # M5 report draft
 
-The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The local reading copy is `output/pdf/M5-report-draft.pdf` from the repository root. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
+The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The current local reading copy is `output/pdf/Orchestra-report-2026-11-16.pdf` from the repository root; the older `M5-report-draft.pdf` there predates the plain-language pass. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
 
 ## Evidence to use while writing
 
@@ -46,3 +46,7 @@ Rebuild the reliability panels from the tracked numeric sidecar with `uv run --l
 The manuscript now cites the completed M6 reproduction. The final package manifest and M7 evidence record identify the code commit, report PDF and archive checksums. The Git bundle provides a checkout for the reproduction script; the source ZIP provides readable source without Git history. Use the bundle clone for the clean rerun. The study archive contains local query text and remains outside Git.
 
 The report remains supplied for Altan's own-word review. Package verification does not establish that review or complete the unanswered oral rehearsal. Actual submission and its receipt belong to M8.
+
+## Plain-language pass, November 16, 2026
+
+At Altan's request the prose was rewritten in plainer words, with repeated AI-style sentence patterns removed and a shorter Assistance section. Altan's own actions are now written in the first person. "The collection lead" now reads "the lead AI agent", as in the release disclosure. The q3014 example no longer says L3-C10 "also" predicted retrieval: the saved test predictions show Jev chose direct answer and L3-C10 chose retrieval. A script compared the old and new source: every number, citation key, label, table body and the bibliography are unchanged. The PDF is still seven pages. The November 13 M7 package holds the earlier report text, so a new dated package is needed before submission.
