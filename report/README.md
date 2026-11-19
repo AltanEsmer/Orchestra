@@ -4,6 +4,8 @@ The [editable IEEE manuscript](main.tex) compiles to seven pages, including four
 
 ## Evidence to use while writing
 
+The abstract links to the private [Orchestra repository](https://github.com/AltanEsmer/Orchestra). Readers with access can trace the paper to these project records: the [dataset release](../docs/evidence/m3-5-dataset.md), [source manifest](../data/manifests/sources.json), [validation run](../docs/evidence/m3-5-full-run.md), [final test and label review](../docs/evidence/m4-final-test.md) and [clean reproduction](../docs/evidence/m6-reproduction.md).
+
 | Report section | Evidence and how to read it |
 | --- | --- |
 | Task and data | Use the first-action examples in the [protocol](../docs/data-and-evaluation.md#prediction-contract). For what actually entered the release, use the [release and split counts](../docs/evidence/m3-5-dataset.md), [source manifest](../data/manifests/sources.json) and [collection brief](../docs/collection-brief-m3-5.md). Describe the inherited and newly screened rows separately. |
