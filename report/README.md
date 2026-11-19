@@ -1,6 +1,6 @@
-# M5 report draft
+# Orchestra report
 
-The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The current local reading copy is `output/pdf/Orchestra-report-2026-11-16.pdf` from the repository root; the older `M5-report-draft.pdf` there predates the plain-language pass. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
+The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The current local reading copy is `output/pdf/Orchestra-report-2026-11-19.pdf`. The November 16 submission ZIP contains the earlier edition. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
 
 ## Evidence to use while writing
 
@@ -52,3 +52,16 @@ The report remains supplied for Altan's own-word review. Package verification do
 ## Plain-language pass, November 16, 2026
 
 At Altan's request the prose was rewritten in plainer words, with repeated AI-style sentence patterns removed and a shorter Assistance section. At his request the Assistance section no longer mentions AI help drafting and editing the report, although AI agents did draft and edit it. Altan's own actions are now written in the first person. "The collection lead" now reads "the lead AI agent", as in the release disclosure. The q3014 example no longer says L3-C10 "also" predicted retrieval: the saved test predictions show Jev chose direct answer and L3-C10 chose retrieval. A script compared the old and new source: every number, citation key, label, table body and the bibliography are unchanged. The PDF is still seven pages. The November 13 M7 package holds the earlier report text. The [November 16 package](../docs/evidence/m7-freeze.md#november-16-edition) contains this version.
+
+## Supervisor follow-up, November 19, 2026
+
+Section VI uses the archived four-choice responses and the error review completed after the test was opened. To check the three counts, run `uv run --locked python -m orchestra test-review --final-test results/final-test-m3-5 --interpretations results/test-interpretations-m3-5.jsonl`. The ledger assigns one hypothesis to each error. The eight ambiguous cases comprise six calculation-to-direct conversions and two lookup-to-retrieval table questions. The five wording cases comprise three inline passages sent to retrieval and two mathematical results sent to direct answer.
+
+To check the additional counts from the local study archive, join `results/final-test-m3-5/predictions.jsonl` to `data/processed/m3-5-v1.jsonl` on query ID and verify the accepted labels match. Use the Jev and raw L3-C10 predictions from the same split.
+
+| Question | Selection and result |
+| --- | --- |
+| Did the missing passage signal always lead to a mistake? | Select accepted retrieval rows with a `kind=passage` entry in `data/raw/m3-5-import/attachments.jsonl`. This covers 180 test retrievals from the expansion. Jev got 167 right. L3-C10 correctly routed 10 of the remaining 13. |
+| Did Jev consistently miss conversions? | Select calculation rows with source `clinc150` and type `per-unit-scaling` in `data/raw/m3-5-import/types.json`. Jev got 7 of 13 right. The other six have the adopted standard-factor decision in the release rationale. Compare that decision with the calculation criterion in [the original prompt](../src/orchestra/jev.py). |
+
+[Lu et al.](https://aclanthology.org/2025.findings-naacl.65/) provide the ToolSandbox example in Figure 3 and the GPT-4o and Claude 3 Opus similarity scores in Table 5. [Zhang et al.](https://proceedings.iclr.cc/paper_files/paper/2025/hash/97e2df4bb8b2f1913657344a693166a2-Abstract-Conference.html) evaluate clarification on open-domain questions. The report proposes testing attachment information, clearer rules and clarification on fresh groups. Their effects on Orchestra are unmeasured.

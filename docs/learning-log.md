@@ -1536,3 +1536,13 @@ At Altan's request the agent built a new dated package from merged source `f6350
 Practice question: the code and study archive did not change, so why rerun the whole reproduction for a text-only report change? Name what the new bundle could get wrong that the old run would not catch.
 
 No learning status changes. M8 submission and receipts remain Altan's task.
+
+## Jev error investigation, November 19, 2026
+
+Riccardo asked what might explain Jev's errors. Altan chose to keep Jev at the centre and use published work on GPT and Claude for comparison. The [manuscript and evidence map](../report/README.md#supervisor-follow-up-november-19-2026) use the archived choices, prompt, labels and attachment records. The abstract links to the private repository and the text names the study stages in ordinary language. This AI-assisted report revision adds an interpretation and proposed tests. Altan's own-word review and earlier practice items remain open.
+
+Trace q0605. A kitchen conversion has the accepted action calculation because the adopted labeling rule covers a known conversion factor. The instruction Jev received describes computing from values supplied by the user. Jev chose direct answer with probability 0.99. It got seven of the other cases in this 13-query conversion group right. The prompt difference suggests a testable explanation. A rerun with a clearer rule on fresh examples would be needed to measure its effect.
+
+The ledger check matched all 26 Jev mistakes and all 41 L3-C10 mistakes to the saved predictions. The new subgroup counts matched the frozen files. The five tables and four figure inputs matched the previous edition, all 19 references are cited, and the compiled PDF links to the repository on page one. All seven pages were rendered and inspected. The reading copy is `output/pdf/Orchestra-report-2026-11-19.pdf`, SHA-256 `b9490afa3e40944972df191bc9e0513fc20ce91b38768418c3badbf422647f37`. The environment smoke passed, all 287 tests passed in 32.666 seconds, and Ruff passed lint and formatting (99 files). No live model call or new test evaluation was used.
+
+Practice, before a worked answer: Sketch two requests with identical wording where the right first action changes with the source the user meant. What one piece of information would distinguish them? Then name one case where the presence of an attachment alone would mislead the router. This follow-up is **not yet reviewed** with Altan.
