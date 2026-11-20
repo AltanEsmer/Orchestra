@@ -1546,3 +1546,9 @@ Trace q0605. A kitchen conversion has the accepted action calculation because th
 The ledger check matched all 26 Jev mistakes and all 41 L3-C10 mistakes to the saved predictions. The new subgroup counts matched the frozen files. The five tables and four figure inputs matched the previous edition, all 19 references are cited, and the compiled PDF links to the repository on page one. All seven pages were rendered and inspected. The reading copy is `output/pdf/Orchestra-report-2026-11-19.pdf`, SHA-256 `b9490afa3e40944972df191bc9e0513fc20ce91b38768418c3badbf422647f37`. The environment smoke passed, all 287 tests passed in 32.666 seconds, and Ruff passed lint and formatting (99 files). No live model call or new test evaluation was used.
 
 Practice, before a worked answer: Sketch two requests with identical wording where the right first action changes with the source the user meant. What one piece of information would distinguish them? Then name one case where the presence of an attachment alone would mislead the router. This follow-up is **not yet reviewed** with Altan.
+
+## Manuscript voice revision, November 20, 2026
+
+At Altan's request, the agent edited the abstract, introduction and conclusion in his preferred first-person academic voice. The percentage-change example traces the first decision from the location of the amounts. Figures supplied inline allow calculation immediately. Figures in a referenced report require document retrieval first. The conclusion frames the attachment signal and clearer conversion instructions as proposals for testing. Altan's own-word review remains open.
+
+The reading copy built to seven pages. The environment smoke check and all 287 tests passed. Ruff passed lint and formatting. Practice: What information did Jev have for the 13 retrieval requests it routed to direct answer? How would you test whether an attachment signal helps without changing the wording?
