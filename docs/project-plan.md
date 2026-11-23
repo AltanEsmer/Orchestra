@@ -113,3 +113,5 @@ The package remains local because the study ZIP includes query text. M8 submissi
 ## Supervisor follow-up, November 19, 2026
 
 After the meeting with Riccardo, Altan chose to centre the [report revision](../report/README.md#supervisor-follow-up-november-19-2026) on Jev's 26 recorded mistakes and use published GPT and Claude results for comparison. The revision uses the existing test predictions and the original routing prompt. Attachment metadata, revised action descriptions and a clarification step are proposals for evaluation on fresh groups. The November 16 package identifies the preceding edition.
+
+The [November 23 follow-up research](evidence/jev-routing-error-research.md) narrows the conversion hypothesis to one-unit and half-unit requests, counts the missing controls for an attachment experiment, and measures the review workload if two routers disagree. The suggested paired tests belong on fresh groups because the hypotheses came from inspecting the held-out mistakes.

@@ -1562,3 +1562,12 @@ Trace q3014 in Section VI. The router saw a short request to summarize. The sour
 Tectonic built seven pages with the same layout warnings as the preceding edition. All seven rendered pages were inspected, and Poppler found the GitHub link annotation on page one. The local reading copy is `output/pdf/Orchestra-report-2026-11-23.pdf`, SHA-256 `0d7e70efcbb1c59005db57ab317a3976f2d098ce0b3afec2ef9afa2d1b93ade4`. The environment smoke, all 287 tests, Ruff lint and format, and `git diff --check` passed. Altan's own-word review is pending.
 
 Practice exercise. Use q3014 to explain the difference between an observed routing error, the related evidence from ToolSandbox and a result the proposed attachment experiment would need to measure.
+
+## Further investigation of Jev, November 23, 2026
+
+The [research note](evidence/jev-routing-error-research.md) and Sections VI–VII of the report use the saved decisions to examine the conversion and passage errors. In q0605 Jev chose direct answer for a familiar kitchen equivalence. In q0632, a request in the same group with the same two units in the other direction and a larger quantity, it chose calculation. To test whether the amount matters, the proposed comparison keeps the units, direction and phrasing fixed. The note also gives the workload of reviewing disagreements and documents the published GPT and Claude comparison on similar tools.
+
+The archive joins checked the test and validation counts against the accepted labels. The error ledger matched all 26 Jev errors and all 41 raw L3-C10 errors. The software checks passed the smoke test, 287 unit tests, Ruff lint and formatting. All seven PDF pages were rendered and inspected. The new reading copy is `output/pdf/Orchestra-report-2026-11-23-research.pdf`, SHA-256 `8ee81dcf7b0c0369de3333bfdd35b91693404f46880324345e803aff68530903`. This is an AI-assisted report revision. Altan’s own-word review and the following practice remain open.
+
+1. All 180 expansion test requests with a passage needed retrieval. What request would you add to check whether a router can tell when to ignore an attachment?
+2. A reviewer sees 54 model disagreements containing 21 Jev errors. What else would you need to measure before reporting that review improves routing?
