@@ -1552,3 +1552,13 @@ Practice, before a worked answer: Sketch two requests with identical wording whe
 At Altan's request, the agent edited the abstract, introduction and conclusion in his preferred first-person academic voice. The percentage-change example traces the first decision from the location of the amounts. Figures supplied inline allow calculation immediately. Figures in a referenced report require document retrieval first. The conclusion frames the attachment signal and clearer conversion instructions as proposals for testing. Altan's own-word review remains open.
 
 The reading copy built to seven pages. The environment smoke check and all 287 tests passed. Ruff passed lint and formatting. Practice: What information did Jev have for the 13 retrieval requests it routed to direct answer? How would you test whether an attachment signal helps without changing the wording?
+
+## Manuscript discussion and public link, November 23, 2026
+
+Altan approved moving the published GPT and Claude comparison and the proposed follow-up tests into Section VII, Discussion. Section VI presents the observed routing errors. The abstract prints a clickable URL for the public Orchestra repository. The source comparison verified that the only manuscript edits were the abstract link sentence and the new heading. The two ToolSandbox scores and timestamp example were checked against Table 5 and Figure 3 of the authors' paper.
+
+Trace q3014 in Section VI. The router saw a short request to summarize. The source included a separate passage, so the accepted label was document retrieval. Jev chose direct answer at 0.53. Section VII proposes passing the router an attachment signal and measuring its effect on fresh groups.
+
+Tectonic built seven pages with the same layout warnings as the preceding edition. All seven rendered pages were inspected, and Poppler found the GitHub link annotation on page one. The local reading copy is `output/pdf/Orchestra-report-2026-11-23.pdf`, SHA-256 `0d7e70efcbb1c59005db57ab317a3976f2d098ce0b3afec2ef9afa2d1b93ade4`. The environment smoke, all 287 tests, Ruff lint and format, and `git diff --check` passed. Altan's own-word review is pending.
+
+Practice exercise. Use q3014 to explain the difference between an observed routing error, the related evidence from ToolSandbox and a result the proposed attachment experiment would need to measure.
