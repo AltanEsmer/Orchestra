@@ -1571,3 +1571,17 @@ The archive joins checked the test and validation counts against the accepted la
 
 1. All 180 expansion test requests with a passage needed retrieval. What request would you add to check whether a router can tell when to ignore an attachment?
 2. A reviewer sees 54 model disagreements containing 21 Jev errors. What else would you need to measure before reporting that review improves routing?
+
+## Supervisor comments on presentation, November 26, 2026
+
+Riccardo's ten comments on the November 16 edition asked for a reader who has never seen the project: a problem-first abstract, an introduction that moves from the general task to the contribution, a background and related-work section, tables for the actions, the sources and the methods, no internal IDs or file names, and a one-paragraph reproducibility note. The [revision record](../report/README.md#supervisor-comments-november-26-2026) maps each comment to its change and gives the map from manuscript names to experiment IDs (LR-bigram is L3-C10, SVM is S1-C1).
+
+Trace one query through the new text. "Calculate the increase using the figures in the attached report" appears in Section III as the example of the earliest-action rule: the label is document retrieval, because the report must be read first. Table I gives the four actions, Table III says which model families see that text as unigram or bigram features, and Section VII explains what happens when the passage a request points to is not in the router's input.
+
+The nine added references were checked against arXiv and the ACL Anthology. Table II was recomputed from the release by source and label and matches the release record. A script confirmed that every number in the November 23 body survives, apart from the commit hashes and archive counts removed from the reproducibility paragraph. Tectonic built ten US Letter pages with no overfull boxes, and all ten rendered pages were inspected. The reading copy is `output/pdf/Orchestra-report-2026-11-26.pdf`, SHA-256 `8311f2e83fb4f3e8f27913f9fb58d8732e812473db1b6133ca3b6137d7669b5b`. This is an AI-assisted revision. Altan's own-word review remains open, and the report still does not say how the initial 400 queries were labeled.
+
+Practice, to attempt before the meeting with Riccardo:
+
+1. In your own words, what is a query router, and how does this task differ from choosing between a cheap and a strong language model?
+2. Table III lets three pairs of models differ in one thing only. Name the pairs and what each one isolates.
+3. Why does Table II make it easier to see that recognizing the source cannot separate retrieval from direct answer?

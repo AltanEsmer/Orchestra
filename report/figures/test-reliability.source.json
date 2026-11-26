@@ -118,7 +118,7 @@
       }
     ]
   },
-  "figure_sha256": "5e6f70b1e14e94abd9799dd2c820f87cfb43c5e742d1938cf12d51441be58d32",
-  "renderer_sha256": "d94885397d45ebe0d239f57020d52b0d85ac50825f7898f44f20f6b5c07e6334",
+  "figure_sha256": "826ee393deda85e635c27fd44f712befacbe8484f64405e2f526bb01ae1a46f6",
+  "renderer_sha256": "e2e4acd7be50533919abdac4dcbcf2c4d9da57e7281874a2d65ac65eba7007b3",
   "matplotlib_version": "3.11.2"
 }

@@ -1,6 +1,6 @@
 # Orchestra report
 
-The [editable IEEE manuscript](main.tex) compiles to seven pages, including four research figures, five results tables and references. The current local reading copy is `output/pdf/Orchestra-report-2026-11-23-research.pdf`. The November 16 submission ZIP contains the earlier edition. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
+The [editable IEEE manuscript](main.tex) compiles to ten pages, including four research figures, eight tables and 30 references. The current local reading copy is `output/pdf/Orchestra-report-2026-11-26.pdf`. The manuscript names models by family (see the [November 26 name map](#supervisor-comments-november-26-2026)); the result files keep the experiment IDs. The November 16 submission ZIP contains the earlier edition. Use the evidence map below to revise the prose in your own words and verify the claims you keep. The course allows 5–12 pages. The M5 draft target is November 25 and the report and code are due December 6. [Course instructions and page references](../docs/course-sources.md)
 
 ## Evidence to use while writing
 
@@ -10,14 +10,14 @@ The abstract links to the public [Orchestra repository](https://github.com/Altan
 | --- | --- |
 | Task and data | Use the first-action examples in the [protocol](../docs/data-and-evaluation.md#prediction-contract). For what actually entered the release, use the [release and split counts](../docs/evidence/m3-5-dataset.md), [source manifest](../data/manifests/sources.json) and [collection brief](../docs/collection-brief-m3-5.md). Describe the inherited and newly screened rows separately. |
 | Methods | Use the M3.5 [configuration grid](../configs/m3-5.json), [methods guide](../docs/study-guides/m3-5-data-and-methods.md) and [record of the full run](../docs/evidence/m3-5-full-run.md). The local comparison holds the partitions fixed. Jev changes both the system and the information supplied about the task. |
-| Results | Table I uses the ten chosen IDs in `results/m3-5-full-a-selection.json`. Read validation macro-F1 from `results/m3-5-full-a/metrics.json` and test macro-F1, accuracy, `brier` and `ece` (five bins, native probabilities, null for S1's margins) from `results/final-test-m3-5/metrics.json`. Use the latter file for per-class precision, recall, F1 and support. Table II gives the matched-C contrasts. Table III uses the selected Jev test entry, with class F1 for `S1-C1` and `L3-C10` from the same file. The contrasts and local batch timings are in `results/m3-5-full-a-report/comparison.md`. Jev network timings are in the [collection record](../docs/evidence/m3-5-full-run.md#jev-collection). |
-| Confidence and errors | Use `results/m4-5-validation/{reliability,thresholds}.json` for bin counts and the threshold choice in Table IV. Use `results/final-test-m3-5/{metrics,reliability,thresholds}.json` for frozen outcomes. Read the [M4 test record and label review](../docs/evidence/m4-final-test.md) alongside `results/test-interpretations-m3-5.jsonl` for paraphrased examples and correct comparisons. A missing attachment is a proposed explanation for a measured error. |
-| Discussion | Section VII compares published GPT and Claude results, explains why the expansion lacks an irrelevant-attachment control, and gives the workload for reviewing model disagreements. The [research note](../docs/evidence/jev-routing-error-research.md) records the counts, the published comparisons and a proposed test using pairs of requests. |
+| Results | Table IV uses the ten chosen IDs in `results/m3-5-full-a-selection.json`. Read validation macro-F1 from `results/m3-5-full-a/metrics.json` and test macro-F1, accuracy, `brier` and `ece` (five bins, native probabilities, null for S1's margins) from `results/final-test-m3-5/metrics.json`. Use the latter file for per-class precision, recall, F1 and support. Table V gives the matched-C contrasts. Table VI uses the selected Jev test entry, with class F1 for `S1-C1` and `L3-C10` from the same file. The contrasts and local batch timings are in `results/m3-5-full-a-report/comparison.md`. Jev network timings are in the [collection record](../docs/evidence/m3-5-full-run.md#jev-collection). |
+| Confidence and errors | Use `results/m4-5-validation/{reliability,thresholds}.json` for bin counts and the threshold choice in Table VII. Use `results/final-test-m3-5/{metrics,reliability,thresholds}.json` for frozen outcomes. Read the [M4 test record and label review](../docs/evidence/m4-final-test.md) alongside `results/test-interpretations-m3-5.jsonl` for paraphrased examples and correct comparisons. A missing attachment is a proposed explanation for a measured error. |
+| Discussion | Section VIII compares published GPT and Claude results, explains why the expansion lacks an irrelevant-attachment control, and gives the workload for reviewing model disagreements. The [research note](../docs/evidence/jev-routing-error-research.md) records the counts, the published comparisons and a proposed test using pairs of requests. |
 | Limitations and reproducibility | Use the [release disclosures](../docs/evidence/m3-5-dataset.md#disclosures-and-limitations), [archive identities](../docs/evidence/m3-5-full-run.md) and [freeze, receipt and final output hashes](../docs/evidence/m4-final-test.md#identities). The 62-file archive restore reproduced validation with cached Jev replies. Cite the run's own provenance, including its dirty working tree, separately from the report commit. The [M6 record](../docs/evidence/m6-reproduction.md) documents the completed clean reproduction of the full 171-file study archive, including confidence, the freeze, final-test replay and figures. Distinguish this from the earlier validation-only archive. |
 
-Table I rounds directly from the metrics files. For DT-d30-leaf1 the test value is 0.8064543652, or **0.806** to three decimals. The earlier M4 summary prints 0.807.
+Table IV rounds directly from the metrics files. For DT-d30-leaf1 the test value is 0.8064543652, or **0.806** to three decimals. The earlier M4 summary prints 0.807.
 
-Table V was calculated on November 9 by joining the frozen release to saved test predictions on query ID, validating matching accepted labels, and matching each cue with a case-insensitive whole-word regular expression. These descriptive subsets overlap and differ in source and action mix. [Review record](../docs/evidence/m5-report-review.md)
+Table VIII was calculated on November 9 by joining the frozen release to saved test predictions on query ID, validating matching accepted labels, and matching each cue with a case-insensitive whole-word regular expression. These descriptive subsets overlap and differ in source and action mix. [Review record](../docs/evidence/m5-report-review.md)
 
 ## Figures in the draft
 
@@ -66,3 +66,36 @@ To check the additional counts from the local study archive, join `results/final
 | Did Jev consistently miss conversions? | Select calculation rows with source `clinc150` and type `per-unit-scaling` in `data/raw/m3-5-import/types.json`. Jev got 7 of 13 right. The other six have the adopted standard-factor decision in the release rationale. Compare that decision with the calculation criterion in [the original prompt](../src/orchestra/jev.py). |
 
 [Lu et al.](https://aclanthology.org/2025.findings-naacl.65/) provide the ToolSandbox example in Figure 3 and the GPT-4o and Claude 3 Opus similarity scores in Table 5. [Zhang et al.](https://proceedings.iclr.cc/paper_files/paper/2025/hash/97e2df4bb8b2f1913657344a693166a2-Abstract-Conference.html) evaluate clarification on open-domain questions. The report proposes testing attachment information, clearer rules and clarification on fresh groups. Their effects on Orchestra are unmeasured.
+
+## Supervisor comments, November 26, 2026
+
+Riccardo returned the November 16 edition with ten highlight comments on November 25 and a general note: the content is good, the reading is difficult, and the reader should be assumed to have a technical background but no knowledge of the project. The revision started from the November 23 source. The table and section numbers above use the new numbering. Dated sections before this one keep the numbering of their own edition (old Tables I to V are now IV to VIII; old Sections VI and VII are now VII and VIII).
+
+| Comment | Change |
+| --- | --- |
+| Abstract: problem first, then approach, then test, results last | Rewritten in that order. |
+| Introduction should tell a story: general task, problems, contribution | Rewritten: tool-using assistants, why the first action is hard to read from wording, the choice between a pretrained model and a small classifier, then the three questions and the approach. |
+| Add "Background and related work" before the data section | New Section II: query routing, text classification with simple features, confidence and selective prediction. Nine added references, each checked against arXiv or the ACL Anthology on November 26. |
+| Notation such as `m3-5-v1` is unclear | Release, milestone and query IDs are gone from the text. Models are named by family (map below). |
+| "Earlier set" and "new set" are undefined | Defined once as the initial set (400) and the expansion (2,745) and used consistently. |
+| Describe the data in a table and comment on the choices | Table II lists every source with its content and per-action counts, recomputed from the release by `source_id` and `label`. A paragraph gives the role of each source. |
+| Characterize the query types with a table or examples | Table I gives each action, its first step and an example from the [prediction contract](../docs/data-and-evaluation.md#prediction-contract). |
+| Characterize the methods in a table | Table III lists the ten families with features, classifier, grid, selected setting and configuration count. |
+| No exact file names | The source path is replaced by "the project repository". |
+| Compress Reproducibility into a small paragraph | One paragraph at the end of Section IX. The commit hashes, the 62- and 171-file archive counts, the 78-image count and the single timing thread now appear only in the [M6 record](../docs/evidence/m6-reproduction.md) and the [validation run](../docs/evidence/m3-5-full-run.md). |
+
+| Name in the manuscript | Experiment ID | Selected configuration |
+| --- | --- | --- |
+| Majority | B0 | B0 |
+| NB | B1 | B1 |
+| LR-count | L1 | L1-C1 |
+| LR-tfidf | L2 | L2-C1 |
+| SVM | S1 | S1-C1 |
+| LR-bigram | L3 | L3-C10 |
+| Tree | DT | DT-d30-leaf1 |
+| Forest | RF | RF-dNone-leaf1 |
+| XGBoost | XGB | XGB-d6-lr0.05 |
+
+A script compared the old and new source. Every number in the November 23 body is still present except the items listed in the last row above and the sum 865, which Table II now shows as 598 and 267. The new numbers are the Table II counts, "12 public datasets", the 80% in the definition of calibration and the figures in the example queries. The reliability figure was re-rendered from the same sidecar with new panel titles only. Section VII no longer has subsections. The Assistance section is unchanged.
+
+The report does not say how the initial 400 queries were labeled. That sentence is left for Altan to write from his own record. The whole text remains an AI-assisted revision awaiting his own-word review.

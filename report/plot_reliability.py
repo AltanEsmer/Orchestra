@@ -16,7 +16,7 @@ def main():
     provenance = json.loads(source.read_text())
     fig, axes = plt.subplots(1, 3, figsize=(9.1, 2.9), sharex=True, sharey=True)
     names = ("L3-C10", "calibrated", "Jev")
-    titles = ("L3-C10 raw", "L3-C10 calibrated", "Jev")
+    titles = ("LR-bigram, uncalibrated", "LR-bigram, calibrated", "Jev")
     for ax, name, title in zip(axes, names, titles, strict=True):
         bins = [row for row in provenance["bins"][name] if row["count"]]
         ax.plot([0, 1], [0, 1], "--", color="0.6", linewidth=1)
